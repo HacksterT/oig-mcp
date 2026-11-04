@@ -13,17 +13,6 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class ResponseFormat(str, Enum):
-    """How a tool should shape its return value.
-
-    - JSON     → machine-readable dict/list (best for chaining tool calls)
-    - MARKDOWN → human-readable text (best for direct display)
-    """
-
-    JSON = "json"
-    MARKDOWN = "markdown"
-
-
 class RecommendationStatus(str, Enum):
     """Recommendation status as VA OIG publishes it."""
 
@@ -145,4 +134,7 @@ class Provenance(BaseModel):
     )
     source_urls: list[str] = Field(
         default_factory=list, description="vaoig.gov pages backing this response."
+    )
+    citation: str = Field(
+        default="", description="How to cite this response in an answer."
     )

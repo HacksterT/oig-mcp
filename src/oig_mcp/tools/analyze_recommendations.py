@@ -15,6 +15,7 @@ from pydantic import Field
 
 from oig_mcp.models import AnalysisGroup, RecommendationFilters
 from oig_mcp.utils import (
+    CITE_TOTALS,
     READ_ONLY_TOOL,
     UpstreamServiceError,
     build_provenance,
@@ -61,6 +62,11 @@ _TARGET_FIELDS = (
     "open_past_target",
     "median_days_after_target",
 )
+_YEAR_MEDIAN_ZERO = (
+    "A median of 0 days means at least half of that year's closed recommendations "
+    "closed the day the report came out, presumably fixed beforehand. It is not a "
+    "typical time to close."
+)
 _PUBLICATION_DAY = (
     "closed_on_publication_day counts recommendations closed the day the report came "
     "out, presumably fixed beforehand. They can pull a small group's median to 0."
@@ -87,6 +93,8 @@ def _caveats(
     if group_by is AnalysisGroup.YEAR:
         caveats += [_YEAR_READINGS, _YEAR_REPORT_COUNT]
         caveats += _closure_caveats(items, "median_days_to_closure")
+        if any(item.get("median_days_to_closure") == 0 for item in items):
+            caveats.append(_YEAR_MEDIAN_ZERO)
     else:
         caveats.append(_GROUP_OVERLAP)
         caveats += _closure_caveats(items, "median_days")
@@ -158,5 +166,7 @@ def register(mcp: FastMCP) -> None:
             "items": items,
             "caveats": _caveats(group_by, filters, items),
             "target_basis": result.get("target_basis"),
-            "provenance": build_provenance(result.get("data_as_of"), _SOURCE_URLS),
+            "provenance": build_provenance(
+                result.get("data_as_of"), _SOURCE_URLS, citation=CITE_TOTALS
+            ),
         }

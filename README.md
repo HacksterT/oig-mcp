@@ -82,7 +82,7 @@ uv run pytest tests/ -v
 uv run ruff check . && uv run ruff format --check .
 ```
 
-Each tool lives in its own file under `src/oig_mcp/tools/` with a `register(mcp)` function, wired up in `tools/__init__.py`. Resources and prompts follow the same pattern. Tool names use the `vaoig_` prefix, take Pydantic-typed inputs, return structured data with a `provenance` block, and support `response_format` of `json` or `markdown`.
+Each tool lives in its own file under `src/oig_mcp/tools/` with a `register(mcp)` function, wired up in `tools/__init__.py`. Resources and prompts follow the same pattern. Tool names use the `vaoig_` prefix, take Pydantic-typed inputs, and return structured data with a `provenance` block that says how to cite the result.
 
 ## Deployment
 

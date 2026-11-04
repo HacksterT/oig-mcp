@@ -3,9 +3,13 @@
 **Run:** November 4, 2026, against data snapshot `d364ff4cb215c6d8`, data as of the same date.
 **Method in brief:** an AI assistant that knows nothing about this project answers 23 questions using only this server's tools, over authenticated HTTP. Its answers are scored against gold answers computed by SQL directly from the database.
 
+## Status of these results
+
+The runs below predate the last changes: smaller responses, a citation line in each result, and clearer notes on missing responses and OIG's totals. Backend fixes are also on the way, with a new snapshot. **Both models will be rerun on the final server and data, and this document updated.** Until then, read these as the most recent results, not the final ones.
+
 ## Results
 
-Scores are from the final runs on the server as built today. Results for watsonx Orchestrate and its models are not included, because the server has not yet been deployed there.
+Results for watsonx Orchestrate and its models are not included, because the server has not yet been deployed there.
 
 | Measure | Claude Opus 5.5 | Claude Sonnet 5.5 | Scored by |
 |---|---|---|---|
@@ -56,6 +60,21 @@ The full set, with answers, is in [`eval/gold/questions.json`](../eval/gold/ques
 
 Traces, datasets, and experiments are recorded in Arize Phoenix. Run records and per-question results are in [`eval/results/`](../eval/results/). To reproduce a run, see [`eval/README.md`](../eval/README.md).
 
+## An independent client: DeepSeek through Hermes Agent
+
+A separate agent, Hermes Agent running DeepSeek V4 Pro 0813, answered 17 of the questions over a public HTTPS address. It ran as one continuing session writing to a file, so it is not directly comparable with the isolated runs above. Results are in [`eval/results/2026-11-04-hermes-deepseek-v4-pro-0813/`](../eval/results/2026-11-04-hermes-deepseek-v4-pro-0813/), and the answers are in [`qna.md`](qna.md).
+
+| Measure | Result |
+|---|---|
+| Exact facts present | 10 of 10 |
+| Agrees with the gold reference | 17 of 17 |
+| Caveats and behaviors | 11 of 12 |
+| Every cited report number exists | 17 of 17 |
+| Report number and link together, where required | 0 of 5 |
+| Data date stated, where required | 2 of 4 |
+
+It gave report numbers in those five answers, but no links, and the host appears not to pass the server's instructions to its model. That is why each tool result now says how to cite it. Reading the answers by hand also found overreach the judge passed, such as calling open findings "the single most likely things to be re-cited." A model can still go beyond what the tools return, whatever the server says.
+
 ## What the evaluation changed
 
 Two runs happened. The first found problems, and the numbers above come from the second. The first run's results are kept in [`eval/results/baseline/`](../eval/results/baseline/).
@@ -73,13 +92,13 @@ Because these changes followed the first results, the second run is not a blind 
 
 ## Known limits
 
-**A defect not yet fixed: inspections with no recommendations.** These reports are missing from the backend's inspection table. For about 14 facilities, the latest inspection and next-window estimate are therefore too early, sometimes already past. VA North Texas was inspected in a report published October 2026, and its estimate reads February 2025. The fix is filed in the backend, and this document will be updated when it is resolved. The gold questions use El Paso and Durham, which this does not affect.
+**A defect being fixed: inspections with no recommendations.** These reports are missing from the backend's inspection table. For about 14 facilities, the latest inspection and next-window estimate are therefore too early, sometimes already past. VA North Texas was inspected in a report published October 2026, and its estimate reads February 2025. The gold questions use El Paso and Durham, which this does not affect. A question on this case will be added when it is fixed.
 
 **Small test set, and one builder.** 23 questions are a check, not a statistical estimate. Results may vary between runs, because the models do not accept a fixed seed.
 
 **The judge is the same model family as the agent.** It is not independent confirmation. No person reviewed every answer.
 
-**Only Claude models are scored here.** watsonx Orchestrate's model has not been tested, and these results do not transfer to it automatically.
+**watsonx Orchestrate's model has not been tested,** and these results do not transfer to it automatically.
 
 **Not tested:**
 

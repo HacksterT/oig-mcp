@@ -86,7 +86,7 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 | `src/oig_mcp/app.py` | Creates the FastMCP server, registers everything, chooses the transport |
 | `src/oig_mcp/config.py` | Settings from environment variables; validates the data API URL |
 | `src/oig_mcp/utils.py` | The hardened HTTP client (`fetch_json`), Access headers, provenance helper |
-| `src/oig_mcp/models.py` | Pydantic models and enums: `ResponseFormat`, `RecommendationStatus`, `PaginationParams`, `Provenance` |
+| `src/oig_mcp/models.py` | Pydantic models and enums: `RecommendationStatus`, `PaginationParams`, `Provenance` |
 | `src/oig_mcp/tools/` | One file per tool; `__init__.py` registers them |
 | `src/oig_mcp/auth.py` | The bearer token check for `/mcp` |
 | `src/oig_mcp/resources/` | `vaoig://about`, `vaoig://facilities`, `vaoig://taxonomy/{facet}` |
@@ -129,7 +129,7 @@ Troy develops on his Mac. Bob works in the IBM VM. GitHub is the only channel be
 | Item | When | How |
 |---|---|---|
 | Access to this repository | Before the first session | GitHub |
-| Troy's initials for resource names | First session | Troy tells Bob directly |
+| Initials for resource names | Known | `TES` |
 | IBM Cloud account, resource group, and Code Engine project to use | Before Phase 2 | Troy tells Bob directly |
 | watsonx Orchestrate instance URL and API key | Before Phase 3 | Entered by Troy in the VM only; never written to the repository |
 | Data API URL and Cloudflare Access service token | Before Phase 1 | Entered as platform secrets only; never written to the repository |
@@ -168,9 +168,8 @@ When Bob receives a secret, confirm receipt without repeating its value anywhere
 
 These are unresolved. Do not decide them; flag anything that depends on them. The handoff lists every assumption about IBM.
 
-1. **Calls out of IBM Cloud.** Troy is confirming with the organizers that a Code Engine app may call an API hosted on his own machine. If not, the fallback is the same API on a small cloud host behind the same Access policy, which needs no change to this server.
-2. **Availability.** The live demo depends on Troy's machine and the tunnel being up. The same fallback covers a long outage.
-3. **Bearer connections in Orchestrate.** IBM's documentation conflicts on whether a remote toolkit accepts one. Phase 3 tests this first.
+1. **Availability.** Troy hosts the data API on his own machine, so the live demo depends on it and the tunnel being up. If needed, the fallback is the same API on a small cloud host behind the same Access policy, which needs no change to this server.
+2. **Bearer connections in Orchestrate.** IBM's documentation conflicts on whether a remote toolkit accepts one. Phase 3 tests this first.
 
 ## 11. Reference
 

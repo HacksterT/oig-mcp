@@ -13,17 +13,31 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 from oig_mcp.utils import (
+    CITE_TOTALS,
     READ_ONLY_TOOL,
     UpstreamServiceError,
     build_provenance,
     fetch_object,
     paginate,
     report_urls,
+    shorten_responses,
     tool_error,
 )
 
 _LOOKUP_LIMIT = 10
 _MAX_RECOMMENDATIONS = 100  # the API returns only the newest 25 unless asked
+_ACTION_CHARS = 300
+
+NO_RESPONSE_NOTICE = (
+    "A finding with no facility response means none was extracted from the report. "
+    "Responses are extracted mainly from inspection reports, so this does not show "
+    "that the facility failed to respond or that anything is overdue."
+)
+
+
+def lacks_response(recommendations: list[dict[str, Any]]) -> bool:
+    """True if any finding has no extracted corrective action."""
+    return any(not record.get("corrective_action") for record in recommendations)
 
 
 def _pick_station(facility: str, matches: list[dict[str, Any]]) -> str | None:
@@ -58,7 +72,9 @@ async def fetch_profile(facility: str) -> dict[str, Any]:
             "matches": matches,
             "total_matches": lookup.get("total"),
             "hint": "Several facilities matched. Ask which one is meant.",
-            "provenance": build_provenance(lookup.get("data_as_of")),
+            "provenance": build_provenance(
+                lookup.get("data_as_of"), citation=CITE_TOTALS
+            ),
         }
     return await fetch_object(
         f"facilities/{quote(str(station), safe='')}",
@@ -98,8 +114,11 @@ def register(mcp: FastMCP) -> None:
 
         Returns:
             Facility fields, reports, inspections, repeat_findings, the basis text,
-            recommendations (the newest 100, open first, paginated), and provenance.
-            recommendations_has_more is true when a facility has older ones.
+            recommendations (the newest 100, open first, paginated), notices, and
+            provenance. Within recommendations, has_more means another page is
+            available, and has_older_beyond_100 means older ones exist that no page
+            will show. Long corrective actions are shortened and marked;
+            vaoig_get_report has the full text.
         """
         try:
             profile = await fetch_profile(facility)
@@ -113,9 +132,14 @@ def register(mcp: FastMCP) -> None:
             key=lambda record: record.get("status") != "open",
         )
         reports = profile.get("reports", [])
+        page = paginate(recommendations, limit, offset)
+        page["items"] = shorten_responses(page["items"], _ACTION_CHARS)
+        page["has_older_beyond_100"] = bool(profile.get("recommendations_has_more"))
+        rest = {k: v for k, v in profile.items() if k != "recommendations_has_more"}
         return {
-            **profile,
-            "recommendations": paginate(recommendations, limit, offset),
+            **rest,
+            "recommendations": page,
+            "notices": [NO_RESPONSE_NOTICE] if lacks_response(page["items"]) else [],
             "provenance": build_provenance(
                 profile.get("data_as_of"), report_urls(reports)
             ),

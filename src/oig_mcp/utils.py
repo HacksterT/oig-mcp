@@ -29,6 +29,17 @@ UNREACHABLE_HINT = (
     "service token in the server's environment."
 )
 
+# These travel in each result, because not every MCP host passes the server's
+# instructions to its model. Totals have no single report to cite.
+CITE_FINDINGS = (
+    "Give the report number and link for each finding you mention, and state "
+    "data_as_of."
+)
+CITE_TOTALS = (
+    "State data_as_of. These are totals across reports, so no single report is the "
+    "source."
+)
+
 READ_ONLY_TOOL = {
     "readOnlyHint": True,
     "destructiveHint": False,
@@ -145,6 +156,31 @@ def tool_error(exc: UpstreamServiceError) -> dict[str, str]:
     return {"error": str(exc), "hint": hint}
 
 
+def shorten_responses(
+    records: list[dict[str, Any]], max_chars: int
+) -> list[dict[str, Any]]:
+    """Clip long corrective actions, marking any record that was clipped.
+
+    These narratives are the largest part of a result, and a long list of them can
+    crowd out a model's context. vaoig_get_report returns the full text.
+    """
+    shortened = []
+    for record in records:
+        # Search nests the facility response. Facility profiles keep it flat.
+        nested = isinstance(record.get("response"), dict)
+        holder = record["response"] if nested else record
+        action = holder.get("corrective_action") or ""
+        if len(action) > max_chars:
+            holder = {
+                **holder,
+                "corrective_action": action[:max_chars],
+                "corrective_action_truncated": True,
+            }
+            record = {**record, "response": holder} if nested else holder
+        shortened.append(record)
+    return shortened
+
+
 def report_urls(*record_lists: list[dict[str, Any]]) -> list[str]:
     """Collect the distinct report links from records, in first-seen order."""
     urls = (record.get("url") for records in record_lists for record in records)
@@ -171,12 +207,16 @@ def paginate(items: list[Any], limit: int, offset: int) -> dict[str, Any]:
 
 
 def build_provenance(
-    data_as_of: str | None, source_urls: list[str] | None = None
+    data_as_of: str | None,
+    source_urls: list[str] | None = None,
+    *,
+    citation: str = CITE_FINDINGS,
 ) -> dict[str, Any]:
     """Return a provenance block for a response, flagging stale data.
 
     `data_as_of` is the ISO date (YYYY-MM-DD) the data was collected. An
-    unparseable or missing date yields `stale = None` rather than a guess.
+    unparseable or missing date yields `stale = None` rather than a guess. `citation`
+    says how to cite the response. Pass CITE_TOTALS for counts across reports.
     """
     from datetime import date
 
@@ -195,4 +235,5 @@ def build_provenance(
         days_old=days_old,
         stale=stale,
         source_urls=source_urls or [],
+        citation=citation,
     ).model_dump()

@@ -18,6 +18,7 @@ from oig_mcp.utils import (
     build_provenance,
     fetch_object,
     report_urls,
+    shorten_responses,
     tool_error,
 )
 
@@ -29,6 +30,8 @@ _FALLBACK_NOTICE = (
     "Semantic search was unavailable, so these results come from keyword search "
     "only. They are valid, but differently worded findings may be missing."
 )
+
+_ACTION_CHARS = 800
 
 
 def register(mcp: FastMCP) -> None:
@@ -60,7 +63,8 @@ def register(mcp: FastMCP) -> None:
         Returns:
             items (recommendations with status, report number, link, facility
             response, and matched_by), page_hits (PDF pages, first page of results
-            only), search_mode, notices to pass on, and provenance.
+            only), search_mode, notices to pass on, and provenance. Long corrective
+            actions are shortened and marked; vaoig_get_report has the full text.
         """
         params = {
             "q": question,
@@ -86,7 +90,7 @@ def register(mcp: FastMCP) -> None:
             "offset": result.get("offset"),
             "has_more": result.get("has_more"),
             "next_offset": result.get("next_offset"),
-            "items": items,
+            "items": shorten_responses(items, _ACTION_CHARS),
             "page_hits": page_hits,
             "notices": notices,
             "provenance": build_provenance(

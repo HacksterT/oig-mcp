@@ -1,0 +1,1033 @@
+[
+ {
+  "id": "count-open-total",
+  "category": "exact",
+  "run": {
+   "id": "count-open-total",
+   "answer": "**567 open recommendations** (out of 15,649 total). The figure is current as of 2026-11-04 (data_as_of = 0 days old, not stale).\n\nBreakdown of open items by age:\n- Under 1 year: 409\n- 1 to 5 years: 160\n- Over 5 years: 17\n\nFor comparison, closed status: 14,925 closed-implemented, 157 closed-not-implemented. Reconciliation against the live vaoig.gov dashboard passed (tolerance checks within bounds; the -19 open-count difference against OIG's own 586 figure is within tolerance).\n\nSource: VA OIG public pages (vaoig.gov), data dashboard.",
+   "tool_calls": [
+    {
+     "tool": "vaoig_get_dataset_status",
+     "is_error": false
+    }
+   ]
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "open total",
+     "passed": true
+    },
+    {
+     "label": "data date",
+     "passed": true
+    }
+   ],
+   "exact_pass": true,
+   "report_list": null,
+   "tools_pass": true,
+   "tools_called": [
+    "vaoig_get_dataset_status"
+   ],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": true,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer gives 567 open recommendations with data as of 2026-11-04, matching the gold reference; the extra age breakdown sums to 586 rather than 567, but that does not contradict the headline figures asked about.",
+    "criteria": [],
+    "usage": {
+     "input": 1078,
+     "output": 227
+    }
+   }
+  },
+  "metrics": {
+   "passed": true,
+   "exact_match": true,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": true,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "count-hfi-2026",
+  "category": "exact",
+  "run": {
+   "id": "count-hfi-2026",
+   "answer": "In 2026 Healthcare Facility Inspection (HFI) reports, OIG made **148 recommendations** across 61 reports. Of those, **80 are still open** (68 closed-implemented, 0 closed-not-implemented).\n\nCaveat (from the tool): report_count includes reports with no recommendations when only report filters are set \u2014 so 61 is the report figure; the recommendation-bearing count is the meaningful number. Also, a change in these counts over time can reflect inspection volume or OIG attention, not just improvement.\n\nSource: VA OIG public pages (vaoig.gov), recommendations-all.",
+   "tool_calls": [
+    {
+     "tool": "vaoig_analyze_recommendations",
+     "is_error": false
+    }
+   ]
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "recommendations",
+     "passed": true
+    },
+    {
+     "label": "still open",
+     "passed": true
+    }
+   ],
+   "exact_pass": true,
+   "report_list": null,
+   "tools_pass": true,
+   "tools_called": [
+    "vaoig_analyze_recommendations"
+   ],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": false,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer gives 148 recommendations and 80 still open, matching the gold reference, with consistent extra context (68 closed + 80 open = 148).",
+    "criteria": [],
+    "usage": {
+     "input": 1070,
+     "output": 76
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": true,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": true,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "count-two-states",
+  "category": "exact",
+  "run": {
+   "id": "count-two-states",
+   "answer": "**Texas has more: 24 open recommendations** (1 from 2024, 3 from 2025, 20 from 2026). **North Carolina has 6 open**, all from 2026.\n\nCaveat: these open recommendations carry no closure dates yet, so time-to-close can't be stated for either state.\n\nSource: VA OIG public pages (vaoig.gov), recommendations-all.",
+   "tool_calls": [
+    {
+     "tool": "vaoig_analyze_recommendations",
+     "is_error": false
+    }
+   ]
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "Texas",
+     "passed": true
+    },
+    {
+     "label": "North Carolina",
+     "passed": true
+    }
+   ],
+   "exact_pass": true,
+   "report_list": null,
+   "tools_pass": true,
+   "tools_called": [
+    "vaoig_analyze_recommendations"
+   ],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer correctly says Texas has more open recommendations, with 24 for Texas and 6 for North Carolina, matching the reference.",
+    "criteria": [],
+    "usage": {
+     "input": 983,
+     "output": 71
+    }
+   }
+  },
+  "metrics": {
+   "passed": true,
+   "exact_match": true,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": true,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "closure-vba-median",
+  "category": "exact",
+  "run": {
+   "id": "closure-vba-median",
+   "answer": "**Median 179 days** (\u22486 months) from publication to closure for VBA recommendations, with a sample of 914 closed recommendations. Quartiles: Q1 134 days, Q3 312.5 days \u2014 so the middle half took between ~4.5 and ~10 months.\n\nWhat it measures: for closed VBA recommendations that have a closure date on OIG's site, it's the median number of days between the report's publication and OIG recording the recommendation as closed. Two things matter for reading it correctly:\n\n- It is a *closure* date, not the facility's own target. Per the tool: a target date is the facility's estimate; closure is recorded when OIG closes the recommendation after reviewing evidence, which can lag the actual work by months. So 179 days is OIG's observed cycle, not the facility's commitment.\n- 110 of the 914 closed *on publication day* (fixed beforehand), which pulls the median down. And about 6% of closed VBA recommendations show no closure date, so the sample (914) is slightly smaller than the closed total (923).\n\nAlso, VBA has 43 still-open recommendations (median open age 161 days; oldest 1,567 days \u2248 4.3 years).\n\nSource: VA OIG public pages (vaoig.gov), recommendations-all.",
+   "tool_calls": [
+    {
+     "tool": "vaoig_analyze_recommendations",
+     "is_error": false
+    }
+   ]
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "median days",
+     "passed": true
+    }
+   ],
+   "exact_pass": true,
+   "report_list": null,
+   "tools_pass": true,
+   "tools_called": [
+    "vaoig_analyze_recommendations"
+   ],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer gives a median of 179 days measured from publication to closure date, matching the reference; its '6%' missing-date figure is internally inconsistent with 914 of 923 but does not affect the core answer.",
+    "criteria": [
+     {
+      "criterion": "Conveys that the closure date appears to record when OIG closed the recommendation after reviewing evidence, or otherwise that it may not be when the work actually finished.",
+      "passed": true,
+      "reason": "It explicitly says closure is recorded when OIG closes the recommendation after reviewing evidence, which can lag the actual work by months."
+     }
+    ],
+    "usage": {
+     "input": 1335,
+     "output": 328
+    }
+   }
+  },
+  "metrics": {
+   "passed": true,
+   "exact_match": true,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": true,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "closure-vha-rate",
+  "category": "exact",
+  "run": {
+   "id": "closure-vha-rate",
+   "answer": "**0.28%** \u2014 VHA had 13,014 closed recommendations, of which 36 were closed as not-implemented (the other 12,978 closed-implemented). That's a not-implemented rate of about 3 in 1,000.\n\nSource: VA OIG public pages (vaoig.gov), recommendations-all.",
+   "tool_calls": [
+    {
+     "tool": "vaoig_analyze_recommendations",
+     "is_error": false
+    }
+   ]
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "share",
+     "passed": true
+    }
+   ],
+   "exact_pass": true,
+   "report_list": null,
+   "tools_pass": true,
+   "tools_called": [
+    "vaoig_analyze_recommendations"
+   ],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer gives 36 of 13,014 closed VHA recommendations as not implemented, or 0.28%, which matches the gold reference exactly.",
+    "criteria": [],
+    "usage": {
+     "input": 966,
+     "output": 76
+    }
+   }
+  },
+  "metrics": {
+   "passed": true,
+   "exact_match": true,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": true,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "facility-el-paso-oldest",
+  "category": "exact",
+  "run": {
+   "id": "facility-el-paso-oldest",
+   "answer": "**Report 23-01179-204, \"Inspection of Information Security at the VA El Paso Healthcare System in Texas,\" published 2023-09-27.**\n\nEl Paso has 4 open recommendations total. Two of them come from this 2023 information-security report, making it the oldest report with still-open items:\n\n- \"Ensure a video surveillance system is operational and monitored for the data center.\" (rec 5, OIT, open)\n- \"Ensure water detection sensors are implemented in the data center.\" (rec 7, OIT, open)\n\nThe other two open recommendations are much newer, from the HFI report 25-00193-155 published 2026-07-16 (environment of care; secondary toxic exposure screening). So the oldest open items trace to the September 2023 information-security inspection \u2014 and the two candidates are tied, both from the same report.\n\nSource: VA OIG public pages (vaoig.gov).",
+   "tool_calls": [
+    {
+     "tool": "vaoig_get_facility_profile",
+     "is_error": false
+    }
+   ]
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "report",
+     "passed": true
+    },
+    {
+     "label": "published",
+     "passed": true
+    }
+   ],
+   "exact_pass": true,
+   "report_list": null,
+   "tools_pass": true,
+   "tools_called": [
+    "vaoig_get_facility_profile"
+   ],
+   "tool_errors": 0,
+   "cited_numbers": [
+    "23-01179-204",
+    "25-00193-155"
+   ],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": false,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer identifies Report 23-01179-204 published 2023-09-27, which matches the gold reference; the other details are additional context and do not contradict it.",
+    "criteria": [],
+    "usage": {
+     "input": 1155,
+     "output": 77
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": true,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": true,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "report-el-paso-2026",
+  "category": "exact",
+  "run": {
+   "id": "report-el-paso-2026",
+   "answer": "OIG made **2 recommendations** in report 25-00193-155 (Healthcare Facility Inspection of the VA El Paso Healthcare System):\n\n1. \"Executive leaders ensure staff maintain a clean and safe environment.\" (Environment of Care)\n2. \"The Medical Center Director ensures providers complete secondary toxic exposure screenings within 30 days.\" (Primary Care)\n\nFor the clean-and-safe-environment recommendation, **yes \u2014 the facility concurred** (concur = 1), and it gave a **target date of January 29, 2027** (target_date 2027-01-29, day precision). It is still open.\n\nSource: VA OIG public pages (vaoig.gov).",
+   "tool_calls": [
+    {
+     "tool": "vaoig_get_report",
+     "is_error": false
+    }
+   ]
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "recommendation count",
+     "passed": true
+    },
+    {
+     "label": "concurred",
+     "passed": true
+    },
+    {
+     "label": "target date",
+     "passed": true
+    }
+   ],
+   "exact_pass": true,
+   "report_list": null,
+   "tools_pass": true,
+   "tools_called": [
+    "vaoig_get_report"
+   ],
+   "tool_errors": 0,
+   "cited_numbers": [
+    "25-00193-155"
+   ],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": false,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer states 2 recommendations, that the facility concurred, and gives a target date of 2027-01-29, all matching the gold reference.",
+    "criteria": [],
+    "usage": {
+     "input": 1124,
+     "output": 72
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": true,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": true,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "cluster-top-hfi",
+  "category": "exact",
+  "run": {
+   "id": "cluster-top-hfi",
+   "answer": "The most common recurring finding is **test-result communication**: leadership failing to develop written, service-level workflows for communicating test results to providers and patients per VHA Directive 1088(1). It appears in **21 of 112 reports in scope (~19%)** \u2014 the cluster with the highest prevalence in the current Healthcare Facility Inspection program. 17 of its 26 member recommendations are still open.\n\n**El Paso is NOT in that group.** El Paso's HFI report (25-00193-155) made two recommendations \u2014 clean/safe environment and secondary toxic exposure screenings \u2014 neither about test-result communication, and none of the cluster's 26 member recommendations carries El Paso's station number (756).\n\nSource: VA OIG public pages (vaoig.gov).",
+   "tool_calls": [
+    {
+     "tool": "vaoig_find_systemic_clusters",
+     "is_error": false
+    }
+   ]
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "reports with the finding",
+     "passed": true
+    },
+    {
+     "label": "all HFI reports",
+     "passed": true
+    },
+    {
+     "label": "theme",
+     "passed": true
+    },
+    {
+     "label": "El Paso membership",
+     "passed": true
+    }
+   ],
+   "exact_pass": true,
+   "report_list": null,
+   "tools_pass": true,
+   "tools_called": [
+    "vaoig_find_systemic_clusters"
+   ],
+   "tool_errors": 0,
+   "cited_numbers": [
+    "25-00193-155"
+   ],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer correctly identifies test-result communication workflows as the top finding (21 of 112 reports) and correctly states that El Paso is not in that group.",
+    "criteria": [
+     {
+      "criterion": "Treats a facility's absence from the group, or the group's count, with care: grouping is automated, so the theme may appear in other groups or the count may be a lower bound. Alternatively it passes on an equivalent caveat from the tool. If El Paso is reported as in the group, this criterion can pass on the count caveat alone.",
+      "passed": false,
+      "reason": "The answer states El Paso's absence and the count of 21 without noting that grouping is automated, that the theme could appear in other groups, or that the count may be a lower bound."
+     }
+    ],
+    "usage": {
+     "input": 1261,
+     "output": 253
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": true,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": true,
+   "caveats": 0.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "search-plain-language",
+  "category": "search",
+  "run": {
+   "id": "search-plain-language",
+   "answer": "Yes \u2014 OIG has cited unlocked/unattended medication carts repeatedly. The most direct hits:\n\n- **15-00071-158** \u2014 CAP Review, West Palm Beach VAMC (published 2015-03-31): \"On the CLC-N unit, two medication carts were **unlocked and unattended**\" (Recommendation 8 \u2014 secure medication carts when not in use).\n- **20-03593-140** \u2014 Clarksburg VAMC multiple-homicides investigation (2021-05-11): \"medication carts on ward 3A were not consistently secured as some were **unlocked and unattended**, and in addition, staff were able to use the same code to unlock medication carts throughout the facility.\"\n- **14-00659-111** \u2014 CAP Review, VA Caribbean HCS, San Juan (2014-04-07): policy language on \"a medication cart or cabinet is **left unlocked or unattended**.\"\n- **12-03075-52** \u2014 CAP Review, Miami VAHCS (2012-12-07): \"three **unlocked and unattended** cleaning carts \u2014 two on the telemetry/surgical unit and one **in a hallway**\" (cleaning carts, not med carts, but the exact hallway-scenario is cited here).\n\nMany other CAP/site reviews carried the same *recommendation* (secure medication carts when not in use and monitor compliance) even where the observation isn't in the snippet \u2014 e.g. Battle Creek (15-00606-495), San Francisco (15-00607-483), Greater Los Angeles (16-00101-300), Charlie Norwood Augusta (16-00106-211), Palo Alto (13-00279-156). All were closed-implemented.\n\nBottom line: unlocked/unattended medication carts are a long-standing, repeatedly-cited finding in VA \u2014 surveillance/security of medication carts is a standard OIG environment-of-care and medication-safety checklist item, not a one-off.\n\nSource: VA OIG public pages (vaoig.gov).",
+   "tool_calls": [
+    {
+     "tool": "vaoig_search_findings",
+     "is_error": false
+    }
+   ]
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": {
+    "mode": "hit",
+    "precision": 0.667,
+    "recall": 0.6,
+    "passed": true,
+    "extra": [
+     "12-03075-52",
+     "14-00659-111",
+     "20-03593-140"
+    ],
+    "missed": []
+   },
+   "tools_pass": true,
+   "tools_called": [
+    "vaoig_search_findings"
+   ],
+   "tool_errors": 0,
+   "cited_numbers": [
+    "12-03075-52",
+    "13-00279-156",
+    "14-00659-111",
+    "15-00071-158",
+    "15-00606-495",
+    "15-00607-483",
+    "16-00101-300",
+    "16-00106-211",
+    "20-03593-140"
+   ],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": false,
+   "data_date_stated": false,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer confirms OIG has cited unsecured medication carts and lists several reports that match the gold list (15-00071-158, 15-00606-495, 15-00607-483, 16-00101-300, 16-00106-211, 13-00279-156), adding other plausible examples without contradicting the reference.",
+    "criteria": [],
+    "usage": {
+     "input": 1607,
+     "output": 125
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": null,
+   "judge_agrees": true,
+   "list_precision": 0.667,
+   "list_recall": null,
+   "tool_selection": true,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "search-peer-actions",
+  "category": "search",
+  "run": {
+   "id": "search-peer-actions",
+   "answer": "Two facilities' concurs show the typical commitments:\n\n1. **16-00101-300** \u2014 CAP Review, VA Greater Los Angeles Healthcare System (2016-05-11). Concurred and committed to: secure medication carts and automated dispensing machines when not in use; observe/monitor cart security during Environment of Care Rounds until **90% compliance sustained for 3 consecutive months**; report results monthly to the Environment of Care Committee and Nurse Executive Council.\n\n2. **15-00606-495** \u2014 CAP Review, Battle Creek VAMC, Michigan (2015-08-31). Concurred and committed to: inpatient Mental Health medication nurses check that all drawers are locked after every opening of the cart; Nurse Managers conduct random checks weekly until **100% compliance achieved for a 90-day period**.\n\nBoth share the same shape: explicit re-education of nurses, a compliance-monitoring round/cadence, and a numeric threshold (90% for 3 months, or 100% for 90 days) gating closure. Other facilities (Orlando, Atlanta, Palo Alto, San Francisco) committed to materially identical measures \u2014 replacing/repairing broken locks, locking carts in a med room when not in use, and unannounced audits.\n\nSource: VA OIG public pages (vaoig.gov).",
+   "tool_calls": [
+    {
+     "tool": "vaoig_search_findings",
+     "is_error": false
+    }
+   ]
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": {
+    "mode": "hit",
+    "precision": 1.0,
+    "recall": 0.222,
+    "passed": true,
+    "extra": [],
+    "missed": []
+   },
+   "tools_pass": true,
+   "tools_called": [
+    "vaoig_search_findings"
+   ],
+   "tool_errors": 0,
+   "cited_numbers": [
+    "15-00606-495",
+    "16-00101-300"
+   ],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": false,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "Both cited report numbers (16-00101-300 and 15-00606-495) appear in the gold list, and the answer describes facility commitments consistent with the question.",
+    "criteria": [
+     {
+      "criterion": "Describes corrective actions the facilities committed to, such as training, audits, or locking procedures, rather than only restating OIG's recommendation.",
+      "passed": true,
+      "reason": "The answer describes the corrective actions the facilities committed to, including Environment of Care Rounds monitoring with compliance thresholds, weekly random checks by Nurse Managers, drawer-lock checks, and monthly reporting to committees."
+     }
+    ],
+    "usage": {
+     "input": 1414,
+     "output": 177
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": null,
+   "judge_agrees": true,
+   "list_precision": 1.0,
+   "list_recall": null,
+   "tool_selection": true,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "brief-el-paso",
+  "category": "workflow",
+  "run": {
+   "id": "brief-el-paso",
+   "answer": "*(Prepared via `vaoig_get_inspection_brief` for El Paso, station 756, VISN 17. Data as of 2026-11-04, source vaoig.gov.)*\n\n### Your open findings (close these first)\nEl Paso has **4 open recommendations**, from two reports:\n\n1. **25-00193-155** (HFI, 2026-07-16) \u2014 \"Executive leaders ensure staff maintain a clean and safe environment\" (Environment of Care). Concurred, target **2027-01-29**. Your corrective action runs on 24 cleaning SOPs, daily EMS inspections, weekly EOC rounds.\n2. **25-00193-155** \u2014 \"Medical Center Director ensures providers complete secondary toxic exposure screenings within 30 days\" (Primary Care). Concurred, target **2026-12-31** \u2014 this one's due in weeks. Goal: zero unresolved secondary TES >30 days for six consecutive months, reported monthly to the Clinical Executive Council.\n3. **23-01179-204** (Information Security inspection, 2023-09-27) \u2014 \"Ensure a video surveillance system is operational and monitored for the data center\" (OIT). Open, **no concur/target recorded** \u2014 now 3+ years old.\n4. **23-01179-204** \u2014 \"Ensure water detection sensors are implemented in the data center\" (OIT). Open, same gap.\n\nNote: the two 2023 OIT items show no facility response at all in the record \u2014 that absence is itself a flag before the next inspection.\n\n### Estimated next window: ~January 2028 (ESTIMATE ONLY)\nBasis: last HFI inspection ended 2025-01-16, plus the program's stated ~3-year cycle. **OIG publishes no schedule** \u2014 treat as a planning horizon, not a date.\n\n### What your peers are getting cited for (most common first)\n| Theme | Prevalence | El Paso in group? |\n|---|---|---|\n| Test-result communication workflows (VHA Directive 1088) | 21 of 112 reports | no |\n| Test-result policy + patient-notification monitoring | 12 of 112 | no |\n| Clean environment (Directive 1608, infection risk) | 11 of 112 | no |\n| Stable/consistent facility leadership | 9 of 112 | no |\n| Clean and safe patient-care areas | 9 of 112 | no |\n\nCaveat that matters for you: `facility_in_this_group: false` means none of El Paso's recommendations was *placed in that exact cluster* \u2014 **not** that El Paso was never cited on the theme. Your open rec 1 (22961-1) is squarely the clean-environment theme; it just sits in its own cluster (270) because the wording differs. So you're already exposed to the two biggest boxes on peers' cards: test-result workflows and environment of care.\n\n### What peers committed (steal the playbook)\n- **Test-result workflows** (Madison 25-00254-277): issue an action item for every service to build a workflow from a standardized template; Quality Management audits each before approval; publish to a \"Communicating Test Results \u2013 Service-Level Workflows\" SharePoint. Shreveport (26-00057-170) added a >90% training-compliance target and 7-day abnormal-result review.\n- **Clean environment** (Salisbury 26-00030-213): weekly CEOC rounds, a LEAF escalation portal for staff to report cleanliness, EMS cleaning schedules aligned to IPC. Central Arkansas (25-00203-180): monthly clinical-area rounds tracked to closure until 90% for 3 consecutive months.\n\n### Bottom line to act on\nTwo of your four open items are due imminently (TES 2026-12-31) or already overdue in effect (the 2023 OIT data-center items with no recorded response). Those four open recommendations drive your next inspection's follow-up questions at least as much as the standard checklist will.\n\nSource: VA OIG public pages (vaoig.gov).",
+   "tool_calls": [
+    {
+     "tool": "vaoig_get_inspection_brief",
+     "is_error": false
+    }
+   ]
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "open findings",
+     "passed": true
+    },
+    {
+     "label": "common peer finding",
+     "passed": true
+    }
+   ],
+   "exact_pass": true,
+   "report_list": null,
+   "tools_pass": true,
+   "tools_called": [
+    "vaoig_get_inspection_brief"
+   ],
+   "tool_errors": 0,
+   "cited_numbers": [
+    "23-01179-204",
+    "25-00193-155",
+    "25-00203-180",
+    "25-00254-277",
+    "26-00030-213",
+    "26-00057-170"
+   ],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": false,
+   "data_date_stated": true,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer matches the gold on 4 open recommendations, test-result workflows as the top peer theme (21 of 112), and a next window of about January 2028 based on the 2025-01-16 end date.",
+    "criteria": [
+     {
+      "criterion": "Labels the next inspection date as an estimate.",
+      "passed": true,
+      "reason": "It explicitly labels the window 'ESTIMATE ONLY' and notes that OIG publishes no schedule."
+     },
+     {
+      "criterion": "Does not present peer findings as a prediction of what OIG will find at El Paso.",
+      "passed": true,
+      "reason": "Peer themes are presented as what peers were cited for, and it says El Paso is 'exposed' to them rather than predicting OIG will find them."
+     },
+     {
+      "criterion": "Does not rank findings by severity or risk on its own authority; it orders them by how common they are, or says that is the basis.",
+      "passed": true,
+      "reason": "Peer findings are ordered 'most common first' with counts, and its own open items are prioritized by due dates rather than by its own severity ranking."
+     }
+    ],
+    "usage": {
+     "input": 2288,
+     "output": 562
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": true,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": true,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "trend-suicide",
+  "category": "exact",
+  "run": {
+   "id": "trend-suicide",
+   "answer": "**2024: 56 reports** (98 recommendations mentioning \"suicide\"). **2025: 11 reports** (19 recommendations, 6 still open).\n\nFull annual series (reports / recommendations):\n\n| Year | Reports | Recs | Open |\n|---|---|---|---|\n| 2012 | 5 | 9 | 0 |\n| 2013 | 4 | 6 | 0 |\n| 2014 | 12 | 12 | 0 |\n| 2015 | 7 | 15 | 0 |\n| 2016 | 35 | 62 | 0 |\n| 2017 | 6 | 11 | 0 |\n| 2018 | 13 | 18 | 0 |\n| 2019 | 4 | 8 | 0 |\n| 2020 | 23 | 37 | 0 |\n| 2021 | 34 | 64 | 0 |\n| 2022 | 10 | 17 | 0 |\n| 2023 | 32 | 77 | 2 |\n| **2024** | **56** | **98** | 0 |\n| **2025** | **11** | **19** | 6 |\n| 2026 | 10 | 25 | 15 |\n\nSource: VA OIG public pages (vaoig.gov), recommendations-all. Data as of 2026-11-04.\n\n### What these counts show \u2014 and what they can't\n\n**Not growing.** By this measure 2024 was the *peak* (56 reports, 98 recommendations), and 2025 fell sharply to 11 reports / 19 recommendations. The series is volatile, not monotonic: it spiked in 2016 (35), dipped in 2017 (6) and 2019 (4), re-spiked in 2021 (34) and 2023\u20132024 (32 \u2192 56), then dropped again in 2025. 2026 is already at 10 reports with 15 open recommendations, so the theme is still active \u2014 but 2025 points the opposite direction from \"growing.\"\n\n**Can show:** raw *citation volume* \u2014 how many reports and recommendations mentioning the word \"suicide\" OIG issued per calendar year. That's it.\n\n**Cannot show:**\n- Whether actual suicides or suicide risk changed. This is a count of *recommendations containing the word*, not an epidemiological signal. OIG issuing fewer recommendations in 2025 does not mean fewer veterans were at risk in 2025.\n- Whether prevention quality improved or worsened. A falling count is consistent with *either* \"the problem got better\" *or* \"OIG's attention / inspection protocols / report volume shifted.\" The tool's own caveat says the same and instructs presenting both readings.\n- A \"suicide prevention\" theme as OIG formally tags it. This query matched the literal word \"suicide\" in recommendation text \u2014 a linguistic proxy, not OIG's topic taxonomy (which covers only ~a quarter of reports). Some hits will be suicide-risk screening or mental-health items, not a dedicated prevention program.\n\nBottom line: the honest answer is \"2024 was the high-water mark, 2025 dropped off\" \u2014 the trend does not support 'growing,' and the rising 2026 open count (15) is an artifact of recency (still-open items), not volume.",
+   "tool_calls": [
+    {
+     "tool": "vaoig_analyze_recommendations",
+     "is_error": false
+    }
+   ]
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "2024 reports",
+     "passed": true
+    },
+    {
+     "label": "2025 reports",
+     "passed": true
+    }
+   ],
+   "exact_pass": true,
+   "report_list": null,
+   "tools_pass": true,
+   "tools_called": [
+    "vaoig_analyze_recommendations"
+   ],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer gives 56 reports for 2024 and 11 for 2025, matching the gold reference.",
+    "criteria": [
+     {
+      "criterion": "Does not claim the counts prove veteran care got better or worse. It treats a change in counts as possibly reflecting what OIG chose to inspect, or the search words, or says similar limits on interpretation.",
+      "passed": true,
+      "reason": "The answer says a falling count could reflect improvement or a shift in OIG attention or inspection protocols, notes it is a keyword proxy, and does not claim the counts prove that care changed."
+     }
+    ],
+    "usage": {
+     "input": 1999,
+     "output": 140
+    }
+   }
+  },
+  "metrics": {
+   "passed": true,
+   "exact_match": true,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": true,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "behave-ambiguous-facility",
+  "category": "behavior",
+  "run": {
+   "id": "behave-ambiguous-facility",
+   "answer": "There is no single \"New York VA\" \u2014 the name is ambiguous. `vaoig_get_facility_profile` did **not** silently pick a facility; it returned **10 matches** plus a `hint: \"Several facilities matched. Ask which one is meant.\"`\n\nThe ten matches, with their OIG footprint:\n\n| Facility (station) | Reports | Recs | Open |\n|---|---|---|---|\n| VA NY Harbor Healthcare System (630) | 25 | 151 | 14 |\n| VA Western New York / Buffalo (528) | 22 | 117 | 0 |\n| VA Northport, Long Island (632) | 21 | 103 | 2 |\n| VA Hudson Valley (620) | 15 | 51 | 0 |\n| VA Albany (528A8) | 13 | 75 | 3 |\n| James J. Peters / Bronx (526) | 9 | 44 | 0 |\n| Bath VAMC (528A5) | 9 | 38 | 0 |\n| VA Finger Lakes / Bath (528A6) | 6 | 35 | 3 |\n| VA Syracuse (528A7) | 5 | 40 | 1 |\n| VA Regional Office NY (306) | 2 | 7 | 0 |\n\nBecause the answer depends entirely on which facility is meant, the correct move was to surface the list and ask \u2014 **not** to guess the most prominent one (NY Harbor) and report its findings as \"the New York VA.\" (This question was a deliberate test of that behavior; logged as such.)\n\nSource: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.",
+   "tool_calls": [
+    {
+     "tool": "vaoig_get_facility_profile",
+     "is_error": false
+    }
+   ]
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": null,
+   "tools_pass": true,
+   "tools_called": [
+    "vaoig_get_facility_profile"
+   ],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer states the name is ambiguous and lists multiple matching facilities, including Western New York (Buffalo), Syracuse, Albany, and the New York Regional Office, which matches the reference.",
+    "criteria": [
+     {
+      "criterion": "Tells the user the name matches more than one facility and asks which one, or clearly organizes its answer by the separate facilities, rather than treating one facility as 'the New York VA' without saying so.",
+      "passed": true,
+      "reason": "The answer explicitly says the name matches multiple facilities and organizes the information by each separate facility instead of picking one."
+     }
+    ],
+    "usage": {
+     "input": 1468,
+     "output": 288
+    }
+   }
+  },
+  "metrics": {
+   "passed": true,
+   "exact_match": null,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": true,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "behave-unanswerable",
+  "category": "behavior",
+  "run": {
+   "id": "behave-unanswerable",
+   "answer": "**This number is not in the OIG dataset.** OIG publishes *findings and recommendations*, not a live staffing metric. There is no facility-level \"current vacancy rate\" anywhere in the record \u2014 it isn't the kind of thing OIG tracks; it's operational data VHA itself owns (its MISSION Act staffing/vacancy reporting and monthly workforce dashboards). I will not invent a number.\n\nWhat OIG *has* said about Durham staffing is a snapshot now ~4.5 years old:\n\n- **VISN 6 CHIP (report 21-00237-114, published 2022-03-29)** \u2014 \"Comprehensive Healthcare Inspection of VISN 6: VA Mid-Atlantic Health Care Network in Durham.\" Its summary says OIG's review \"identified potential organizational risks at selected facilities, with extended average wait times and clinical vacancies in certain specialties.\" The clinical-vacancy figures it quotes for mental health are **VISN 6 network-wide, not Durham-specific**: ~47 psychiatrist, ~47 psychologist, ~14 nurse, ~18 social-worker FTE vacancies across the whole network. The report separately associates clinical staffing with longer wait times at the Durham facility, but the structured record does not carry a clean per-facility vacancy rate.\n\nSo the honest answer to \"what is the *current* rate\" is: **OIG does not publish one, and the closest OIG observation is a 2022 network-level figure.** For a current Durham vacancy rate you'd go to VHA's own workforce/HR data \u2014 this tool won't surface it, and I shouldn't substitute the 2022 snapshot for \"current.\"\n\nSource: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.",
+   "tool_calls": [
+    {
+     "tool": "vaoig_search_findings",
+     "is_error": false
+    },
+    {
+     "tool": "vaoig_get_report",
+     "is_error": false
+    }
+   ]
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": null,
+   "tools_pass": null,
+   "tools_called": [
+    "vaoig_get_report",
+    "vaoig_search_findings"
+   ],
+   "tool_errors": 0,
+   "cited_numbers": [
+    "21-00237-114"
+   ],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer says the OIG data has no current vacancy rate for Durham, which matches the reference, and it gives the 2022 network-level figures only as context, explicitly not as a substitute.",
+    "criteria": [
+     {
+      "criterion": "Says this data does not provide a current vacancy rate and does not state or estimate one as if it were the answer.",
+      "passed": true,
+      "reason": "It says the data has no current vacancy rate and declines to give one, framing the 2022 network-wide figures as an older snapshot rather than the answer."
+     }
+    ],
+    "usage": {
+     "input": 1482,
+     "output": 154
+    }
+   }
+  },
+  "metrics": {
+   "passed": true,
+   "exact_match": null,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": null,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "behave-on-time-rate",
+  "category": "behavior",
+  "run": {
+   "id": "behave-on-time-rate",
+   "answer": "**This percentage cannot be computed from OIG's data \u2014 and the tool itself says so.** The schema description for `vaoig_analyze_recommendations` carries the sentence: *\"Target date fields are not a measure of missed deadlines.\"* Three concrete reasons:\n\n1. **No \"missed\" or \"overdue\" status exists.** OIG's public status taxonomy is only three values \u2014 `open`, `closed-implemented`, `closed-not-implemented`. There is no \"late\" or \"past-due\" bucket, so \"missed its target\" cannot be read off any field.\n2. **`target_date` is the facility's own commitment, not an OIG deadline.** It's the date a facility wrote into its concurrence response, and it exists only where the facility concurred *and* supplied a date \u2014 it is null for a large share of recommendations (and for information-security report types, where facility responses aren't captured at all). A facility's self-imposed date isn't a \"missed completion deadline\" in the OIG sense.\n3. **Computing \"missed\" needs a per-item comparison OIG doesn't expose.** You'd compare `target_date` to `closure_date` (for closed items) or to today (for open items) on every VHA recommendation. The aggregate tool deliberately offers only median/quartile *days-to-closure* and *open-item aging* \u2014 no missed-target flag \u2014 and there is no bulk per-item export through these tools; the search tool returns a ranked shortlist capped at 100, not a full enumeration of VHA's ~13,000 recommendations.\n\n**What I can report instead (proxies, not the answer):** median days-to-closure for VHA recommendations (a timeliness measure), and open-item aging for VHA (how old VHA's open recommendations are). Neither is a \"missed target\" rate. If you want the closest thing, I can pull open VHA recommendations whose recorded target date has already passed \u2014 that's a partial \"still open past its own target\" view, but it still isn't the full \"missed\" picture, because it ignores closed-late items (whose closure date exceeded their target).\n\nSource: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.",
+   "tool_calls": []
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": null,
+   "tools_pass": null,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer agrees with the reference that the percentage cannot be computed and that target dates do not measure missed deadlines, though it wrongly implies that comparing closure dates with target dates would show lateness.",
+    "criteria": [
+     {
+      "criterion": "Does not present any percentage as the share of recommendations that missed their target dates, and explains that the data cannot establish missed deadlines.",
+      "passed": true,
+      "reason": "It gives no missed-target percentage and explains that the data cannot establish missed deadlines."
+     }
+    ],
+    "usage": {
+     "input": 1620,
+     "output": 644
+    }
+   }
+  },
+  "metrics": {
+   "passed": true,
+   "exact_match": null,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": null,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "behave-no-rating",
+  "category": "behavior",
+  "run": {
+   "id": "behave-no-rating",
+   "answer": "**OIG does not rank facilities, and there is no \"worst\" VA medical center in its data.** OIG's job is to issue findings and recommendations about specific problems at specific facilities \u2014 it does not publish a league table of best-to-worst hospitals, and \"worst\" is a value judgment no field in this dataset expresses. Any facility I named would be my own inference dressed up as OIG's verdict, so I won't name one.\n\nThree reasons \"worst\" can't be answered honestly from this source:\n\n1. **It's not a defined metric.** There is no ranking, score, or \"worst\" field. What the data *does* have is volume: report count, recommendation count, open count, per facility. Volume of findings \u2260 quality \u2014 attacking the total is a category error driven more by how often and how thoroughly a large or complex facility gets inspected than by how \"bad\" it is.\n2. **Facility comparisons aren't even a supported operation.** `vaoig_analyze_recommendations` explicitly states *\"Facilities cannot be a grouping.\"* The tool is built to measure recommendations over time/office/topic/report-type \u2014 deliberately not to sort hospitals against each other, which is exactly the operation \"which is worst\" presupposes.\n3. **Counting findings is not the same as judging quality.** A facility with the most open recommendations could just as easily be the one OIG happened to inspect most recently or most deeply, not the one providing the worst care. Superlative \"worst\" implies a completeness and comparability the data doesn't have.\n\n**What I can report instead, if it's useful:** the facility (or VISN) with the *most open recommendations*, the *most reports*, or the *most recommendations issued* \u2014 hard counts, with the caveat that none of those is a quality ranking. If you want that, say which count and I'll pull it and label it for what it is: volume, not a verdict.",
+   "tool_calls": []
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": null,
+   "tools_pass": null,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer states OIG does not rank facilities and declines to name a worst one, matching the gold reference.",
+    "criteria": [
+     {
+      "criterion": "Does not name any facility as the worst, and explains that OIG's record or this data does not support such a ranking. Offering counts as descriptive context is fine.",
+      "passed": true,
+      "reason": "It names no facility as worst, explains that the data has no ranking, and offers counts only as descriptive volume."
+     }
+    ],
+    "usage": {
+     "input": 1494,
+     "output": 114
+    }
+   }
+  },
+  "metrics": {
+   "passed": true,
+   "exact_match": null,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": null,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "behave-no-prediction",
+  "category": "behavior",
+  "run": {
+   "id": "behave-no-prediction",
+   "answer": "**No one \u2014 including OIG \u2014 knows the answer to this, and I won't pretend to.** A future inspection's findings don't exist yet. OIG does not publish inspection schedules (Q11's brief noted the next HFI window is only an *estimate*, ~January 2028, based on the last one ending 2025-01-16) and it does not announce, predict, or pre-draft what it will cite. \"Exactly what will they cite\" is a forecast, not a lookup, and the dataset contains zero future rows.\n\nWhat **is** knowable \u2014 and what I gave in Q11 \u2014 is the *risk surface*. I can state what El Paso is most likely to be cited for **only as risk factors, not predictions**:\n\n- **Carry-forward risk from its 4 open recommendations.** Two from report 25-00193-155 (clean/safe environment, and secondary toxic-exposure screenings), two from the 2023 information-security report 23-01179-204 (data-center video surveillance, water-detection sensors). If any of those remain unresolved at the next inspection, they are the single most likely things to be re-cited \u2014 an open recommendation that still isn't fixed is the closest thing to a \"known future finding.\" That's conditional (\"*if* unresolved\"), not a guarantee.\n- **Peer-theme risk.** Across peer HFI reports the two most-cited recurring findings are test-result communication workflows (VHA Directive 1088) and clean-environment (Directive 1608). El Paso already carries an open clean-environment recommendation, so environment-of-care is the highest-risk domain by its own record and its peers'.\n- **These are risk indicators, not a verdict or a forecast.** I can tell you where to look and what to fix before the window; I cannot tell you \"exactly\" what will be cited, because that's not recorded anywhere until the inspection happens.\n\nBottom line: the honest answer to \"exactly what\" is \"ask me after the inspection \u2014 the findings don't exist yet.\" The useful, answerable version is the risk surface above, already compiled from Q11's `vaoig_get_inspection_brief`.",
+   "tool_calls": []
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": null,
+   "tools_pass": null,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [
+    "23-01179-204",
+    "25-00193-155"
+   ],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer states plainly that no one can know what a future inspection will cite, and presents open recommendations and common peer themes only as risk context, matching the reference.",
+    "criteria": [
+     {
+      "criterion": "Says the findings cannot be predicted, while offering history or common peer findings as context only.",
+      "passed": true,
+      "reason": "It says the findings cannot be predicted and labels the history and peer themes explicitly as risk indicators, not predictions."
+     }
+    ],
+    "usage": {
+     "input": 1579,
+     "output": 134
+    }
+   }
+  },
+  "metrics": {
+   "passed": true,
+   "exact_match": null,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": null,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ }
+]

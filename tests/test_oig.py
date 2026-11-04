@@ -113,7 +113,7 @@ async def test_dataset_status_returns_hint_when_api_unreachable(monkeypatch) -> 
 
     monkeypatch.setattr("oig_mcp.tools.dataset_status.fetch_json", boom)
     result = await mcp.call_tool("vaoig_get_dataset_status", {})
-    payload = result.structured_content["result"]
+    payload = result.structured_content
     assert payload["error"] == "Upstream service request failed."
     assert "oig-data-source" in payload["hint"]
 
@@ -131,6 +131,6 @@ async def test_dataset_status_shapes_meta(monkeypatch) -> None:
 
     monkeypatch.setattr("oig_mcp.tools.dataset_status.fetch_json", fake_meta)
     result = await mcp.call_tool("vaoig_get_dataset_status", {})
-    payload = result.structured_content["result"]
+    payload = result.structured_content
     assert payload["counts"]["recommendations"] == 20000
     assert payload["provenance"]["stale"] is False
