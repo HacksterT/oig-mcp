@@ -1,6 +1,9 @@
 # Planning documents (kept local)
 tasks/
 
+# Working notes between agents (kept local)
+docs/agent-handoff*.md
+
 # Virtual environments
 .venv/
 venv/

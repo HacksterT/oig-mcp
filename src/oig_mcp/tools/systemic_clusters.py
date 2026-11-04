@@ -22,8 +22,11 @@ from oig_mcp.utils import (
 )
 
 _CLUSTER_CAVEAT = (
-    "A cluster is a group of recommendations whose opening words match across five "
-    "or more reports. It suggests a shared template; it does not prove a common cause."
+    "A cluster groups recommendations with matching wording or similar meaning, as "
+    "named in method. It suggests a shared issue; it does not prove a common cause. "
+    "One theme can split across clusters, so one cluster is not a full count for a "
+    "theme. Read median_days with days_sample_size: recommendations closed on the "
+    "day a report came out can pull a small group's median to 0."
 )
 
 
@@ -68,7 +71,15 @@ def register(mcp: FastMCP) -> None:
                 )
             ),
         ] = None,
-        domain: Annotated[str | None, Field(description="Member domain.")] = None,
+        domain: Annotated[
+            str | None,
+            Field(
+                description=(
+                    "Member domain. Usually empty on newer Healthcare Facility "
+                    "Inspection responses, so this misses most of them."
+                )
+            ),
+        ] = None,
         published_from: Annotated[
             str | None,
             Field(pattern=r"^\d{4}-\d{2}-\d{2}$", description="Earliest member date."),
