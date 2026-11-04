@@ -1,4 +1,4 @@
-# VA OIG Recommendations Assistant: Overview
+# MCP Exec Summary: VA OIG Recommendations Assistant
 
 *For leaders and staff. Status and figures as of November 4, 2026.*
 
@@ -50,13 +50,16 @@ Use the links to confirm anything you plan to act on or repeat. OIG's site remai
 
 **Why this is hard today.** OIG's wording is different. Its reports say things like "secure medication carts when not in use," which shares few words with how the manager put it. A word search depends on guessing the right words.
 
-**What happened when we tried it.** We ran that exact sentence against this project's copy of OIG's recommendations three ways. This tests word matching on our data, not OIG's website itself.
+**What happened when we tried it.** We ran that exact sentence against this project's copy of OIG's recommendations three ways on this project's data, and once on OIG's own recommendation search.
 
 | Approach | Result |
 |---|---|
 | Require every word to match | No results |
 | Match any word | Led with emergency exits, hallway obstructions, and handrails |
 | The assistant's search | Led with recommendations to secure medication carts |
+| OIG's recommendation search, same sentence | No results |
+
+We ran ten such questions through OIG's search. All ten full sentences returned nothing. Because people type keywords into a keyword search, we also tried a short form of each, such as "medication carts," and eight of the ten returned at least one recommendation. Someone who knows OIG's wording will do well there. Someone who doesn't, or an assistant passing along what a person said, will find it much less forgiving. This shows which searches return results, not which results are better, and the questions were written with knowledge of our own results, so they favor this project.
 
 **The difference.** The manager gets the relevant findings, each with a report number and link, without first having to learn how OIG phrases things. The manager also sees what facilities committed to do where that has been extracted. The top results here come from older reports, 2013 to 2015, so the natural next step is to narrow to recent inspections. Results are not always this clean, which is why a person should check them against the cited reports.
 
