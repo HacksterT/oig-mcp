@@ -22,7 +22,8 @@ Tools are built and run against the hosted data API. The full data build is stil
 | `vaoig_find_systemic_clusters`: findings that recur across reports, and how common they are | Tool | Implemented |
 | `vaoig://about`: scope of the data and citation rules | Resource | Implemented |
 | `vaoig_get_inspection_brief`: one facility's history, common peer findings, peer commitments, and estimated next window | Tool | Implemented |
-| Topic taxonomy, offices, facilities | Resources | Planned |
+| `vaoig://taxonomy/{facet}` and `vaoig://facilities`: OIG's filter values and the facility registry | Resources | Implemented |
+| Inspection readiness checklist and open-recommendation aging brief | Prompts | Implemented |
 | Inspection readiness checklist, aging brief | Prompts | Planned |
 | Phoenix evaluation harness with gold questions | Eval | Planned |
 
