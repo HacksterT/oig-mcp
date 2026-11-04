@@ -11,12 +11,24 @@ To add a tool:
 
 from __future__ import annotations
 
-from oig_mcp.tools import dataset_status
+from oig_mcp.tools import (
+    analyze_recommendations,
+    dataset_status,
+    facility_profile,
+    get_report,
+    search_findings,
+    systemic_clusters,
+)
 
 
 def register_tools(mcp) -> None:
     """Register all tools with the MCP server."""
     dataset_status.register(mcp)
+    search_findings.register(mcp)
+    get_report.register(mcp)
+    facility_profile.register(mcp)
+    analyze_recommendations.register(mcp)
+    systemic_clusters.register(mcp)
 
 
 __all__ = ["register_tools"]

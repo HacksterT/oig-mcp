@@ -10,19 +10,18 @@ An entry in the [GSA MCP Server and AI Agent Government Hackathon](https://www.g
 
 ## Status
 
-Early setup. The server runs, connects to clients, and enforces its outbound security boundary. One tool and one resource are live; the goal-level tools are built as the data API comes online.
+Tools are built and run against the hosted data API. The full data build is still in progress, so facility and cluster results stay empty until those tables are filled.
 
 | Capability | Kind | Status |
 |---|---|---|
 | `vaoig_get_dataset_status`: data coverage, freshness, reconciliation with the OIG dashboard | Tool | Implemented |
+| `vaoig_search_findings`: the one search tool, keyword and semantic on every query | Tool | Implemented |
+| `vaoig_get_report`: one report with every recommendation and facility response | Tool | Implemented |
+| `vaoig_get_facility_profile`: one facility's reports, inspections, findings, and repeat findings | Tool | Implemented |
+| `vaoig_analyze_recommendations`: counts, trends, time to close, and aging by year, office, topic, or report type | Tool | Implemented |
+| `vaoig_find_systemic_clusters`: findings that recur across reports, and how common they are | Tool | Implemented |
 | `vaoig://about`: scope of the data and citation rules | Resource | Implemented |
 | Inspection readiness brief | Tool | Planned |
-| Search findings | Tool | Planned |
-| Theme trend | Tool | Planned |
-| Systemic clusters | Tool | Planned |
-| Closure performance | Tool | Planned |
-| Facility profile | Tool | Planned |
-| Report detail | Tool | Planned |
 | Topic taxonomy, offices, facilities | Resources | Planned |
 | Inspection readiness checklist, aging brief | Prompts | Planned |
 | Phoenix evaluation harness with gold questions | Eval | Planned |
