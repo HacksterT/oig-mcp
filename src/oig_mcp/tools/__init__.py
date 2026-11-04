@@ -16,6 +16,7 @@ from oig_mcp.tools import (
     dataset_status,
     facility_profile,
     get_report,
+    inspection_brief,
     search_findings,
     systemic_clusters,
 )
@@ -29,6 +30,7 @@ def register_tools(mcp) -> None:
     facility_profile.register(mcp)
     analyze_recommendations.register(mcp)
     systemic_clusters.register(mcp)
+    inspection_brief.register(mcp)
 
 
 __all__ = ["register_tools"]

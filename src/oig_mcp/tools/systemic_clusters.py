@@ -21,7 +21,7 @@ from oig_mcp.utils import (
     tool_error,
 )
 
-_CLUSTER_CAVEAT = (
+CLUSTER_CAVEAT = (
     "A cluster groups recommendations with matching wording or similar meaning, as "
     "named in method. It suggests a shared issue; it does not prove a common cause. "
     "One theme can split across clusters, so one cluster is not a full count for a "
@@ -105,7 +105,7 @@ def register(mcp: FastMCP) -> None:
                 return {
                     **cluster,
                     "members": paginate(members, limit, offset),
-                    "caveat": _CLUSTER_CAVEAT,
+                    "caveat": CLUSTER_CAVEAT,
                     "provenance": build_provenance(
                         cluster.get("data_as_of"), report_urls(members)
                     ),
@@ -140,6 +140,6 @@ def register(mcp: FastMCP) -> None:
             "next_offset": result.get("next_offset"),
             "reports_in_scope": in_scope,
             "items": [_with_prevalence(i, in_scope) for i in result.get("items", [])],
-            "caveat": _CLUSTER_CAVEAT,
+            "caveat": CLUSTER_CAVEAT,
             "provenance": build_provenance(result.get("data_as_of")),
         }
