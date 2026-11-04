@@ -73,12 +73,11 @@ Without the data API running, `vaoig://about` still works and `vaoig_get_dataset
 |---|---|---|
 | `OIG_DATA_API_BASE_URL` | `http://127.0.0.1:8787/v1/` | The data API. Must be https unless local. |
 | `CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET` | empty | Cloudflare Access service token for the hosted API |
+| `MCP_AUTH_TOKEN` | empty | Bearer token for `/mcp`. Required over HTTP, unused over stdio |
 | `STALE_AFTER_DAYS` | `30` | Age at which responses flag data as stale |
 | `MCP_TRANSPORT`, `MCP_HOST`, `MCP_PORT` | `stdio`, `0.0.0.0`, `8000` | Transport; a platform-injected `PORT` switches to HTTP automatically |
 
 ## Development
-
-Planned and completed work is tracked as features and stories in [`tasks/`](tasks/).
 
 ```bash
 uv sync --group dev
@@ -90,7 +89,7 @@ Each tool lives in its own file under `src/oig_mcp/tools/` with a `register(mcp)
 
 ## Deployment
 
-The target is IBM watsonx Orchestrate on IBM Cloud, deployed from an IBM-provided VM with IBM Bob. See [deploy/README.md](deploy/README.md) and [tasks/backlog/F05-ibm-cloud-deployment.md](tasks/backlog/F05-ibm-cloud-deployment.md). The `Dockerfile` serves streamable HTTP on port 8080 with `/mcp`, `/health`, and `/version`. Hosting follows once the data API is reachable from IBM Cloud.
+The target is IBM watsonx Orchestrate on IBM Cloud, deployed from an IBM-provided VM with IBM Bob. See [deploy/README.md](deploy/README.md) and [docs/project-overview.md](docs/project-overview.md). The `Dockerfile` serves streamable HTTP on port 8080 with `/mcp`, `/health`, and `/version`.
 
 ## Security
 

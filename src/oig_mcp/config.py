@@ -12,6 +12,7 @@ from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
+_MIN_AUTH_TOKEN_LENGTH = 32
 
 
 class Settings(BaseSettings):
@@ -33,6 +34,10 @@ class Settings(BaseSettings):
     mcp_host: str = "0.0.0.0"
     mcp_port: int = 8000
 
+    # Bearer token callers must present to /mcp. Required to serve over HTTP;
+    # unused over stdio. Not related to the Cloudflare Access token below.
+    mcp_auth_token: str = ""
+
     # ── OIG data API (served by the oig-data-source repository) ───────────────
     # The one outbound origin this server calls. Operator-controlled: never
     # taken from a tool argument. Defaults to the local oig-data-source container.
@@ -46,6 +51,16 @@ class Settings(BaseSettings):
 
     # Responses flag data older than this many days as stale.
     stale_after_days: int = 30
+
+    @field_validator("mcp_auth_token")
+    @classmethod
+    def _validate_auth_token(cls, value: str) -> str:
+        """Reject tokens short enough to guess; empty means not configured."""
+        if value and len(value) < _MIN_AUTH_TOKEN_LENGTH:
+            raise ValueError(
+                f"MCP_AUTH_TOKEN must be at least {_MIN_AUTH_TOKEN_LENGTH} characters"
+            )
+        return value
 
     @field_validator("oig_data_api_base_url")
     @classmethod
