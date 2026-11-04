@@ -76,6 +76,7 @@ async def test_tool_surface_is_exactly_the_agreed_list() -> None:
         "vaoig_get_facility_profile",
         "vaoig_analyze_recommendations",
         "vaoig_find_systemic_clusters",
+        "vaoig_get_inspection_brief",
     }
 
 
@@ -402,6 +403,143 @@ async def test_cluster_detail_paginates_members(api: FakeApi) -> None:
 async def test_unknown_cluster_is_reported_as_not_found(api: FakeApi) -> None:
     result = await call("vaoig_find_systemic_clusters", cluster_id=99)
     assert result["error"] == "No cluster has the id 99."
+
+
+# ── Inspection brief ─────────────────────────────────────────────────────────
+
+
+def _brief_api(api: FakeApi) -> None:
+    api.routes["facilities"] = _lookup(_facility())
+    profile = _profile()
+    profile["inspections"] = [
+        {
+            "is_latest": True,
+            "program": "HFI",
+            "next_window_estimate": "2028-01-16",
+            "next_window_is_estimate": True,
+            "report_number": "1",
+        }
+    ]
+    profile["recommendations"][1]["cluster_id"] = 7
+    api.routes["facilities/528A6"] = profile
+    api.routes["clusters"] = {
+        **AS_OF,
+        **ENVELOPE,
+        "reports_in_scope": 112,
+        "items": [
+            {
+                "cluster_id": 7,
+                "label": "Develop test result workflows",
+                "matching_report_count": 21,
+                "median_days": 120,
+            },
+            {"cluster_id": 8, "label": "Keep areas clean", "matching_report_count": 9},
+        ],
+    }
+    api.routes["search"] = {
+        **_search_response(),
+        "items": [
+            {
+                "report_number": "2",
+                "text": "Peer finding",
+                "url": "https://www.vaoig.gov/reports/peer",
+                "response": {
+                    "corrective_action": "Peer plan",
+                    "target_date": "2027-01",
+                },
+            }
+        ],
+    }
+
+
+async def test_brief_combines_the_facility_and_its_peers(api: FakeApi) -> None:
+    _brief_api(api)
+    result = await call("vaoig_get_inspection_brief", facility="West Haven")
+    assert result["facility"]["station_number"] == "528A6"
+    assert [r["rec_id"] for r in result["own_history"]["open_findings"]] == ["1-2"]
+    first = result["common_peer_findings"][0]
+    assert first["how_common"] == "21 of 112 reports in scope"
+    assert first["median_days_to_close"] == 120
+    assert first["peer_actions"][0]["corrective_action"] == "Peer plan"
+
+
+async def test_brief_marks_groups_this_facility_is_in(api: FakeApi) -> None:
+    _brief_api(api)
+    result = await call("vaoig_get_inspection_brief", facility="West Haven")
+    assert [f["facility_in_this_group"] for f in result["common_peer_findings"]] == [
+        True,
+        False,
+    ]
+
+
+async def test_brief_passes_basis_text_and_labels_the_estimate(api: FakeApi) -> None:
+    _brief_api(api)
+    result = await call("vaoig_get_inspection_brief", facility="West Haven")
+    assert result["next_inspection"]["basis"] == WINDOW_BASIS
+    assert result["next_inspection"]["is_estimate"] is True
+    assert result["own_history"]["repeat_findings_basis"] == REPEAT_BASIS
+
+
+async def test_brief_searches_only_peers_in_the_current_program(api: FakeApi) -> None:
+    _brief_api(api)
+    await call("vaoig_get_inspection_brief", facility="West Haven")
+    searches = [r for r in api.requests if r.url.path == "/v1/search"]
+    assert len(searches) == 2
+    for request in searches:
+        assert request.url.params["exclude_station_number"] == "528A6"
+        assert request.url.params["report_type"] == "healthcare-facility-inspection"
+        assert request.url.params["has_response"] == "true"
+
+
+async def test_brief_clips_long_peer_actions(api: FakeApi) -> None:
+    _brief_api(api)
+    response = {"corrective_action": "x" * 2000}
+    api.routes["search"]["items"][0]["response"] = response
+    result = await call("vaoig_get_inspection_brief", facility="West Haven")
+    action = result["common_peer_findings"][0]["peer_actions"][0]
+    assert len(action["corrective_action"]) == 800
+    assert action["corrective_action_truncated"] is True
+
+
+async def test_brief_explains_what_group_membership_means(api: FakeApi) -> None:
+    _brief_api(api)
+    result = await call("vaoig_get_inspection_brief", facility="West Haven")
+    assert "never cited" in " ".join(result["notices"])
+
+
+async def test_brief_does_not_rank_by_severity(api: FakeApi) -> None:
+    _brief_api(api)
+    result = await call("vaoig_get_inspection_brief", facility="West Haven")
+    assert "not by severity" in " ".join(result["notices"])
+
+
+async def test_brief_survives_a_failed_peer_search(api: FakeApi) -> None:
+    _brief_api(api)
+    api.routes["search"] = 500
+    result = await call("vaoig_get_inspection_brief", facility="West Haven")
+    assert result["common_peer_findings"][0]["peer_actions"] == []
+    assert "incomplete" in result["notices"][0]
+
+
+async def test_brief_reports_keyword_fallback(api: FakeApi) -> None:
+    _brief_api(api)
+    api.routes["search"]["search_mode"] = "keyword_fallback"
+    result = await call("vaoig_get_inspection_brief", facility="West Haven")
+    assert "keyword search only" in result["notices"][0]
+
+
+async def test_brief_asks_when_several_facilities_match(api: FakeApi) -> None:
+    api.routes["facilities"] = _lookup(_facility("528A6"), _facility("528A7"))
+    result = await call("vaoig_get_inspection_brief", facility="New York")
+    assert len(result["matches"]) == 2
+    assert not [r for r in api.requests if r.url.path == "/v1/clusters"]
+
+
+async def test_brief_without_an_inspection_says_so(api: FakeApi) -> None:
+    _brief_api(api)
+    api.routes["facilities/528A6"]["inspections"] = []
+    result = await call("vaoig_get_inspection_brief", facility="West Haven")
+    assert result["next_inspection"] is None
 
 
 # ── Report ───────────────────────────────────────────────────────────────────

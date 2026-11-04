@@ -35,6 +35,37 @@ def _pick_station(facility: str, matches: list[dict[str, Any]]) -> str | None:
     return matches[0].get("station_number") if len(matches) == 1 else None
 
 
+async def fetch_profile(facility: str) -> dict[str, Any]:
+    """Resolve a name, city, or station to its profile.
+
+    Returns the profile, or a dict with `error` or `matches` for the caller to pass
+    on when no single facility can be chosen.
+    """
+    lookup = await fetch_object("facilities", {"q": facility, "limit": _LOOKUP_LIMIT})
+    matches = lookup.get("items", [])
+    if not matches:
+        return {
+            "error": f"No facility matched '{facility}'.",
+            "hint": (
+                "Try another name or a station number. If this keeps happening, "
+                "check counts.facilities in vaoig_get_dataset_status: the registry "
+                "may be empty."
+            ),
+        }
+    station = _pick_station(facility, matches)
+    if station is None:
+        return {
+            "matches": matches,
+            "total_matches": lookup.get("total"),
+            "hint": "Several facilities matched. Ask which one is meant.",
+            "provenance": build_provenance(lookup.get("data_as_of")),
+        }
+    return await fetch_object(
+        f"facilities/{quote(str(station), safe='')}",
+        {"recommendations_limit": _MAX_RECOMMENDATIONS},
+    )
+
+
 def register(mcp: FastMCP) -> None:
     """Register the facility profile tool with the MCP server."""
 
@@ -71,33 +102,11 @@ def register(mcp: FastMCP) -> None:
             recommendations_has_more is true when a facility has older ones.
         """
         try:
-            lookup = await fetch_object(
-                "facilities", {"q": facility, "limit": _LOOKUP_LIMIT}
-            )
-            matches = lookup.get("items", [])
-            if not matches:
-                return {
-                    "error": f"No facility matched '{facility}'.",
-                    "hint": (
-                        "Try another name or a station number. If this keeps "
-                        "happening, check counts.facilities in "
-                        "vaoig_get_dataset_status: the registry may be empty."
-                    ),
-                }
-            station = _pick_station(facility, matches)
-            if station is None:
-                return {
-                    "matches": matches,
-                    "total_matches": lookup.get("total"),
-                    "hint": "Several facilities matched. Ask which one is meant.",
-                    "provenance": build_provenance(lookup.get("data_as_of")),
-                }
-            profile = await fetch_object(
-                f"facilities/{quote(str(station), safe='')}",
-                {"recommendations_limit": _MAX_RECOMMENDATIONS},
-            )
+            profile = await fetch_profile(facility)
         except UpstreamServiceError as exc:
             return tool_error(exc)
+        if "error" in profile or "matches" in profile:
+            return profile
 
         recommendations = sorted(
             profile.get("recommendations", []),

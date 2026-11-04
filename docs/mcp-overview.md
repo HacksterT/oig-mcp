@@ -66,7 +66,7 @@ Use the links to confirm anything you plan to act on or repeat. OIG's site remai
 
 **Using the website.** The manager can pull up El Paso's reports and filter peer reports by type and date. The findings are visible there, but what each facility committed to do is in its PDF. Comparing even a dozen peers means opening a dozen PDFs.
 
-**Using the assistant.** One conversation can bring together:
+**Using the assistant.** One request brings together:
 
 - **The facility's own history:** prior findings, whether they closed, and anything cited in more than one report.
 - **What peers were cited for:** recurring findings under the current inspection program, and how common each one is.
@@ -102,8 +102,7 @@ Counts depend on the search words, so these differ from the theme-based counts t
 
 | Status | Capability |
 |---|---|
-| **Working now** | Plain-language search of findings and corrective actions; full report details; facility profiles and repeat findings; recurring-finding groups; counts and trends by year; time to close and open-item aging by office, topic, or report type |
-| **Not built yet** | A guided inspection-prep workflow that brings these together for one facility |
+| **Working now** | Plain-language search of findings and corrective actions; full report details; facility profiles and repeat findings; recurring-finding groups; counts and trends by year; time to close and open-item aging by office, topic, or report type; a one-step inspection brief for a facility |
 | **Not yet done** | Formal accuracy testing, and connecting it to a hosted assistant. It currently runs on one computer |
 
 Search quality is good on many topics and uneven on others, and near-identical findings can crowd the top of the results. Treat the results as a strong starting point, and do not treat a search shortlist as a count. Statuses can also change after the data is collected, which is why each answer states its date.
