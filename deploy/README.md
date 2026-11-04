@@ -1,17 +1,47 @@
 # Deployment
 
-The deployment target is IBM watsonx Orchestrate on IBM Cloud. The plan and open questions are in [`docs/project-overview.md`](../docs/project-overview.md).
+The target is IBM Code Engine, registered as a remote MCP toolkit in watsonx Orchestrate. Start with [the handoff to Bob](../docs/handoff/2026-11-04-troy-bob-deployment-handoff.md), which lists what is tested and what is assumed.
 
-The server code is the same everywhere. `app.py` picks its transport:
+```
+watsonx Orchestrate  -- HTTPS, Authorization: Bearer MCP_AUTH_TOKEN -->  oig-mcp on Code Engine
+oig-mcp              -- HTTPS, Cloudflare Access service token      -->  OIG data API
+```
 
-- `PORT` set by the platform (IBM Code Engine sets it): HTTP on that port, with `/mcp`, `/health`, and `/version`
-- `MCP_TRANSPORT=streamable-http`: HTTP on `MCP_HOST:MCP_PORT`
-- otherwise: stdio
+| Item | Value |
+|---|---|
+| Image | Root `Dockerfile`. Dependencies are installed from `uv.lock`, and it runs as non-root |
+| Port | `8080`. Code Engine sets `PORT`, which switches the server to HTTP |
+| MCP endpoint | `/mcp`. Streamable HTTP, stateless, plain JSON responses. No SSE |
+| Health and version | `/health` and `/version`. Open, and they return no data. There is no `/ping` |
 
-Over HTTP the server requires `MCP_AUTH_TOKEN`, a bearer token that callers present to `/mcp`, and refuses to start without it. Supply it as a secret.
+| Setting | Secret | Value |
+|---|---|---|
+| `MCP_AUTH_TOKEN` | Yes | New for IBM: `openssl rand -hex 32`. The server refuses to start without it |
+| `CF_ACCESS_CLIENT_ID` | Yes | Troy provides it |
+| `CF_ACCESS_CLIENT_SECRET` | Yes | Troy provides it |
+| `OIG_DATA_API_BASE_URL` | No, but keep it out of the repository | Troy provides it |
+| `STALE_AFTER_DAYS` | No | `30` |
 
-Wherever it runs, the server needs to reach the OIG data API at `OIG_DATA_API_BASE_URL`, with the Cloudflare Access service token supplied as secrets (`CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET`). Never commit them.
+## Check a build
 
-## Deployment kit
+```bash
+deploy/verify_image.sh
+```
 
-No kit is checked in yet. F05 chooses one (Code Engine with a hosted `/mcp` URL, or Orchestrate's local stdio toolkit) and adds it here, adapted to this server's configuration and credentials. In the IBM VM, IBM Bob's own deployment skill builds the image from the root `Dockerfile`, pushes it to the shared Container Registry, and deploys on Code Engine. The project-specific plan, configuration, and checks are in [`docs/project-overview.md`](../docs/project-overview.md).
+This builds the image with docker or podman, then checks it: no secrets in the image, it refuses to start unsafely, a missing or wrong Cloudflare token gives a clean refusal, and with good credentials everything in the next command passes. It needs all four settings above in the environment or `.env`.
+
+## Check a running server
+
+```bash
+uv run python deploy/verify_deployment.py --url https://<APP_URL>
+```
+
+This tests both connections from outside: who may reach `/mcp`, and whether tools get live data through the API. It needs `MCP_AUTH_TOKEN`. With the API URL and Cloudflare token set too, it also tests the API directly. Without them, it skips that part and says so.
+
+## Run it locally for any MCP client
+
+```bash
+docker compose up -d --build
+```
+
+The endpoint is `http://127.0.0.1:8000/mcp`, using the same image. Only the settings above reach the container, so an evaluation key in `.env` stays out of it.

@@ -51,12 +51,15 @@ _PARTIAL_CLOSURE_DATES = (
     "for some groups. About 6 percent of closed recommendations, mostly from 2013 "
     "to 2016, show no closure date on OIG's site."
 )
-_TARGET_DATES = (
-    "Do not present target date fields as missed deadlines or compute an on-time "
-    "rate. A target is the facility's estimate, and a closure date appears to record "
-    "when OIG closed the recommendation after reviewing evidence, which can follow "
-    "the work by months. These fields cover only recommendations with a parsed "
-    "target date, so read them with with_target_date."
+# The API also compares closure dates with facilities' target dates. Those counts stay
+# out of this tool: a target is the facility's estimate and a closure date appears to
+# record OIG's closure, so they would invite a miss rate the data cannot support.
+_TARGET_FIELDS = (
+    "with_target_date",
+    "closed_by_target",
+    "closed_after_target",
+    "open_past_target",
+    "median_days_after_target",
 )
 _PUBLICATION_DAY = (
     "closed_on_publication_day counts recommendations closed the day the report came "
@@ -89,8 +92,6 @@ def _caveats(
         caveats += _closure_caveats(items, "median_days")
         if any(item.get("closed_on_publication_day") for item in items):
             caveats.append(_PUBLICATION_DAY)
-        if any("with_target_date" in item for item in items):
-            caveats.append(_TARGET_DATES)
     if group_by is AnalysisGroup.TOPIC or (filters and filters.topic):
         caveats.append(_TOPIC_COVERAGE)
     return caveats
@@ -120,10 +121,10 @@ def register(mcp: FastMCP) -> None:
         """Count and measure a filtered set of recommendations by a chosen grouping.
 
         Use this for exact counts, trends over time, how long recommendations take
-        to close, not-implemented rates, and how old open items are. Target date fields
-        are not a measure of missed deadlines. Group by year for a trend. Group by
-        office, topic, or report_type for closure and aging measures. Facilities cannot
-        be a grouping.
+        to close, not-implemented rates, and how old open items are. It does not measure
+        whether target dates were met, because the data cannot establish that; see
+        target_basis. Group by year for a trend. Group by office, topic, or report_type
+        for closure and aging measures. Facilities cannot be a grouping.
 
         Always pass on the caveats in the result.
 
@@ -147,7 +148,10 @@ def register(mcp: FastMCP) -> None:
         except UpstreamServiceError as exc:
             return tool_error(exc)
 
-        items = result.get("items", [])
+        items = [
+            {key: value for key, value in item.items() if key not in _TARGET_FIELDS}
+            for item in result.get("items", [])
+        ]
         return {
             "group_by": group_by.value,
             "total_groups": result.get("total"),

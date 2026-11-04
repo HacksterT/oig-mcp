@@ -130,6 +130,7 @@ def test_platform_port_serves_stateless_http_with_token(monkeypatch) -> None:
             "host": "0.0.0.0",
             "port": 8080,
             "stateless_http": True,
+            "json_response": True,
         }
     ]
 

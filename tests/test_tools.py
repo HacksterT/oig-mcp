@@ -256,19 +256,28 @@ async def test_partial_closure_dates_point_to_sample_size(api: FakeApi) -> None:
     assert "days_sample_size" in " ".join(result["caveats"])
 
 
-async def test_promised_vs_actual_fields_pass_through_with_caveat(api: FakeApi) -> None:
+async def test_target_date_counts_stay_out_of_the_analysis(api: FakeApi) -> None:
     item = {
         "group": "VHA",
         "closed_count": 10,
         "days_sample_size": 10,
         "median_days": 9,
         "with_target_date": 8,
-        "closed_by_target_rate": 0.5,
+        "closed_by_target": 4,
+        "closed_after_target": 3,
+        "open_past_target": 1,
+        "median_days_after_target": 20,
     }
     api.routes["metrics/closure"] = {**AS_OF, **ENVELOPE, "items": [item]}
     result = await call("vaoig_analyze_recommendations", group_by="office")
-    assert result["items"][0]["closed_by_target_rate"] == 0.5
-    assert "missed deadlines" in " ".join(result["caveats"])
+    assert result["items"] == [
+        {
+            "group": "VHA",
+            "closed_count": 10,
+            "days_sample_size": 10,
+            "median_days": 9,
+        }
+    ]
 
 
 async def test_target_basis_is_passed_through_verbatim(api: FakeApi) -> None:

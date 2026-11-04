@@ -30,6 +30,14 @@ dev = [
     "pytest-asyncio>=0.23.0",
     "ruff>=0.6.0",
 ]
+eval = [
+    "anthropic>=1.17.0",
+    "arize-phoenix>=21.0.0",
+    "arize-phoenix-client>=3.6.0",
+    "arize-phoenix-otel>=0.17.2",
+    "openinference-instrumentation-anthropic>=3.3.0",
+    "python-dotenv>=1.2.4",
+]
 
 [tool.ruff]
 line-length = 88
@@ -41,6 +49,10 @@ extend-exclude = ["*.md"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# Long regexes and Markdown table rows read better on one line.
+"eval/**" = ["E501"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

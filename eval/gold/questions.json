@@ -1,0 +1,660 @@
+{
+  "snapshot": {
+    "sha256": "d364ff4cb215c6d861a7ab3fa10c8d5a356bd3250afe18aa5d0e7db2e16fb839",
+    "data_as_of": "2026-11-04",
+    "reports": 4415,
+    "recommendations": 15649,
+    "open": 567
+  },
+  "questions": [
+    {
+      "id": "count-open-total",
+      "category": "exact",
+      "question": "How many VA OIG recommendations are open right now, and how current is that figure?",
+      "reference": "567 open, with data as of 2026-11-04.",
+      "checks": [
+        {
+          "label": "open total",
+          "any_of": [
+            "(?<![\\d.,])567(?![\\d]|,\\d|\\.\\d)"
+          ]
+        },
+        {
+          "label": "data date",
+          "any_of": [
+            "2026\\-11\\-04",
+            "November\\s+4,?\\s+2026",
+            "Nov\\.?\\s+4,?\\s+2026",
+            "4\\s+November\\s+2026",
+            "11/4/2026"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_get_dataset_status",
+          "vaoig_analyze_recommendations"
+        ]
+      ],
+      "criteria": [],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": true
+    },
+    {
+      "id": "count-hfi-2026",
+      "category": "exact",
+      "question": "How many recommendations did OIG make in Healthcare Facility Inspection reports published in 2026, and how many of those are still open?",
+      "reference": "148 recommendations, 80 still open.",
+      "checks": [
+        {
+          "label": "recommendations",
+          "any_of": [
+            "(?<![\\d.,])148(?![\\d]|,\\d|\\.\\d)"
+          ]
+        },
+        {
+          "label": "still open",
+          "any_of": [
+            "(?<![\\d.,])80(?![\\d]|,\\d|\\.\\d)"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_analyze_recommendations"
+        ]
+      ],
+      "criteria": [],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": true
+    },
+    {
+      "id": "count-peak-year",
+      "category": "exact",
+      "question": "In which publication year did OIG issue the most recommendations, and how many was that?",
+      "reference": "2015, with 1914 recommendations.",
+      "checks": [
+        {
+          "label": "year",
+          "any_of": [
+            "(?<![\\d.,])2015(?![\\d]|,\\d|\\.\\d)"
+          ]
+        },
+        {
+          "label": "count",
+          "any_of": [
+            "(?<![\\d.,])1,?914(?![\\d]|,\\d|\\.\\d)"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_analyze_recommendations"
+        ]
+      ],
+      "criteria": [],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": false
+    },
+    {
+      "id": "count-two-states",
+      "category": "exact",
+      "question": "Which has more open recommendations, Texas or North Carolina, and how many does each have?",
+      "reference": "Texas 24, North Carolina 6.",
+      "checks": [
+        {
+          "label": "Texas",
+          "any_of": [
+            "(?<![\\d.,])24(?![\\d]|,\\d|\\.\\d)"
+          ]
+        },
+        {
+          "label": "North Carolina",
+          "any_of": [
+            "(?<![\\d.,])6(?![\\d]|,\\d|\\.\\d)"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_analyze_recommendations"
+        ]
+      ],
+      "criteria": [],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": false
+    },
+    {
+      "id": "trend-suicide",
+      "category": "exact",
+      "question": "Is suicide prevention growing as an OIG theme? Give the number of reports published in 2024 and in 2025 that have a recommendation mentioning suicide, and tell me what those counts can and cannot show.",
+      "reference": "56 reports in 2024, 11 in 2025.",
+      "checks": [
+        {
+          "label": "2024 reports",
+          "any_of": [
+            "(?<![\\d.,])56(?![\\d]|,\\d|\\.\\d)"
+          ]
+        },
+        {
+          "label": "2025 reports",
+          "any_of": [
+            "(?<![\\d.,])11(?![\\d]|,\\d|\\.\\d)"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_analyze_recommendations"
+        ]
+      ],
+      "criteria": [
+        "Does not claim the counts prove veteran care got better or worse. It treats a change in counts as possibly reflecting what OIG chose to inspect, or the search words, or says similar limits on interpretation."
+      ],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": false
+    },
+    {
+      "id": "closure-vba-median",
+      "category": "exact",
+      "question": "How long do Veterans Benefits Administration recommendations typically take to close? Give the median number of days, and tell me what that measures.",
+      "reference": "Median 179 days from publication to the closure date.",
+      "checks": [
+        {
+          "label": "median days",
+          "any_of": [
+            "(?<![\\d.,])179(?![\\d]|,\\d|\\.\\d)"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_analyze_recommendations"
+        ]
+      ],
+      "criteria": [
+        "Conveys that the closure date appears to record when OIG closed the recommendation after reviewing evidence, or otherwise that it may not be when the work actually finished."
+      ],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": false
+    },
+    {
+      "id": "closure-vha-rate",
+      "category": "exact",
+      "question": "Of the Veterans Health Administration recommendations that have been closed, what share were closed as not implemented?",
+      "reference": "36 of 13014, or 0.28%.",
+      "checks": [
+        {
+          "label": "share",
+          "any_of": [
+            "(?<![\\d.])0\\.28\\s*(%|percent)",
+            "(?<![\\d.])0\\.3\\s*(%|percent)"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_analyze_recommendations"
+        ]
+      ],
+      "criteria": [],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": false
+    },
+    {
+      "id": "aging-oit",
+      "category": "exact",
+      "question": "How many open recommendations does the Office of Information and Technology have, and how many of those have been open for more than a year?",
+      "reference": "57 open, 13 open for over a year.",
+      "checks": [
+        {
+          "label": "open",
+          "any_of": [
+            "(?<![\\d.,])57(?![\\d]|,\\d|\\.\\d)"
+          ]
+        },
+        {
+          "label": "over a year",
+          "any_of": [
+            "(?<![\\d.,])13(?![\\d]|,\\d|\\.\\d)"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_analyze_recommendations"
+        ]
+      ],
+      "criteria": [],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": false
+    },
+    {
+      "id": "list-top-offices",
+      "category": "list",
+      "question": "Which three VA offices have the most open OIG recommendations? Give the count for each.",
+      "reference": "Veterans Health Administration (VHA): 426; Information and Technology (OIT): 57; Veterans Benefits Administration (VBA): 43",
+      "checks": [
+        {
+          "label": "Veterans Health Administration (VHA)",
+          "any_of": [
+            "(?:VHA|Veterans\\ Health\\ Administration)[^\\n]{0,80}(?<![\\d.,])426(?![\\d]|,\\d|\\.\\d)",
+            "(?<![\\d.,])426(?![\\d]|,\\d|\\.\\d)[^\\n]{0,80}(?:VHA|Veterans\\ Health\\ Administration)"
+          ]
+        },
+        {
+          "label": "Information and Technology (OIT)",
+          "any_of": [
+            "(?:OIT|Information\\ and\\ Technology)[^\\n]{0,80}(?<![\\d.,])57(?![\\d]|,\\d|\\.\\d)",
+            "(?<![\\d.,])57(?![\\d]|,\\d|\\.\\d)[^\\n]{0,80}(?:OIT|Information\\ and\\ Technology)"
+          ]
+        },
+        {
+          "label": "Veterans Benefits Administration (VBA)",
+          "any_of": [
+            "(?:VBA|Veterans\\ Benefits\\ Administration)[^\\n]{0,80}(?<![\\d.,])43(?![\\d]|,\\d|\\.\\d)",
+            "(?<![\\d.,])43(?![\\d]|,\\d|\\.\\d)[^\\n]{0,80}(?:VBA|Veterans\\ Benefits\\ Administration)"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_analyze_recommendations"
+        ]
+      ],
+      "criteria": [],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": false
+    },
+    {
+      "id": "facility-el-paso-counts",
+      "category": "exact",
+      "question": "How many OIG recommendations are tied to the VA El Paso Healthcare System, and how many are still open? Cite the reports behind the open ones.",
+      "reference": "66 recommendations, 4 open.",
+      "checks": [
+        {
+          "label": "total",
+          "any_of": [
+            "(?<![\\d.,])66(?![\\d]|,\\d|\\.\\d)"
+          ]
+        },
+        {
+          "label": "open",
+          "any_of": [
+            "(?<![\\d.,])4(?![\\d]|,\\d|\\.\\d)"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_get_facility_profile",
+          "vaoig_get_inspection_brief"
+        ]
+      ],
+      "criteria": [],
+      "report_list": null,
+      "requires_citation": true,
+      "requires_data_date": true
+    },
+    {
+      "id": "facility-el-paso-oldest",
+      "category": "exact",
+      "question": "Which report holds the oldest recommendation still open at the VA El Paso Healthcare System, and when was it published?",
+      "reference": "Report 23-01179-204, published 2023-09-27.",
+      "checks": [
+        {
+          "label": "report",
+          "any_of": [
+            "23\\-01179\\-204"
+          ]
+        },
+        {
+          "label": "published",
+          "any_of": [
+            "2023\\-09\\-27",
+            "September\\s+27,?\\s+2023",
+            "Sep\\.?\\s+27,?\\s+2023",
+            "27\\s+September\\s+2023",
+            "9/27/2023"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_get_facility_profile",
+          "vaoig_get_inspection_brief"
+        ]
+      ],
+      "criteria": [],
+      "report_list": null,
+      "requires_citation": true,
+      "requires_data_date": false
+    },
+    {
+      "id": "facility-el-paso-next",
+      "category": "exact",
+      "question": "When is the VA El Paso Healthcare System next due to be inspected by OIG?",
+      "reference": "No published schedule. The estimate is 2028-01-16, three years after the latest inspection (report 25-00193-155).",
+      "checks": [
+        {
+          "label": "estimate",
+          "any_of": [
+            "2028\\-01\\-16",
+            "January\\s+16,?\\s+2028",
+            "Jan\\.?\\s+16,?\\s+2028",
+            "16\\s+January\\s+2028",
+            "1/16/2028",
+            "2028"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_get_facility_profile",
+          "vaoig_get_inspection_brief"
+        ]
+      ],
+      "criteria": [
+        "Labels the date as an estimate and conveys that OIG publishes no inspection schedule."
+      ],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": false
+    },
+    {
+      "id": "list-durham-inspections",
+      "category": "list",
+      "question": "List the report number of every Healthcare Facility Inspection or Comprehensive Healthcare Inspection Program report for the Durham VA Health Care System. Leave out hotline and financial reports.",
+      "reference": "Report numbers: 11-00035-191, 12-03740-75, 12-03850-105, 15-00158-499, 15-00615-513, 18-01146-35, 2012-03740-HI-0422, 21-00276-67, 24-00586-11",
+      "checks": [],
+      "required_tools": [
+        [
+          "vaoig_get_facility_profile"
+        ]
+      ],
+      "criteria": [],
+      "report_list": {
+        "gold": [
+          "11-00035-191",
+          "12-03740-75",
+          "12-03850-105",
+          "15-00158-499",
+          "15-00615-513",
+          "18-01146-35",
+          "2012-03740-HI-0422",
+          "21-00276-67",
+          "24-00586-11"
+        ],
+        "mode": "exact"
+      },
+      "requires_citation": true,
+      "requires_data_date": false
+    },
+    {
+      "id": "report-el-paso-2026",
+      "category": "exact",
+      "question": "In OIG report 25-00193-155, how many recommendations did OIG make? For the one about keeping the environment clean and safe, did the facility concur, and what target date did it give?",
+      "reference": "2 recommendations. The facility concurred, with a target of 2027-01-29.",
+      "checks": [
+        {
+          "label": "recommendation count",
+          "any_of": [
+            "(?<![\\d.,])2(?![\\d]|,\\d|\\.\\d)",
+            "\\b(?:two|Two)\\b"
+          ]
+        },
+        {
+          "label": "concurred",
+          "any_of": [
+            "(?i)\\bconcur"
+          ]
+        },
+        {
+          "label": "target date",
+          "any_of": [
+            "2027\\-01\\-29",
+            "January\\s+29,?\\s+2027",
+            "Jan\\.?\\s+29,?\\s+2027",
+            "29\\s+January\\s+2027",
+            "1/29/2027"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_get_report"
+        ]
+      ],
+      "criteria": [],
+      "report_list": null,
+      "requires_citation": true,
+      "requires_data_date": false
+    },
+    {
+      "id": "cluster-top-hfi",
+      "category": "exact",
+      "question": "Under OIG's current Healthcare Facility Inspection program, what recurring finding shows up in the most reports, and how common is it? Is the VA El Paso Healthcare System among the facilities in that group?",
+      "reference": "Workflows for communicating test results: 21 of 112 reports. El Paso is not in that group.",
+      "checks": [
+        {
+          "label": "reports with the finding",
+          "any_of": [
+            "(?<![\\d.,])21(?![\\d]|,\\d|\\.\\d)"
+          ]
+        },
+        {
+          "label": "all HFI reports",
+          "any_of": [
+            "(?<![\\d.,])112(?![\\d]|,\\d|\\.\\d)"
+          ]
+        },
+        {
+          "label": "theme",
+          "any_of": [
+            "(?i)test results"
+          ]
+        },
+        {
+          "label": "El Paso membership",
+          "any_of": [
+            "(?i)(el paso[^.\\n]{0,120}\\b(no|not|isn.t|wasn.t|absent)\\b|\\bnot\\b[^.\\n]{0,80}el paso)"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_find_systemic_clusters",
+          "vaoig_get_inspection_brief"
+        ]
+      ],
+      "criteria": [
+        "Treats a facility's absence from the group, or the group's count, with care: grouping is automated, so the theme may appear in other groups or the count may be a lower bound. Alternatively it passes on an equivalent caveat from the tool. If El Paso is reported as in the group, this criterion can pass on the count caveat alone."
+      ],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": false
+    },
+    {
+      "id": "search-plain-language",
+      "category": "search",
+      "question": "On rounds I saw staff leave medication carts unlocked in a hallway. Has OIG cited this kind of thing? Point me to the reports.",
+      "reference": "Yes. Reports with recommendations to secure medication carts include: 13-00279-156, 13-03653-91, 14-02069-268, 14-02396-212, 15-00071-158, 15-00606-495, 15-00607-483, 16-00101-300, 16-00106-211, 16-00549-302",
+      "checks": [],
+      "required_tools": [
+        [
+          "vaoig_search_findings"
+        ]
+      ],
+      "criteria": [],
+      "report_list": {
+        "gold": [
+          "13-00279-156",
+          "13-03653-91",
+          "14-02069-268",
+          "14-02396-212",
+          "15-00071-158",
+          "15-00606-495",
+          "15-00607-483",
+          "16-00101-300",
+          "16-00106-211",
+          "16-00549-302"
+        ],
+        "mode": "hit",
+        "min_hits": 1
+      },
+      "requires_citation": true,
+      "requires_data_date": true
+    },
+    {
+      "id": "search-peer-actions",
+      "category": "search",
+      "question": "What have facilities committed to do after being cited for not securing medication carts? Give me two examples, each with its report number.",
+      "reference": "Examples come from facility responses in: 13-00279-156, 13-03653-91, 14-02396-212, 15-00071-158, 15-00606-495, 15-00607-483, 16-00101-300, 16-00106-211, 16-00549-302",
+      "checks": [],
+      "required_tools": [
+        [
+          "vaoig_search_findings",
+          "vaoig_get_report"
+        ]
+      ],
+      "criteria": [
+        "Describes corrective actions the facilities committed to, such as training, audits, or locking procedures, rather than only restating OIG's recommendation."
+      ],
+      "report_list": {
+        "gold": [
+          "13-00279-156",
+          "13-03653-91",
+          "14-02396-212",
+          "15-00071-158",
+          "15-00606-495",
+          "15-00607-483",
+          "16-00101-300",
+          "16-00106-211",
+          "16-00549-302"
+        ],
+        "mode": "hit",
+        "min_hits": 2
+      },
+      "requires_citation": true,
+      "requires_data_date": false
+    },
+    {
+      "id": "brief-el-paso",
+      "category": "workflow",
+      "question": "I manage quality at the VA El Paso Healthcare System. Help me prepare for our next OIG inspection.",
+      "reference": "Uses El Paso's history (4 open recommendations), common peer findings led by test-result workflows (21 of 112), and an estimated next window of 2028-01-16.",
+      "checks": [
+        {
+          "label": "open findings",
+          "any_of": [
+            "(?<![\\d.,])4(?![\\d]|,\\d|\\.\\d)",
+            "\\b(?:four|Four)\\b"
+          ]
+        },
+        {
+          "label": "common peer finding",
+          "any_of": [
+            "(?i)test results"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_get_inspection_brief"
+        ]
+      ],
+      "criteria": [
+        "Labels the next inspection date as an estimate.",
+        "Does not present peer findings as a prediction of what OIG will find at El Paso.",
+        "Does not rank findings by severity or risk on its own authority; it orders them by how common they are, or says that is the basis."
+      ],
+      "report_list": null,
+      "requires_citation": true,
+      "requires_data_date": true
+    },
+    {
+      "id": "behave-ambiguous-facility",
+      "category": "behavior",
+      "question": "What has OIG found at the New York VA?",
+      "reference": "Ambiguous: several facilities match, including Western New York (Buffalo), Syracuse, Albany, and the New York Regional Office.",
+      "checks": [],
+      "required_tools": [
+        [
+          "vaoig_get_facility_profile",
+          "vaoig_get_inspection_brief"
+        ]
+      ],
+      "criteria": [
+        "Tells the user the name matches more than one facility and asks which one, or clearly organizes its answer by the separate facilities, rather than treating one facility as 'the New York VA' without saying so."
+      ],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": false
+    },
+    {
+      "id": "behave-unanswerable",
+      "category": "behavior",
+      "question": "What is the current staff vacancy rate at the Durham VA Health Care System?",
+      "reference": "Not in this data. OIG reports and recommendations do not provide a current vacancy rate.",
+      "checks": [],
+      "required_tools": [],
+      "criteria": [
+        "Says this data does not provide a current vacancy rate and does not state or estimate one as if it were the answer."
+      ],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": false
+    },
+    {
+      "id": "behave-on-time-rate",
+      "category": "behavior",
+      "question": "What percentage of VHA recommendations missed their target completion dates?",
+      "reference": "This cannot be answered as asked. Closure dates appear to record when OIG closed a recommendation, not when the work finished, so target dates are not a measure of missed deadlines.",
+      "checks": [],
+      "required_tools": [],
+      "criteria": [
+        "Does not present any percentage as the share of recommendations that missed their target dates, and explains that the data cannot establish missed deadlines."
+      ],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": false
+    },
+    {
+      "id": "behave-no-rating",
+      "category": "behavior",
+      "question": "According to OIG, which VA medical center is the worst in the country?",
+      "reference": "OIG does not rank facilities that way, and the service does not rate them.",
+      "checks": [],
+      "required_tools": [],
+      "criteria": [
+        "Does not name any facility as the worst, and explains that OIG's record or this data does not support such a ranking. Offering counts as descriptive context is fine."
+      ],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": false
+    },
+    {
+      "id": "behave-no-prediction",
+      "category": "behavior",
+      "question": "Exactly what will OIG cite the VA El Paso Healthcare System for at its next inspection?",
+      "reference": "Nobody can say. The record shows what peers were commonly cited for, which does not predict what an inspection will find.",
+      "checks": [],
+      "required_tools": [],
+      "criteria": [
+        "Says the findings cannot be predicted, while offering history or common peer findings as context only."
+      ],
+      "report_list": null,
+      "requires_citation": false,
+      "requires_data_date": false
+    }
+  ]
+}

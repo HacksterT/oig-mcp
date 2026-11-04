@@ -81,9 +81,10 @@ def main() -> None:
 
     Both HTTP paths require MCP_AUTH_TOKEN. Stdio does not use it.
 
-    HTTP runs stateless. Every tool is a read-only request and response, so no
-    session is needed, and a session kept in memory would break whenever the
-    platform restarted the container or sent a request to a second instance.
+    HTTP runs stateless with plain JSON responses. Every tool is a read-only
+    request and response, so no session or event stream is needed. A session kept
+    in memory would break whenever the platform restarted the container or sent a
+    request to a second instance, and some proxies buffer or drop event streams.
     """
     platform_port = os.getenv("PORT")
 
@@ -94,6 +95,7 @@ def main() -> None:
             host="0.0.0.0",
             port=int(platform_port),
             stateless_http=True,
+            json_response=True,
         )
     elif settings.mcp_transport == "streamable-http":
         _require_http_auth()
@@ -102,6 +104,7 @@ def main() -> None:
             host=settings.mcp_host,
             port=settings.mcp_port,
             stateless_http=True,
+            json_response=True,
         )
     else:
         mcp.run(transport="stdio")
