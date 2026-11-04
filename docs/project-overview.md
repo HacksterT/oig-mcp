@@ -74,7 +74,7 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 | `vaoig_get_dataset_status` tool | Built. Calls the data API's `meta` endpoint |
 | Lookup and analysis tools (`vaoig_search_findings`, `vaoig_get_report`, `vaoig_get_facility_profile`, `vaoig_analyze_recommendations`, `vaoig_find_systemic_clusters`, `vaoig_get_inspection_brief`) | Built. Facility and cluster tools are tested against a mocked API until those tables are filled |
 | `vaoig://about` resource | Built. Works without the data API |
-| Reference resources and prompts | Planned (F02, F03) |
+| `vaoig://taxonomy/{facet}` and `vaoig://facilities` resources, and two workflow prompts | Built. Tool-only clients get filter values from `vaoig_get_dataset_status` |
 | Evaluation harness (Arize Phoenix) | Planned (F04) |
 | IBM Cloud deployment | Planned (F05). This is Bob's area |
 | `oig-data-source` crawler, database, and API | Live at `https://oig-api.troymd.com/v1/`. The full data build is still in progress |

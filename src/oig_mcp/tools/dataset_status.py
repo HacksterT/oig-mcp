@@ -19,6 +19,28 @@ from oig_mcp.utils import (
     fetch_json,
 )
 
+_FILTER_FACETS = ("report_type", "topic", "action_office", "state", "visn")
+
+
+async def _filter_values() -> dict[str, list[str]]:
+    """Return valid filter values per facet, leaving out any that cannot be read.
+
+    Status matters more than this convenience, so a failure here never fails the tool.
+    """
+    values: dict[str, list[str]] = {}
+    for facet in _FILTER_FACETS:
+        try:
+            result = await fetch_json(f"taxonomy/{facet}")
+        except UpstreamServiceError:
+            continue
+        items = result.get("items", []) if isinstance(result, dict) else []
+        values[facet] = [
+            str(item.get("abbreviation") or item["value"])
+            for item in items
+            if item.get("value") is not None
+        ]
+    return values
+
 
 def register(mcp: FastMCP) -> None:
     """Register the dataset status tool with the MCP server."""
@@ -45,7 +67,8 @@ def register(mcp: FastMCP) -> None:
 
         Returns:
             data_as_of (collection date), counts of reports and recommendations,
-            open-recommendation reconciliation against the OIG dashboard, and a
+            open-recommendation reconciliation against the OIG dashboard,
+            filter_values (valid values for search and analysis filters), and a
             provenance block with a stale flag. On failure, an error with a hint.
         """
         try:
@@ -66,6 +89,7 @@ def register(mcp: FastMCP) -> None:
             "data_as_of": meta.get("data_as_of"),
             "counts": meta.get("counts", {}),
             "reconciliation": meta.get("reconciliation", {}),
+            "filter_values": await _filter_values(),
             "provenance": provenance,
         }
 

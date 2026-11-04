@@ -6,6 +6,8 @@ the API-to-tool mapping.
 
 from __future__ import annotations
 
+import json
+import re
 from typing import Any
 
 import httpx
@@ -55,7 +57,7 @@ def api(monkeypatch) -> FakeApi:
         utils.httpx,
         "AsyncClient",
         lambda **kwargs: real_client(
-            transport=httpx.MockTransport(fake.handle), **kwargs
+            transport=httpx.MockTransport(lambda r: fake.handle(r)), **kwargs
         ),
     )
     return fake
@@ -540,6 +542,76 @@ async def test_brief_without_an_inspection_says_so(api: FakeApi) -> None:
     api.routes["facilities/528A6"]["inspections"] = []
     result = await call("vaoig_get_inspection_brief", facility="West Haven")
     assert result["next_inspection"] is None
+
+
+# ── Filter values, resources, and prompts ───────────────────────────────────
+
+
+async def test_status_lists_filter_values_for_tool_only_clients(api: FakeApi) -> None:
+    api.routes["meta"] = {**AS_OF, "counts": {}}
+    api.routes["taxonomy/report_type"] = {
+        "items": [{"value": "audit", "label": "Audit", "report_count": 3}]
+    }
+    api.routes["taxonomy/action_office"] = {
+        "items": [{"value": "Veterans Health Administration", "abbreviation": "VHA"}]
+    }
+    async with Client(mcp) as client:
+        result = await client.call_tool("vaoig_get_dataset_status", {})
+    values = result.structured_content["result"]["filter_values"]
+    assert values["report_type"] == ["audit"]
+    assert values["action_office"] == ["VHA"]
+    assert "topic" not in values  # a facet that cannot be read is left out
+
+
+async def test_taxonomy_resource_reads_a_facet(api: FakeApi) -> None:
+    api.routes["taxonomy/topic"] = {"facet": "topic", "items": [{"value": "Safety"}]}
+    async with Client(mcp) as client:
+        contents = await client.read_resource("vaoig://taxonomy/topic")
+    assert json.loads(contents[0].text)["items"] == [{"value": "Safety"}]
+
+
+async def test_taxonomy_resource_reports_an_unknown_facet(api: FakeApi) -> None:
+    async with Client(mcp) as client:
+        contents = await client.read_resource("vaoig://taxonomy/nope")
+    assert "Unknown facet" in json.loads(contents[0].text)["error"]
+
+
+async def test_facilities_resource_reads_every_page(api: FakeApi) -> None:
+    pages = [
+        {**AS_OF, "items": [_facility("1")], "has_more": True, "next_offset": 1},
+        {**AS_OF, "items": [_facility("2")], "has_more": False, "next_offset": None},
+    ]
+
+    def facilities(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json=pages[int(request.url.params["offset"])])
+
+    api.handle = facilities  # type: ignore[method-assign]
+    async with Client(mcp) as client:
+        contents = await client.read_resource("vaoig://facilities")
+    body = json.loads(contents[0].text)
+    assert body["total"] == 2
+    assert [f["station_number"] for f in body["items"]] == ["1", "2"]
+
+
+async def test_prompts_arrange_existing_tools() -> None:
+    tool_names = {tool.name for tool in await mcp.list_tools()}
+    async with Client(mcp) as client:
+        names = {prompt.name for prompt in await client.list_prompts()}
+        brief = await client.get_prompt(
+            "inspection_readiness_checklist", {"facility": "El Paso"}
+        )
+        aging = await client.get_prompt(
+            "open_recommendation_aging_brief", {"focus": "test results"}
+        )
+    assert names == {
+        "inspection_readiness_checklist",
+        "open_recommendation_aging_brief",
+    }
+    for result in (brief, aging):
+        text = result.messages[0].content.text
+        assert set(re.findall(r"vaoig_\w+", text)) <= tool_names
+    assert "El Paso" in brief.messages[0].content.text
+    assert "test results" in aging.messages[0].content.text
 
 
 # ── Report ───────────────────────────────────────────────────────────────────
