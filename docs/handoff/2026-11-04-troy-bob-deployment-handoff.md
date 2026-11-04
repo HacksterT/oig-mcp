@@ -45,14 +45,14 @@ The bearer token is the only authentication built. OAuth is not. It is one share
 
 | Check | Where it ran | Result |
 |---|---|---|
-| Unit tests and lint | Mac | 118 tests pass |
+| Unit tests and lint | Mac | 120 tests pass |
 | Image builds for `linux/amd64` and imports the package | Mac, under emulation | Pass. It has not run a full request cycle on amd64 |
 | Refuses to start without a token, with a short token, or with a plain-HTTP remote API | Container | Pass |
 | Both connections accept right and refuse wrong credentials: 21 checks | Container, and through a public HTTPS tunnel | Pass |
 | Missing or wrong Cloudflare token gives a clean refusal without the API address | Container | Pass |
 | No secret in the image, tool responses, or logs | Container | Pass |
 | An independent MCP client with a different model answers the questions | Hermes Agent running DeepSeek V4 Pro 0813, through the tunnel | Facts all correct. It gave report numbers but no links, which led to the citation field described in D10 |
-| Gold questions, on two Claude models | Container | 22 of 23 each. See [`docs/evaluation.md`](../evaluation.md), which notes what was rerun |
+| 24 gold questions, on two Claude models | Container | 23 of 24 each. See [`docs/evaluation.md`](../evaluation.md) |
 
 **Not tested at all:** IBM's network, Code Engine, Orchestrate's import, its connections, and its model.
 
@@ -84,7 +84,7 @@ Report each one as confirmed or wrong in your phase reports.
 | B3 | Secrets reach the app as environment variables through `--env-from-secret`, and a changed secret needs a restart or new revision | Docs | Report it |
 | B4 | One instance staying up (`--min-scale 1`) is allowed. Orchestrate's import gives the server 30 seconds, so a cold start is a risk with zero | Template uses it. Default is zero | If not allowed, warm the app with `/health` before importing, and report it |
 | B5 | Default resources, 1 vCPU and 4 GB, are more than needed. The image is about 260 MB | Docs for the default | If quota is tight, try 0.25 vCPU and 1 GB. This is unmeasured |
-| B6 | The default request timeout of 300 seconds is enough. The slowest tool took about 2 seconds | Docs, and measured on the Mac | Report it |
+| B6 | The default request timeout of 300 seconds is enough. The slowest tool took about 4 seconds | Docs, and measured on the Mac | Report it |
 | B7 | Running more than one instance is safe. The server is stateless, with no sessions | Tested on the server's side | Not an IBM risk |
 
 ### Reaching the data API
@@ -106,8 +106,8 @@ Report each one as confirmed or wrong in your phase reports.
 | D4 | Import calls `tools/list` with those credentials within 30 seconds, without running tools, and a 4xx fails the import. So deploy, verify, and set credentials before importing | Docs | Report it |
 | D5 | Transport is `streamable_http` with the URL ending in `/mcp`. **Do not try `sse`: this server has no SSE.** A `GET` to `/mcp` correctly returns 405, and POST responses are plain JSON | Tested on the server's side. Docs say the ADK will not switch protocols | Report the exact error. Do not change the server's transport without asking |
 | D6 | The tool schemas import. None use `$ref`, but four use `anyOf` for optional fields, and two take a nested filter object. Tool names use only letters and underscores | Assumed. The ADK validates them, and no one has run that | Send Troy the exact error and the tool name |
-| D7 | Orchestrate calls tools with a timeout of about 2 minutes. MCP has no asynchronous mode there | Docs, in the Tool Performance Guide | Should not matter at about 2 seconds per tool |
-| D8 | No response size limit gets in the way. IBM documents none. The largest response seen was about 112,000 characters, from a facility profile with 100 recommendations. Others stayed under about 40,000 | No documented limit | If responses fail or are cut off, record which tool and which facility. `vaoig_get_facility_profile` accepts a smaller `limit`, and Troy decides on the default |
+| D7 | Orchestrate calls tools with a timeout of about 2 minutes. MCP has no asynchronous mode there | Docs, in the Tool Performance Guide | Should not matter at about 4 seconds or less per tool |
+| D8 | No response size limit gets in the way. IBM documents none. The largest response seen was about 90,000 characters, from a facility profile with 100 recommendations. Others stayed under about 40,000 | No documented limit | If responses fail or are cut off, record which tool and which facility. `vaoig_get_facility_profile` accepts a smaller `limit`, and Troy decides on the default |
 | D9 | MCP prompts and resources do not import, only tools. IBM's page is silent. The tools carry what is needed, and `vaoig_get_dataset_status` returns the filter values | Assumed | No change needed. Good news if they do import |
 | D10 | Orchestrate may not pass the server's `instructions` to its model. Hermes Agent appears not to, and left links out of its answers. So each tool result now carries a `provenance.citation` line saying how to cite it | Hermes observed. Orchestrate unknown | See Phase 4 |
 | D11 | Orchestrate's outbound traffic can reach a Code Engine public URL | Assumed | Report the exact error |
@@ -195,8 +195,8 @@ Ask these, in order, and put each full answer in your report:
 
 | # | Question | What a good answer does |
 |---|---|---|
-| 1 | What is the status of the OIG dataset? | Gives data as of 2026-11-04, unless Troy says it was rebuilt, with 4,415 reports and 15,649 recommendations |
-| 2 | How many recommendations did OIG make in Healthcare Facility Inspection reports published in 2026, and how many are still open? | 148 and 80, unless the data was rebuilt |
+| 1 | What is the status of the OIG dataset? | Gives data as of 2026-11-04, with 4,415 report listings and 15,649 recommendations, unless Troy says the data was rebuilt again |
+| 2 | How many recommendations did OIG make in Healthcare Facility Inspection reports published in 2026, and how many are still open? | 148 and 80 |
 | 3 | On rounds I saw staff leave medication carts unlocked in a hallway. Has OIG cited this kind of thing? Point me to the reports. | Says yes, with report numbers and vaoig.gov links |
 | 4 | I manage quality at the VA El Paso Healthcare System. Help me prepare for our next OIG inspection. | Uses `vaoig_get_inspection_brief`. Labels the next window as an estimate, and does not predict findings |
 | 5 | What has OIG found at the New York VA? | Says several facilities match, rather than picking one |
@@ -231,10 +231,6 @@ The rules in `docs/project-overview.md` section 9 apply. The ones most likely to
 - Do not touch the data API or its hosting. That is Troy's.
 - Do not delete or rename IBM resources without Troy's initials.
 - Ask before creating anything paid that is not listed here.
-
-## If the data has been rebuilt
-
-Troy is having backend issues fixed before you start, so a new snapshot may change some figures in Phase 4. He will tell you if question 2's numbers changed. The API's address and credentials stay the same, and nothing else changes on your side.
 
 ## Questions for Troy
 

@@ -6,7 +6,7 @@
 
 The VA Office of Inspector General (OIG) has published thousands of reports. Its website is good at finding a document. It is not built to answer a question that spans many documents, such as "what keeps being cited?" or "what did other facilities commit to do about it?" Today, answering those questions means hours of reading reports and PDFs.
 
-This project connects an AI assistant to a structured copy of what OIG publishes, currently 4,415 reports, 15,649 recommendations, and 11,240 facility responses drawn from report PDFs. Staff ask a question in plain language and get an answer drawn from across all of them, with a report number and link for every finding. The connector is called an MCP server, which is simply a standard way for an AI assistant to use an outside data source.
+This project connects an AI assistant to a structured copy of what OIG publishes, currently 4,410 reports, 15,649 recommendations, and 11,264 facility responses drawn from report PDFs. Staff ask a question in plain language and get an answer drawn from across all of them, with a report number and link for every finding. The connector is called an MCP server, which is simply a standard way for an AI assistant to use an outside data source.
 
 It uses only public information from vaoig.gov and no internal VA systems. It is not an official VA or OIG product, and it does not replace VA's own tracking of recommendations.
 
@@ -64,14 +64,14 @@ Use the links to confirm anything you plan to act on or repeat. OIG's site remai
 
 | Search | Questions with a relevant result | Relevant results, of those returned |
 |---|---|---|
-| The assistant's search, full sentence | 8 of 10 | 24 of 50 |
-| The assistant's search, short keywords | 7 of 10 | 18 of 50 |
+| The assistant's search, full sentence | 8 of 10 | 22 of 50 |
+| The assistant's search, short keywords | 7 of 10 | 17 of 50 |
 | OIG, short keywords | 6 of 10 | 14 of 28 |
 | OIG, full sentence | 0 of 10 | No results on any |
 
 Treat this as directional. The test is small, an AI judged relevance rather than a person, and we wrote the questions knowing how this project performed, so they favor it. OIG lists results newest first, so its top five are its newest matches, not necessarily its best. Corrective actions were not judged.
 
-**The difference.** The gain is reach and access, not sharper results. The manager can use their own words and still find something, without first learning how OIG phrases things. About half of the results from each search were relevant, and on identical keywords OIG's did better. On two of the ten questions, no search found anything relevant. So results still need checking against the cited reports. The larger difference is that an AI assistant can search, count, and compare the whole record, and cite each result.
+**The difference.** The gain is reach and access, not sharper results. The manager can use their own words and still find something, without first learning how OIG phrases things. A full sentence here was relevant 44 percent of the time, close to the 50 percent for OIG's short keywords, and on identical keywords OIG's did better, at 50 percent against 34. On two of the ten questions, no search found anything relevant. So results still need checking against the cited reports. The larger difference is that an AI assistant can search, count, and compare the whole record, and cite each result.
 
 ## Use case 2: Preparing for an inspection
 
@@ -116,8 +116,9 @@ Counts depend on the search words, so these differ from the theme-based counts t
 | Status | Capability |
 |---|---|
 | **Working now** | Plain-language search of findings and corrective actions; full report details; facility profiles and repeat findings; recurring-finding groups; counts and trends by year; time to close and open-item aging by office, topic, or report type; a one-step inspection brief for a facility |
-| **Not yet done** | Formal accuracy testing, and connecting it to a hosted assistant. It currently runs on one computer |
+| **Tested** | 24 questions scored against answers computed from the data, on two AI models. Each passed 23, with no made-up report numbers. The test is small, and its author wrote the questions, so see the [evaluation](evaluation.md) for its limits |
+| **Not yet done** | Connecting it to a hosted assistant. It currently runs on one computer |
 
-Search results are mixed: about half were relevant in the small test above, results vary by topic, and near-identical findings can crowd the top. Treat results as a starting point to check, and do not treat a search shortlist as a count. Statuses can also change after the data is collected, which is why each answer states its date.
+Search results are mixed: fewer than half were relevant in the small test above, results vary by topic, and near-identical findings can crowd the top. Treat results as a starting point to check, and do not treat a search shortlist as a count. Statuses can also change after the data is collected, which is why each answer states its date.
 
 Closure dates need care. A closure date appears to record when OIG closed a recommendation after reviewing evidence, not when the work finished. So time to close describes OIG's process as well as the facility's, and this project does not report whether facilities met their target dates.

@@ -17,7 +17,7 @@ docker compose up -d --build     # the server, at http://127.0.0.1:8000
 uv run --group eval python eval/phoenix/run_experiment.py --url http://127.0.0.1:8000
 ```
 
-This starts a local Arize Phoenix if none is running, asks all the questions, scores them, and writes `records.json` and `summary.md` under `eval/results/`. A full run took under five minutes and cost about $1.40 to $2.80 at list prices. Add `--keep-phoenix` to browse traces at http://127.0.0.1:6006 afterward.
+This starts a local Arize Phoenix if none is running, asks all the questions, scores them, and writes `records.json` and `summary.md` under `eval/results/`. A full run took under five minutes and cost about $1.30 to $2.90 at list prices. Add `--keep-phoenix` to browse traces at http://127.0.0.1:6006 afterward.
 
 The harness stops if the server's data differs from the pinned snapshot, because the gold answers would not apply.
 
@@ -41,7 +41,8 @@ The harness stops if the server's data differs from the pinned snapshot, because
 | `phoenix/agent.py` | The assistant loop, connected to the server over authenticated HTTP |
 | `phoenix/scoring.py` | Scoring by code, and the judge |
 | `phoenix/run_experiment.py` | The command above |
-| `results/` | Final runs, and the first runs under `baseline/` |
+| `phoenix/score_external.py` | Scores answers from an agent outside this harness |
+| `results/` | Final runs, and earlier runs under `superseded-d364ff4c/` |
 
 ## Rebuild the gold answers
 

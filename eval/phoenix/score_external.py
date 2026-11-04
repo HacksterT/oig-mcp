@@ -43,6 +43,7 @@ QNA_ORDER = [
     "behave-on-time-rate",
     "behave-no-rating",
     "behave-no-prediction",
+    "facility-clean-inspection",
 ]
 
 

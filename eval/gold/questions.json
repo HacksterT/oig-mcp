@@ -1,10 +1,13 @@
 {
   "snapshot": {
-    "sha256": "d364ff4cb215c6d861a7ab3fa10c8d5a356bd3250afe18aa5d0e7db2e16fb839",
+    "sha256": "2bb10bd321e08dfc4c878b42e6a60e69a03a50e19aebb9e359256368677d5060",
     "data_as_of": "2026-11-04",
     "reports": 4415,
     "recommendations": 15649,
-    "open": 567
+    "open": 567,
+    "facilities": 159,
+    "inspections": 1232,
+    "facility_responses": 11264
   },
   "questions": [
     {
@@ -371,10 +374,47 @@
       "requires_data_date": false
     },
     {
+      "id": "facility-clean-inspection",
+      "category": "exact",
+      "question": "When was the VA North Texas Health Care System last inspected by OIG, and when is it next due?",
+      "reference": "Latest inspection report 26-00055-01, published 2026-10-08, with no recommendations. No published schedule. The estimate is 2029-10-08, counted from the publication date.",
+      "checks": [
+        {
+          "label": "latest report",
+          "any_of": [
+            "26\\-00055\\-01"
+          ]
+        },
+        {
+          "label": "estimate",
+          "any_of": [
+            "2029\\-10\\-08",
+            "October\\s+8,?\\s+2029",
+            "Oct\\.?\\s+8,?\\s+2029",
+            "8\\s+October\\s+2029",
+            "10/8/2029",
+            "2029"
+          ]
+        }
+      ],
+      "required_tools": [
+        [
+          "vaoig_get_facility_profile",
+          "vaoig_get_inspection_brief"
+        ]
+      ],
+      "criteria": [
+        "Labels the date as an estimate and conveys that OIG publishes no inspection schedule."
+      ],
+      "report_list": null,
+      "requires_citation": true,
+      "requires_data_date": false
+    },
+    {
       "id": "list-durham-inspections",
       "category": "list",
       "question": "List the report number of every Healthcare Facility Inspection or Comprehensive Healthcare Inspection Program report for the Durham VA Health Care System. Leave out hotline and financial reports.",
-      "reference": "Report numbers: 11-00035-191, 12-03740-75, 12-03850-105, 15-00158-499, 15-00615-513, 18-01146-35, 2012-03740-HI-0422, 21-00276-67, 24-00586-11",
+      "reference": "Report numbers: 11-00035-191, 12-03740-75, 12-03850-105, 15-00158-499, 15-00615-513, 18-01146-35, 21-00276-67, 24-00586-11",
       "checks": [],
       "required_tools": [
         [
@@ -390,7 +430,6 @@
           "15-00158-499",
           "15-00615-513",
           "18-01146-35",
-          "2012-03740-HI-0422",
           "21-00276-67",
           "24-00586-11"
         ],

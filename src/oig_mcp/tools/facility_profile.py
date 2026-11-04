@@ -35,6 +35,22 @@ NO_RESPONSE_NOTICE = (
 )
 
 
+PAST_WINDOW_NOTICE = (
+    "The estimated next window is already past. It is only the last inspection plus "
+    "about three years, so this does not show that the facility is overdue."
+)
+
+
+def window_has_passed(profile: dict[str, Any]) -> bool:
+    """True if the latest inspection's estimate is before the data's own date."""
+    latest = next(
+        (i for i in profile.get("inspections", []) if i.get("is_latest")), None
+    )
+    estimate = (latest or {}).get("next_window_estimate")
+    data_as_of = profile.get("data_as_of")
+    return bool(estimate and data_as_of and estimate < data_as_of)
+
+
 def lacks_response(recommendations: list[dict[str, Any]]) -> bool:
     """True if any finding has no extracted corrective action."""
     return any(not record.get("corrective_action") for record in recommendations)
@@ -139,7 +155,10 @@ def register(mcp: FastMCP) -> None:
         return {
             **rest,
             "recommendations": page,
-            "notices": [NO_RESPONSE_NOTICE] if lacks_response(page["items"]) else [],
+            "notices": [
+                *([NO_RESPONSE_NOTICE] if lacks_response(page["items"]) else []),
+                *([PAST_WINDOW_NOTICE] if window_has_passed(profile) else []),
+            ],
             "provenance": build_provenance(
                 profile.get("data_as_of"), report_urls(reports)
             ),

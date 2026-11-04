@@ -434,6 +434,24 @@ async def test_status_explains_oig_open_total(api: FakeApi) -> None:
     assert "19 blank rows" in result["reconciliation"]["note"]
 
 
+async def test_past_estimate_is_not_called_overdue(api: FakeApi) -> None:
+    profile = _profile()
+    profile["inspections"] = [{"is_latest": True, "next_window_estimate": "2025-04-15"}]
+    api.routes["facilities"] = _lookup(_facility())
+    api.routes["facilities/528A6"] = profile
+    result = await call("vaoig_get_facility_profile", facility="West Haven")
+    assert "does not show that the facility is overdue" in " ".join(result["notices"])
+
+
+async def test_future_estimate_has_no_past_window_notice(api: FakeApi) -> None:
+    profile = _profile()
+    profile["inspections"] = [{"is_latest": True, "next_window_estimate": "2029-10-08"}]
+    api.routes["facilities"] = _lookup(_facility())
+    api.routes["facilities/528A6"] = profile
+    result = await call("vaoig_get_facility_profile", facility="West Haven")
+    assert "already past" not in " ".join(result["notices"])
+
+
 async def test_profile_lists_open_findings_first(api: FakeApi) -> None:
     api.routes["facilities"] = _lookup(_facility())
     api.routes["facilities/528A6"] = _profile()

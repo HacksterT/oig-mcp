@@ -135,6 +135,9 @@ async def preflight(url: str, token: str, snapshot: dict) -> None:
         "reports": counts.get("reports"),
         "recommendations": counts.get("recommendations"),
         "open": counts.get("open"),
+        "facilities": counts.get("facilities"),
+        "inspections": counts.get("inspections"),
+        "facility_responses": counts.get("facility_responses"),
     }
     expected = {key: snapshot[key] for key in observed}
     if observed != expected:

@@ -20,10 +20,11 @@ from collections import Counter
 from datetime import date
 from pathlib import Path
 
-PINNED_SHA256 = "d364ff4cb215c6d861a7ab3fa10c8d5a356bd3250afe18aa5d0e7db2e16fb839"
+PINNED_SHA256 = "2bb10bd321e08dfc4c878b42e6a60e69a03a50e19aebb9e359256368677d5060"
 HERE = Path(__file__).parent
 HFI = "Healthcare Facility Inspection"
 EL_PASO = "756"
+NORTH_TEXAS = "549"
 DURHAM = "558"
 MONTHS = (
     "January February March April May June July August September October "
@@ -349,22 +350,47 @@ def build(conn: sqlite3.Connection) -> list[dict]:
         requires_citation=True,
     )
 
-    latest = all_rows(
-        """SELECT r.report_number, i.published_at, i.inspection_end
-           FROM inspections i JOIN reports r USING (node_id)
-           WHERE i.station_number = ? ORDER BY i.published_at DESC LIMIT 1""",
-        EL_PASO,
-    )[0]
-    basis = date.fromisoformat((latest[2] or latest[1])[:10])
-    next_window = basis.replace(year=basis.year + 3).isoformat()
+    def next_window(station: str) -> tuple[str, str, int]:
+        """The latest inspection's report, the estimate, and the estimate's year."""
+        report, published, ended = all_rows(
+            """SELECT r.report_number, i.published_at, i.inspection_end
+               FROM inspections i JOIN reports r USING (path)
+               WHERE i.station_number = ? ORDER BY i.published_at DESC LIMIT 1""",
+            station,
+        )[0]
+        start = date.fromisoformat((ended or published)[:10])
+        return report, start.replace(year=start.year + 3).isoformat(), start.year + 3
+
+    latest_report, next_estimate, next_year = next_window(EL_PASO)
     add(
         "facility-el-paso-next",
         "exact",
         "When is the VA El Paso Healthcare System next due to be inspected by OIG?",
-        f"No published schedule. The estimate is {next_window}, three years after the "
-        f"latest inspection (report {latest[0]}).",
-        checks=[check("estimate", day(next_window), rf"{basis.year + 3}")],
+        f"No published schedule. The estimate is {next_estimate}, three years after the "
+        f"latest inspection (report {latest_report}).",
+        checks=[check("estimate", day(next_estimate), rf"{next_year}")],
         required_tools=[[PROFILE, BRIEF]],
+        criteria=[
+            "Labels the date as an estimate and conveys that OIG publishes no "
+            "inspection schedule.",
+        ],
+    )
+
+    clean_report, clean_estimate, clean_year = next_window(NORTH_TEXAS)
+    add(
+        "facility-clean-inspection",
+        "exact",
+        "When was the VA North Texas Health Care System last inspected by OIG, and when "
+        "is it next due?",
+        f"Latest inspection report {clean_report}, published 2026-10-08, with no "
+        f"recommendations. No published schedule. The estimate is {clean_estimate}, "
+        "counted from the publication date.",
+        checks=[
+            check("latest report", re.escape(clean_report)),
+            check("estimate", day(clean_estimate), rf"{clean_year}"),
+        ],
+        required_tools=[[PROFILE, BRIEF]],
+        requires_citation=True,
         criteria=[
             "Labels the date as an estimate and conveys that OIG publishes no "
             "inspection schedule.",
@@ -529,7 +555,7 @@ def build(conn: sqlite3.Connection) -> list[dict]:
         "our next OIG inspection.",
         f"Uses El Paso's history ({paso_open} open recommendations), common peer "
         f"findings led by test-result workflows ({top[2]} of {hfi_total}), and an "
-        f"estimated next window of {next_window}.",
+        f"estimated next window of {next_estimate}.",
         checks=[
             check("open findings", num(paso_open), r"\b(?:four|Four)\b"),
             check("common peer finding", r"(?i)test results"),
@@ -632,6 +658,11 @@ def main() -> None:
         ).fetchone()[0],
         "open": conn.execute(
             "SELECT count(*) FROM recommendations WHERE status = 'open'"
+        ).fetchone()[0],
+        "facilities": conn.execute("SELECT count(*) FROM facilities").fetchone()[0],
+        "inspections": conn.execute("SELECT count(*) FROM inspections").fetchone()[0],
+        "facility_responses": conn.execute(
+            "SELECT count(*) FROM rec_responses"
         ).fetchone()[0],
     }
     (HERE / "questions.json").write_text(

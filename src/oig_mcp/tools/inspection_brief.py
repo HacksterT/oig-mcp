@@ -18,8 +18,10 @@ from pydantic import Field
 
 from oig_mcp.tools.facility_profile import (
     NO_RESPONSE_NOTICE,
+    PAST_WINDOW_NOTICE,
     fetch_profile,
     lacks_response,
+    window_has_passed,
 )
 from oig_mcp.tools.systemic_clusters import CLUSTER_CAVEAT
 from oig_mcp.utils import (
@@ -109,6 +111,8 @@ def _next_inspection(profile: dict[str, Any]) -> dict[str, Any] | None:
         "latest_inspection": {
             "program": latest.get("program"),
             "inspection_end": latest.get("inspection_end"),
+            "published_at": latest.get("published_at"),
+            "next_window_based_on": latest.get("next_window_based_on"),
             "report_number": latest.get("report_number"),
             "url": latest.get("url"),
         },
@@ -212,6 +216,8 @@ def register(mcp: FastMCP) -> None:
             notices.insert(0, _FALLBACK_NOTICE)
         if lacks_response(_own_history(profile)["open_findings"]):
             notices.append(NO_RESPONSE_NOTICE)
+        if window_has_passed(profile):
+            notices.append(PAST_WINDOW_NOTICE)
         if profile.get("recommendations_has_more"):
             notices.append(
                 "This facility has more recommendations than were checked, so "
