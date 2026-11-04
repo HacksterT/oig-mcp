@@ -66,7 +66,7 @@ A separate agent, Hermes Agent running DeepSeek V4 Pro 0813, answered 18 of the 
 | Report number and link together, where required | 0 of 6 |
 | Report numbers that do not exist | 1 |
 
-**This run was not blind or isolated.** It was a second round across several sessions, with access to the first round's answers, and it followed a logging format the tester set. That format asked for a source line naming a report number, URL, or provenance. So 0 of 6 may reflect the format, not the server: its tool results did carry report links and the citation line. Isolated Claude runs gave a number and link on 15 of 16 required answers.
+**This run was not blind or isolated.** It was a second round across several sessions, with access to the first round's answers, and it followed a logging format the tester set. That format added a tools line and observations that a normal answer would not have, and it asked for a source naming a report number, URL, or provenance. So 0 of 6 may reflect the format, not the server: its tool results did carry report links and the citation line. Isolated Claude runs gave a number and link on 15 of 16 required answers.
 
 **The one wrong number** was 26-00254-277, written for report 25-00254-277. No Claude run produced a report number that does not exist.
 

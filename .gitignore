@@ -4,6 +4,7 @@ tasks/
 # Working notes between agents (kept local)
 docs/agent-handoff*.md
 docs/web-handoff*.md
+docs/FOLLOWUP_HANDOFF.md
 
 # Virtual environments
 .venv/
