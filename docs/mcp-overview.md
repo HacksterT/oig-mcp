@@ -16,7 +16,8 @@ OIG's search is solid, and this project does not try to replace it. If you know 
 
 | What you need | On OIG's website | With this assistant |
 |---|---|---|
-| Find a report or recommendation | Keywords plus filters for date, report type, topic, office, status, and location | Ask in your own words. It looks for matching meaning as well as matching words |
+| Use it directly from an AI assistant, with citations | No API or bulk export | Yes. This is the main difference, and the rest follows from it |
+| Find a report or recommendation | Keywords plus filters for date, report type, topic, office, status, and location | Ask in your own words. It looks for matching meaning as well as matching words, with mixed results |
 | See how an issue changes over time | One total per search, so you repeat the search for each year and tally the results | A year-by-year table from one question |
 | See how old open items are | Site-wide totals in three age bands, and a filter for each band | Typical and oldest age, compared across offices, topics, or report types |
 | Learn how long fixes take | A closure date on each closed recommendation, with no averages | Typical time to close, the usual range, and the share not implemented |
@@ -59,9 +60,18 @@ Use the links to confirm anything you plan to act on or repeat. OIG's site remai
 | The assistant's search | Led with recommendations to secure medication carts |
 | OIG's recommendation search, same sentence | No results |
 
-We ran ten such questions through OIG's search. All ten full sentences returned nothing. Because people type keywords into a keyword search, we also tried a short form of each, such as "medication carts," and eight of the ten returned at least one recommendation. Someone who knows OIG's wording will do well there. Someone who doesn't, or an assistant passing along what a person said, will find it much less forgiving. This shows which searches return results, not which results are better, and the questions were written with knowledge of our own results, so they favor this project.
+**How it compared overall.** We ran ten such questions through both searches, as full sentences and as short keywords, and compared the top five recommendations from each.
 
-**The difference.** The manager gets the relevant findings, each with a report number and link, without first having to learn how OIG phrases things. The manager also sees what facilities committed to do where that has been extracted. The top results here come from older reports, 2013 to 2015, so the natural next step is to narrow to recent inspections. Results are not always this clean, which is why a person should check them against the cited reports.
+| Search | Questions with a relevant result | Relevant results, of those returned |
+|---|---|---|
+| The assistant's search, full sentence | 8 of 10 | 24 of 50 |
+| The assistant's search, short keywords | 7 of 10 | 18 of 50 |
+| OIG, short keywords | 6 of 10 | 14 of 28 |
+| OIG, full sentence | 0 of 10 | No results on any |
+
+Treat this as directional. The test is small, an AI judged relevance rather than a person, and we wrote the questions knowing how this project performed, so they favor it. OIG lists results newest first, so its top five are its newest matches, not necessarily its best. Corrective actions were not judged.
+
+**The difference.** The gain is reach and access, not sharper results. The manager can use their own words and still find something, without first learning how OIG phrases things. About half of the results from each search were relevant, and on identical keywords OIG's did better, so results still need checking against the cited reports. The larger difference is that an AI assistant can search, count, and compare the whole record, and cite each result.
 
 ## Use case 2: Preparing for an inspection
 
@@ -108,6 +118,6 @@ Counts depend on the search words, so these differ from the theme-based counts t
 | **Working now** | Plain-language search of findings and corrective actions; full report details; facility profiles and repeat findings; recurring-finding groups; counts and trends by year; time to close and open-item aging by office, topic, or report type; a one-step inspection brief for a facility |
 | **Not yet done** | Formal accuracy testing, and connecting it to a hosted assistant. It currently runs on one computer |
 
-Search quality is good on many topics and uneven on others, and near-identical findings can crowd the top of the results. Treat the results as a strong starting point, and do not treat a search shortlist as a count. Statuses can also change after the data is collected, which is why each answer states its date.
+Search results are mixed: about half were relevant in the small test above, results vary by topic, and near-identical findings can crowd the top. Treat results as a starting point to check, and do not treat a search shortlist as a count. Statuses can also change after the data is collected, which is why each answer states its date.
 
 Closure dates need care. A closure date appears to record when OIG closed a recommendation after reviewing evidence, not when the work finished. So time to close describes OIG's process as well as the facility's, and this project does not report whether facilities met their target dates.
