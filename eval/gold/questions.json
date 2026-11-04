@@ -499,7 +499,7 @@
         {
           "label": "theme",
           "any_of": [
-            "(?i)test results"
+            "(?i)test[- ]results?"
           ]
         },
         {
@@ -602,7 +602,7 @@
         {
           "label": "common peer finding",
           "any_of": [
-            "(?i)test results"
+            "(?i)test[- ]results?"
           ]
         }
       ],

@@ -481,7 +481,7 @@ def build(conn: sqlite3.Connection) -> list[dict]:
         checks=[
             check("reports with the finding", num(top[2])),
             check("all HFI reports", num(hfi_total)),
-            check("theme", r"(?i)test results"),
+            check("theme", r"(?i)test[- ]results?"),
             check(
                 "El Paso membership",
                 r"(?i)el paso[^.\n]{0,120}\b(is|was)\b(?! not)"
@@ -558,7 +558,7 @@ def build(conn: sqlite3.Connection) -> list[dict]:
         f"estimated next window of {next_estimate}.",
         checks=[
             check("open findings", num(paso_open), r"\b(?:four|Four)\b"),
-            check("common peer finding", r"(?i)test results"),
+            check("common peer finding", r"(?i)test[- ]results?"),
         ],
         required_tools=[[BRIEF]],
         requires_citation=True,

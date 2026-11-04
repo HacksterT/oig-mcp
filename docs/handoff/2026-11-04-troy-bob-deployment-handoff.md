@@ -51,7 +51,7 @@ The bearer token is the only authentication built. OAuth is not. It is one share
 | Both connections accept right and refuse wrong credentials: 21 checks | Container, and through a public HTTPS tunnel | Pass |
 | Missing or wrong Cloudflare token gives a clean refusal without the API address | Container | Pass |
 | No secret in the image, tool responses, or logs | Container | Pass |
-| An independent MCP client with a different model answers the questions | Hermes Agent running DeepSeek V4 Pro 0813, through the tunnel | Facts all correct. It gave report numbers but no links, which led to the citation field described in D10 |
+| An independent MCP client with a different model answers the questions | Hermes Agent running DeepSeek V4 Pro 0813, through the tunnel | Facts all correct, 18 questions. It gave report numbers but almost no links, in a logging format that may have caused that. See D10 |
 | 24 gold questions, on two Claude models | Container | 23 of 24 each. See [`docs/evaluation.md`](../evaluation.md) |
 
 **Not tested at all:** IBM's network, Code Engine, Orchestrate's import, its connections, and its model.
@@ -109,7 +109,7 @@ Report each one as confirmed or wrong in your phase reports.
 | D7 | Orchestrate calls tools with a timeout of about 2 minutes. MCP has no asynchronous mode there | Docs, in the Tool Performance Guide | Should not matter at about 4 seconds or less per tool |
 | D8 | No response size limit gets in the way. IBM documents none. The largest response seen was about 90,000 characters, from a facility profile with 100 recommendations. Others stayed under about 40,000 | No documented limit | If responses fail or are cut off, record which tool and which facility. `vaoig_get_facility_profile` accepts a smaller `limit`, and Troy decides on the default |
 | D9 | MCP prompts and resources do not import, only tools. IBM's page is silent. The tools carry what is needed, and `vaoig_get_dataset_status` returns the filter values | Assumed | No change needed. Good news if they do import |
-| D10 | Orchestrate may not pass the server's `instructions` to its model. Hermes Agent appears not to, and left links out of its answers. So each tool result now carries a `provenance.citation` line saying how to cite it | Hermes observed. Orchestrate unknown | See Phase 4 |
+| D10 | Orchestrate may not pass the server's `instructions` to its model. Hermes Agent appears not to. So each tool result now carries a `provenance.citation` line saying how to cite it. Hermes' answers still had almost no links, though its test format may be why | Hermes observed. Orchestrate unknown | See Phase 4 |
 | D11 | Orchestrate's outbound traffic can reach a Code Engine public URL | Assumed | Report the exact error |
 | D12 | A `409 Gateway name already exists` after deleting a toolkit is a known leftover. Use a new unique name | Docs | |
 

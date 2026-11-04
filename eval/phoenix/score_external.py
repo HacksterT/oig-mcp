@@ -110,8 +110,8 @@ async def main_async(args) -> None:
         f"# External run: {args.label}",
         "",
         f"{len(records)} of the gold questions, judged by `{args.judge_model}`. Tool "
-        "use is as the agent reported it. The answers came from one continuing session "
-        "and were written into an artifact, unlike the isolated harness runs.",
+        "use is as the agent reported it. The answers were written into an artifact in "
+        "a format the operator set, unlike the isolated harness runs.",
         "",
         "| Measure | Result |",
         "|---|---|",

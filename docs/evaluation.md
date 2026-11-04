@@ -23,7 +23,7 @@ These are the final runs, on the server as built today and the data snapshot the
 | Mean time per question | 15.3 s | 8.7 s | Code |
 | Estimated cost of the run, including the judge | $2.87 | $1.31 | List prices |
 
-**No report number was fabricated in any answer, in any run.** That is the project's stated target, and it held.
+**Neither model cited a report number that does not exist, in any run.** That is the project's stated target. The independent agent below wrote one wrong number.
 
 ### The failures, and what the scores do not show
 
@@ -55,18 +55,22 @@ Traces, datasets, and experiments are recorded in Arize Phoenix. Run records and
 
 ## An independent client: DeepSeek through Hermes Agent
 
-A separate agent, Hermes Agent running DeepSeek V4 Pro 0813, answered 17 of the questions over a public HTTPS address, on the earlier build and snapshot. It ran as one continuing session writing to a file, so it is not directly comparable with the isolated runs above. Results are in [`eval/results/superseded-d364ff4c/2026-11-04-hermes-deepseek-v4-pro-0813/`](../eval/results/superseded-d364ff4c/2026-11-04-hermes-deepseek-v4-pro-0813/), and the answers are in [`qna.md`](qna.md). A rerun on the final build is planned.
+A separate agent, Hermes Agent running DeepSeek V4 Pro 0813, answered 18 of the questions over public HTTPS, on the final server and data. Its answers, with a note on how each checked out, are in the [test bank](https://www.troymd.com/mcp-hackathon-test-bank) and [`qna2.md`](qna2.md). Scores are in [`eval/results/2026-11-04-hermes-deepseek-v4-pro-0813/`](../eval/results/2026-11-04-hermes-deepseek-v4-pro-0813/).
 
-| Measure | First run |
+| Measure | Result |
 |---|---|
-| Exact facts present | 10 of 10 |
-| Agrees with the gold reference | 17 of 17 |
-| Caveats and behaviors | 11 of 12 |
-| Every cited report number exists | 17 of 17 |
-| Report number and link together, where required | 0 of 5 |
-| Data date stated, where required | 2 of 4 |
+| Exact facts present | 11 of 11 |
+| Agrees with the gold reference | 18 of 18 |
+| Caveats and behaviors | 10 of 13 |
+| Data date stated, where required | 4 of 4 |
+| Report number and link together, where required | 0 of 6 |
+| Report numbers that do not exist | 1 |
 
-It gave report numbers in those five answers, but no links, and the host appears not to pass the server's instructions to its model. That is why each tool result now says how to cite it. Reading the answers by hand also found overreach the judge passed, such as calling open findings "the single most likely things to be re-cited." A model can still go beyond what the tools return, whatever the server says.
+**This run was not blind or isolated.** It was a second round across several sessions, with access to the first round's answers, and it followed a logging format the tester set. That format asked for a source line naming a report number, URL, or provenance. So 0 of 6 may reflect the format, not the server: its tool results did carry report links and the citation line. Isolated Claude runs gave a number and link on 15 of 16 required answers.
+
+**The one wrong number** was 26-00254-277, written for report 25-00254-277. No Claude run produced a report number that does not exist.
+
+Reading the answers by hand also found overreach, such as calling a peer finding the "single highest-probability" item for a facility. A model can still go beyond what the tools return, whatever the server says.
 
 ## What the evaluation changed
 

@@ -116,7 +116,7 @@ Counts depend on the search words, so these differ from the theme-based counts t
 | Status | Capability |
 |---|---|
 | **Working now** | Plain-language search of findings and corrective actions; full report details; facility profiles and repeat findings; recurring-finding groups; counts and trends by year; time to close and open-item aging by office, topic, or report type; a one-step inspection brief for a facility |
-| **Tested** | 24 questions scored against answers computed from the data, on two AI models. Each passed 23, with no made-up report numbers. The test is small, and its author wrote the questions, so see the [evaluation](evaluation.md) for its limits |
+| **Tested** | 24 questions scored against answers computed from the data, on two AI models. Each passed 23, with no made-up report numbers. The test is small, and its authors wrote the questions, so see the [evaluation](evaluation.md) for its limits. An independent agent's answers are in the [test bank](https://www.troymd.com/mcp-hackathon-test-bank) |
 | **Not yet done** | Connecting it to a hosted assistant. It currently runs on one computer |
 
 Search results are mixed: fewer than half were relevant in the small test above, results vary by topic, and near-identical findings can crowd the top. Treat results as a starting point to check, and do not treat a search shortlist as a count. Statuses can also change after the data is collected, which is why each answer states its date.
