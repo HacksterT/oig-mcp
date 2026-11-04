@@ -265,7 +265,25 @@ async def test_promised_vs_actual_fields_pass_through_with_caveat(api: FakeApi) 
     api.routes["metrics/closure"] = {**AS_OF, **ENVELOPE, "items": [item]}
     result = await call("vaoig_analyze_recommendations", group_by="office")
     assert result["items"][0]["closed_by_target_rate"] == 0.5
-    assert "with_target_date" in " ".join(result["caveats"])
+    assert "missed deadlines" in " ".join(result["caveats"])
+
+
+async def test_target_basis_is_passed_through_verbatim(api: FakeApi) -> None:
+    api.routes["metrics/closure"] = {
+        **AS_OF,
+        **ENVELOPE,
+        "target_basis": "A target is the facility's estimate.",
+        "items": [],
+    }
+    result = await call("vaoig_analyze_recommendations", group_by="office")
+    assert result["target_basis"] == "A target is the facility's estimate."
+
+
+async def test_publication_day_closures_are_explained(api: FakeApi) -> None:
+    item = {"group": "VHA", "median_days": 0, "closed_on_publication_day": 9}
+    api.routes["metrics/closure"] = {**AS_OF, **ENVELOPE, "items": [item]}
+    result = await call("vaoig_analyze_recommendations", group_by="office")
+    assert "closed the day the report came out" in " ".join(result["caveats"])
 
 
 # ── Facility profile ─────────────────────────────────────────────────────────
@@ -302,6 +320,14 @@ async def test_profile_passes_basis_text_verbatim(api: FakeApi) -> None:
     assert result["repeat_findings_basis"] == REPEAT_BASIS
     assert result["next_window_basis"] == WINDOW_BASIS
     assert result["repeat_findings"] == [{"cluster_id": 7, "report_count": 2}]
+
+
+async def test_profile_asks_for_more_than_the_api_default(api: FakeApi) -> None:
+    api.routes["facilities"] = _lookup(_facility())
+    api.routes["facilities/528A6"] = {**_profile(), "recommendations_has_more": True}
+    result = await call("vaoig_get_facility_profile", facility="West Haven")
+    assert api.last.url.params["recommendations_limit"] == "100"
+    assert result["recommendations_has_more"] is True
 
 
 async def test_profile_lists_open_findings_first(api: FakeApi) -> None:

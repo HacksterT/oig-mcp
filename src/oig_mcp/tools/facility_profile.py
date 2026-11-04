@@ -23,6 +23,7 @@ from oig_mcp.utils import (
 )
 
 _LOOKUP_LIMIT = 10
+_MAX_RECOMMENDATIONS = 100  # the API returns only the newest 25 unless asked
 
 
 def _pick_station(facility: str, matches: list[dict[str, Any]]) -> str | None:
@@ -66,7 +67,8 @@ def register(mcp: FastMCP) -> None:
 
         Returns:
             Facility fields, reports, inspections, repeat_findings, the basis text,
-            recommendations (open first, paginated), and provenance.
+            recommendations (the newest 100, open first, paginated), and provenance.
+            recommendations_has_more is true when a facility has older ones.
         """
         try:
             lookup = await fetch_object(
@@ -90,7 +92,10 @@ def register(mcp: FastMCP) -> None:
                     "hint": "Several facilities matched. Ask which one is meant.",
                     "provenance": build_provenance(lookup.get("data_as_of")),
                 }
-            profile = await fetch_object(f"facilities/{quote(str(station), safe='')}")
+            profile = await fetch_object(
+                f"facilities/{quote(str(station), safe='')}",
+                {"recommendations_limit": _MAX_RECOMMENDATIONS},
+            )
         except UpstreamServiceError as exc:
             return tool_error(exc)
 

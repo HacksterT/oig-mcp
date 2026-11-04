@@ -1,12 +1,12 @@
 # VA OIG Recommendations Assistant: Overview
 
-*For leaders and staff. Status and figures as of November 4, 2026, using data collected October 28, 2026.*
+*For leaders and staff. Status and figures as of November 4, 2026.*
 
 ## In brief
 
 The VA Office of Inspector General (OIG) has published thousands of reports. Its website is good at finding a document. It is not built to answer a question that spans many documents, such as "what keeps being cited?" or "what did other facilities commit to do about it?" Today, answering those questions means hours of reading reports and PDFs.
 
-This project connects an AI assistant to a structured copy of what OIG publishes, currently 4,413 reports and 15,647 recommendations. Staff ask a question in plain language and get an answer drawn from across all of them, with a report number and link for every finding. The connector is called an MCP server, which is simply a standard way for an AI assistant to use an outside data source.
+This project connects an AI assistant to a structured copy of what OIG publishes, currently 4,415 reports, 15,649 recommendations, and 11,240 facility responses drawn from report PDFs. Staff ask a question in plain language and get an answer drawn from across all of them, with a report number and link for every finding. The connector is called an MCP server, which is simply a standard way for an AI assistant to use an outside data source.
 
 It uses only public information from vaoig.gov and no internal VA systems. It is not an official VA or OIG product, and it does not replace VA's own tracking of recommendations.
 
@@ -19,12 +19,9 @@ OIG's search is solid, and this project does not try to replace it. If you know 
 | Find a report or recommendation | Keywords plus filters for date, report type, topic, office, status, and location | Ask in your own words. It looks for matching meaning as well as matching words |
 | See how an issue changes over time | One total per search, so you repeat the search for each year and tally the results | A year-by-year table from one question |
 | See how old open items are | Site-wide totals in three age bands, and a filter for each band | Typical and oldest age, compared across offices, topics, or report types |
-| Learn how long fixes take | A closure date on each closed recommendation, with no averages | Typical time to close, the usual range, and the share not implemented\* |
-| See what facilities committed to do | Only in the report PDFs | Searchable commitments and target dates across reports\* |
-| Spot what recurs across facilities | Read the reports and compare them yourself | Near-identical findings grouped, showing how many reports contain them\* |
-| Compare promises with results | Not available | Target dates compared with actual closure dates\* |
-
-\*Available when the current data build finishes. See "Where it stands today."
+| Learn how long fixes take | A closure date on each closed recommendation, with no averages | Typical time to close, the usual range, and the share not implemented |
+| See what facilities committed to do | Only in the report PDFs | Searchable commitments and target dates across reports |
+| Spot what recurs across facilities | Read the reports and compare them yourself | Near-identical findings grouped, showing how many reports contain them |
 
 ## For leaders
 
@@ -61,7 +58,7 @@ Use the links to confirm anything you plan to act on or repeat. OIG's site remai
 | Match any word | Led with emergency exits, hallway obstructions, and handrails |
 | The assistant's search | Led with recommendations to secure medication carts |
 
-**The difference.** The manager gets the relevant findings, each with a report number and link, without first having to learn how OIG phrases things. The top results here are from 2015 and 2016, so the natural next step is to narrow to recent inspections. Results are not always this clean, which is why a person should check them against the cited reports.
+**The difference.** The manager gets the relevant findings, each with a report number and link, without first having to learn how OIG phrases things. The manager also sees what facilities committed to do where that has been extracted. The top results here come from older reports, 2013 to 2015, so the natural next step is to narrow to recent inspections. Results are not always this clean, which is why a person should check them against the cited reports.
 
 ## Use case 2: Preparing for an inspection
 
@@ -77,9 +74,7 @@ Use the links to confirm anything you plan to act on or repeat. OIG's site remai
 - **A realistic timeline:** how long that kind of finding has typically taken to close.
 - **The likely timing:** an estimated next inspection window, labeled as an estimate, because OIG publishes no schedule.
 
-Here is what sits behind that. El Paso's July 2026 report (25-00193-155) includes the open recommendation that leaders "ensure staff maintain a clean and safe environment." The facility's written response, including whether it agreed, its target date, and its planned actions, appears only in the PDF. Once extracted, it can sit alongside what peers committed to for the same finding.
-
-Peer findings can be searched today. The rest of this list arrives with the data build described under "Where it stands today."
+These are real records. The most common recurring finding in current inspections, on developing workflows for communicating test results, appears in 21 of the 112 Healthcare Facility Inspection reports. El Paso's July 2026 report (25-00193-155) includes the open recommendation that leaders "ensure staff maintain a clean and safe environment." The facility concurred, set a target of January 29, 2027, and described its cleaning inspections and procedures. That response appears only in the PDF, and it can now sit alongside what peers committed to for the same finding. El Paso's next inspection window is estimated at about January 2028.
 
 **The difference.** The manager starts from an evidence-based checklist instead of a blank page.
 
@@ -89,27 +84,28 @@ Peer findings can be searched today. The rest of this list arrives with the data
 
 **Using the website.** The officer can repeat a search for each year and tally the totals by hand, which gives counts but no context.
 
-**Using the assistant.** One question returns the table. These are recommendations containing the words "communicating test results":
+**Using the assistant.** One question returns the pattern. These are reports with recommendations that mention test or laboratory results:
 
-| Year report was published | Reports | Recommendations | Still open |
-|---|---|---|---|
-| 2022 | 3 | 4 | 0 |
-| 2023 | 3 | 3 | 0 |
-| 2024 | 1 | 1 | 0 |
-| 2025 | 21 | 26 | 7 |
-| 2026 (to date) | 28 | 41 | 25 |
+| Years | Reports per year |
+|---|---|
+| 2015 and 2016 | 32 and 27 |
+| 2017 through 2024 | 2 to 11 |
+| 2025 and 2026 (to date) | 21 and 28 |
 
-Taken alone, that looks like a problem that suddenly got much worse. The data supports a second reading. Nearly all of the 2025 and 2026 reports come from one inspection series, Healthcare Facility Inspections, which grew from 6 reports in 2024 to 59 so far in 2026, and 28 of those 59 contain this finding. So the jump may reflect a real problem, or a newer program that looks for it and is reporting far more often.
+Taken alone, that looks like facilities improved and then slipped. The data cannot support that by itself. Nearly all of the 2025 and 2026 reports come from one inspection series, Healthcare Facility Inspections, where this finding appears in 20 of 45 reports in 2025 and 28 of 61 so far in 2026. OIG inspects against a protocol, so the rise could reflect the topic returning to that protocol as much as any change in care, and the same goes for the earlier drop.
 
-**The difference.** The data cannot say which reading is right, so the assistant gives the counts and both readings rather than choosing one. The officer gets a useful number, 28 of 59 inspections this year, and a better question: is this a gap in our facilities or a change in what is being measured? Recent years also show more open items partly because those findings have had less time to close.
+Counts depend on the search words, so these differ from the theme-based counts through 2024 on the project page.
+
+**The difference.** The data cannot say which reading is right, so the assistant gives the counts and both readings rather than choosing one. What the counts do show is useful either way: this is a live inspection theme now, and a patient safety manager should be ready for it.
 
 ## Where it stands today
 
 | Status | Capability |
 |---|---|
-| **Working now** | Plain-language search of findings; full report details; counts and trends by year; open-item aging by office, topic, or report type |
-| **Built, waiting on data** | Corrective actions and target dates from PDFs; facility profiles and repeat findings; recurring-finding groups; time to close; promised versus actual dates |
-| **Not built yet** | An inspection readiness brief that brings these together for one facility |
+| **Working now** | Plain-language search of findings and corrective actions; full report details; facility profiles and repeat findings; recurring-finding groups; counts and trends by year; time to close and open-item aging by office, topic, or report type |
+| **Not built yet** | A guided inspection-prep workflow that brings these together for one facility |
 | **Not yet done** | Formal accuracy testing, and connecting it to a hosted assistant. It currently runs on one computer |
 
 Search quality is good on many topics and uneven on others, and near-identical findings can crowd the top of the results. Treat the results as a strong starting point, and do not treat a search shortlist as a count. Statuses can also change after the data is collected, which is why each answer states its date.
+
+Closure dates need care. A closure date appears to record when OIG closed a recommendation after reviewing evidence, not when the work finished. So time to close describes OIG's process as well as the facility's, and this project does not report whether facilities met their target dates.

@@ -90,7 +90,11 @@ class RecommendationFilters(BaseModel):
     )
     node_id: int | None = Field(default=None, description="One report's node id.")
     domain: str | None = Field(
-        default=None, description="Inspection domain of the facility response."
+        default=None,
+        description=(
+            "Inspection domain of the facility response. Usually empty on newer "
+            "Healthcare Facility Inspection responses, so this misses most of them."
+        ),
     )
     has_response: bool | None = Field(
         default=None,

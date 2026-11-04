@@ -1,9 +1,9 @@
 """vaoig_analyze_recommendations: filter a set and group it.
 
 The one analysis tool. It replaces separate theme trend and closure performance
-tools, which had the same shape. Time to close and promised versus actual dates
-are fields in its results. Facilities are deliberately not a grouping, because
-the server does not rate them.
+tools, which had the same shape. Time to close and target dates are fields in
+its results. Facilities are deliberately not a grouping, because the server does
+not rate them.
 """
 
 from __future__ import annotations
@@ -52,9 +52,15 @@ _PARTIAL_CLOSURE_DATES = (
     "to 2016, show no closure date on OIG's site."
 )
 _TARGET_DATES = (
-    "Promised versus actual fields cover only recommendations with a parsed target "
-    "date, so read them with with_target_date. A month-precision target runs to "
-    "month end."
+    "Do not present target date fields as missed deadlines or compute an on-time "
+    "rate. A target is the facility's estimate, and a closure date appears to record "
+    "when OIG closed the recommendation after reviewing evidence, which can follow "
+    "the work by months. These fields cover only recommendations with a parsed "
+    "target date, so read them with with_target_date."
+)
+_PUBLICATION_DAY = (
+    "closed_on_publication_day counts recommendations closed the day the report came "
+    "out, presumably fixed beforehand. They can pull a small group's median to 0."
 )
 
 
@@ -81,6 +87,8 @@ def _caveats(
     else:
         caveats.append(_GROUP_OVERLAP)
         caveats += _closure_caveats(items, "median_days")
+        if any(item.get("closed_on_publication_day") for item in items):
+            caveats.append(_PUBLICATION_DAY)
         if any("with_target_date" in item for item in items):
             caveats.append(_TARGET_DATES)
     if group_by is AnalysisGroup.TOPIC or (filters and filters.topic):
@@ -112,9 +120,10 @@ def register(mcp: FastMCP) -> None:
         """Count and measure a filtered set of recommendations by a chosen grouping.
 
         Use this for exact counts, trends over time, how long recommendations take
-        to close, not-implemented rates, how old open items are, and promised versus
-        actual dates. Group by year for a trend. Group by office, topic, or
-        report_type for closure and aging measures. Facilities cannot be a grouping.
+        to close, not-implemented rates, and how old open items are. Target date fields
+        are not a measure of missed deadlines. Group by year for a trend. Group by
+        office, topic, or report_type for closure and aging measures. Facilities cannot
+        be a grouping.
 
         Always pass on the caveats in the result.
 
@@ -144,5 +153,6 @@ def register(mcp: FastMCP) -> None:
             "total_groups": result.get("total"),
             "items": items,
             "caveats": _caveats(group_by, filters, items),
+            "target_basis": result.get("target_basis"),
             "provenance": build_provenance(result.get("data_as_of"), _SOURCE_URLS),
         }
