@@ -19,7 +19,7 @@ Read this first, and then [`docs/project-overview.md`](../project-overview.md) f
 | Initials | `TES`. Required in every IBM resource name |
 | IBM account, resource group, Code Engine project | Assumption A5 |
 | Orchestrate instance URL and API key | Entered in the VM, never written to a file in the repository |
-| `OIG_DATA_API_BASE_URL`, `CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET` | Provided directly. Treat all three as secrets, although the URL is not strictly one |
+| `OIG_DATA_API_BASE_URL`, `CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET` | Provided directly. Treat all three as secrets, although the URL is not strictly one. Troy refreshes the Cloudflare token before handing it over, because earlier testing exposed part of it. Use only the values he gives you, and nothing from older notes |
 
 You generate `MCP_AUTH_TOKEN` yourself with `openssl rand -hex 32`. Use a new one for IBM, not one from the Mac. Confirm you have received secrets without repeating their values, and never put them in commits, logs, command arguments that get logged, or handoff reports.
 
@@ -40,6 +40,24 @@ Cloudflare Access, then the OIG data API on Troy's machine
 ```
 
 The bearer token is the only authentication built. OAuth is not. It is one shared token that does not expire, which is acceptable for a read-only server over public data, and `SECURITY.md` records that limit. It is rotated by changing it in both places, then restarting the app.
+
+### Changing a token
+
+| Token | Who changes it | Steps | What happens meanwhile |
+|---|---|---|---|
+| `MCP_AUTH_TOKEN` | Bob or Troy | Generate a new one. Update the Code Engine secret and restart the app (B3). Run `orchestrate connections set-credentials` with the new token for both `draft` and `live` | Orchestrate's calls get a 401 until both places match |
+| Cloudflare token | Troy, in the Cloudflare dashboard | Troy refreshes it, which ends the old one at once. Update the Code Engine secret and restart the app. Orchestrate needs no change | Tools return a refusal until the app restarts. Avoid this during judging. It expires after one year by default |
+
+### What an auth failure looks like
+
+| What you see | Likely cause | What to do |
+|---|---|---|
+| A 401 from `/mcp` | The bearer token does not match the Code Engine secret, or the secret has not reached the app | Compare by setting a new token in both places. Do not print it |
+| The app exits at startup, with `MCP_AUTH_TOKEN must be set`, or fails on a token under 32 characters | The secret is missing, not attached, or too short | Check `--env-from-secret`, then the secret's keys |
+| The app exits at startup over `OIG_DATA_API_BASE_URL` | The URL is not `https` | Use the value from Troy, ending in `/v1/` |
+| Tools return `Upstream service returned status 401` | The Cloudflare token is wrong, missing, or has been refreshed | Ask Troy for the current values |
+| Tools return status 403, or a request failure | IBM's network or a Cloudflare setting (C2, C3), or the API is down (C4) | Report the exact text to Troy. Do not add a proxy |
+| Orchestrate's import fails with a 4xx | The connection's token is wrong, or it rejects a bearer connection (D2, D4) | Check with `verify_deployment.py` first. If that passes, stop and send Troy the exact error |
 
 ## What is tested, and how
 
@@ -142,7 +160,7 @@ Set `CONTAINER_ENGINE=podman` if it picks the wrong one. **Done when:** every ch
 Use your deployment skill for the registry and registry secret, with initials in every name. The project-specific part:
 
 ```bash
-# Write the three secret values to a file outside the repository, readable only by you.
+# Write the four settings below to a file outside the repository, readable only by you.
 ibmcloud ce secret create --name oig-mcp-secrets-TES --from-env-file <file>
 
 ibmcloud ce application create \
@@ -155,7 +173,7 @@ ibmcloud ce application create \
   --env-from-secret oig-mcp-secrets-TES
 ```
 
-The secret file holds `MCP_AUTH_TOKEN`, `OIG_DATA_API_BASE_URL`, `CF_ACCESS_CLIENT_ID`, and `CF_ACCESS_CLIENT_SECRET`. Delete it afterward. Then, from the VM:
+The secret file holds `MCP_AUTH_TOKEN`, `OIG_DATA_API_BASE_URL`, `CF_ACCESS_CLIENT_ID`, and `CF_ACCESS_CLIENT_SECRET`. Delete it afterward, and delete the `.env` from Phase 1 when you finish deploying. Then, from the VM:
 
 ```bash
 export MCP_AUTH_TOKEN=<the same token>
