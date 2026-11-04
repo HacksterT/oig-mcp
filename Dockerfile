@@ -1,31 +1,31 @@
-# syntax=docker/dockerfile:1
-# Container image for remote (streamable-HTTP) deployment.
+# Container image for remote (streamable HTTP) deployment, such as IBM Code Engine.
 #
-# Used by:
-#   - IBM Code Engine (deploy/ibm/)
-#   - any other container host
-#
-# The server serves MCP over streamable-HTTP at :8080/mcp with a health check
-# at :8080/health. app.py auto-selects HTTP because PORT is set below.
+# Serves MCP at :8080/mcp with a health check at :8080/health. app.py selects
+# HTTP because PORT is set below, and refuses to start without MCP_AUTH_TOKEN.
+# Supply secrets at run time. None are baked into the image.
 
-FROM python:3.11-slim
+FROM docker.io/library/python:3.11-slim
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app/src
-ENV PORT=8080
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8080 \
+    PATH=/app/.venv/bin:$PATH \
+    UV_PYTHON_DOWNLOADS=never
 
 WORKDIR /app
 
-# Install uv (fast, reproducible installs).
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+# Install uv from the same index as the dependencies, at a fixed version.
+RUN pip install --no-cache-dir --quiet uv==0.10.12
 
-# Install dependencies first for better layer caching.
-COPY pyproject.toml README.md ./
+# Install exactly what uv.lock records: no dev or eval dependencies.
+COPY pyproject.toml uv.lock README.md ./
 COPY src ./src
-RUN uv pip install --system --no-cache .
+RUN uv sync --frozen --no-dev --no-cache
+
+# Run as an unprivileged user.
+RUN useradd --system --uid 10001 --no-create-home oig
+USER 10001
 
 EXPOSE 8080
 
-# PORT=8080 (set above) makes app.py run HTTP on that port automatically.
 CMD ["python", "-m", "oig_mcp.app"]

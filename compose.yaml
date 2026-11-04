@@ -1,0 +1,24 @@
+# Run the same image IBM Code Engine will run, on this machine, for testing with
+# any MCP client:
+#
+#   docker compose up -d --build
+#
+# Compose reads the values below from `.env`. Only these four reach the container,
+# so anything else in that file, such as an evaluation API key, stays out of it.
+#
+# MCP endpoint: http://127.0.0.1:8000/mcp, with Authorization: Bearer <MCP_AUTH_TOKEN>
+
+services:
+  oig-mcp:
+    build: .
+    image: oig-mcp:local
+    container_name: oig-mcp
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8080"
+    environment:
+      MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN:?set MCP_AUTH_TOKEN in .env}
+      OIG_DATA_API_BASE_URL: ${OIG_DATA_API_BASE_URL:?set OIG_DATA_API_BASE_URL in .env}
+      CF_ACCESS_CLIENT_ID: ${CF_ACCESS_CLIENT_ID:?set CF_ACCESS_CLIENT_ID in .env}
+      CF_ACCESS_CLIENT_SECRET: ${CF_ACCESS_CLIENT_SECRET:?set CF_ACCESS_CLIENT_SECRET in .env}
+      STALE_AFTER_DAYS: ${STALE_AFTER_DAYS:-30}
