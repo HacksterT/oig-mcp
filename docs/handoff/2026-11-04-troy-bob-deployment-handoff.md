@@ -15,7 +15,7 @@ Read this first, and then [`docs/project-overview.md`](../project-overview.md) f
 
 | Item | Notes |
 |---|---|
-| Repository access | The repository is private for now, so cloning needs access from Troy, and so does pushing `ibm/` branches (assumption A1). If history is rewritten or the repository goes public later, Troy will tell you to clone it again |
+| Repository access | The repository is private for now, so cloning needs access from Troy, and so does pushing `ibm/` branches (assumption A1). |
 | Initials | `TES`. Required in every IBM resource name |
 | IBM account, resource group, Code Engine project | Assumption A5 |
 | Orchestrate instance URL and API key | Entered in the VM, never written to a file in the repository |
