@@ -12,12 +12,11 @@ from typing import Any
 from fastmcp import FastMCP
 
 from oig_mcp.models import ResponseFormat
-from oig_mcp.utils import UpstreamServiceError, build_provenance, fetch_json
-
-_UNREACHABLE_HINT = (
-    "The OIG data API is not reachable. Start the oig-data-source API locally "
-    "(docker compose up -d) or check OIG_DATA_API_BASE_URL and the Cloudflare Access "
-    "service token in the server's environment."
+from oig_mcp.utils import (
+    UNREACHABLE_HINT,
+    UpstreamServiceError,
+    build_provenance,
+    fetch_json,
 )
 
 
@@ -52,7 +51,7 @@ def register(mcp: FastMCP) -> None:
         try:
             meta = await fetch_json("meta")
         except UpstreamServiceError as exc:
-            return {"error": str(exc), "hint": _UNREACHABLE_HINT}
+            return {"error": str(exc), "hint": UNREACHABLE_HINT}
 
         if not isinstance(meta, dict):
             return {

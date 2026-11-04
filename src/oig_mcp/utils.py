@@ -23,6 +23,19 @@ MAX_RESPONSE_BYTES = 5_000_000
 # argument. The origin comes from OIG_DATA_API_BASE_URL (see config.py).
 API_BASE_URL = settings.oig_data_api_base_url
 
+UNREACHABLE_HINT = (
+    "The OIG data API is not reachable. Start the oig-data-source API locally "
+    "(docker compose up -d) or check OIG_DATA_API_BASE_URL and the Cloudflare Access "
+    "service token in the server's environment."
+)
+
+READ_ONLY_TOOL = {
+    "readOnlyHint": True,
+    "destructiveHint": False,
+    "idempotentHint": True,
+    "openWorldHint": True,
+}
+
 
 def _access_headers() -> dict[str, str]:
     """Cloudflare Access service-token headers, when configured."""
@@ -36,6 +49,10 @@ def _access_headers() -> dict[str, str]:
 
 class UpstreamServiceError(RuntimeError):
     """Sanitized external-service failure safe to return to an MCP client."""
+
+    def __init__(self, message: str, status_code: int | None = None) -> None:
+        super().__init__(message)
+        self.status_code = status_code
 
 
 def _validate_relative_path(path: str) -> str:
@@ -99,12 +116,39 @@ async def fetch_json(
         raise
     except httpx.HTTPStatusError as exc:
         raise UpstreamServiceError(
-            f"Upstream service returned status {exc.response.status_code}."
+            f"Upstream service returned status {exc.response.status_code}.",
+            status_code=exc.response.status_code,
         ) from None
     except (httpx.DecodingError, json.JSONDecodeError, UnicodeDecodeError):
         raise UpstreamServiceError("Upstream service returned invalid JSON.") from None
     except httpx.RequestError:
         raise UpstreamServiceError("Upstream service request failed.") from None
+
+
+async def fetch_object(
+    path: str, params: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    """GET a JSON object, dropping unset parameters so they are not sent as empty."""
+    cleaned = {k: v for k, v in (params or {}).items() if v is not None}
+    result = await fetch_json(path, params=cleaned)
+    if not isinstance(result, dict):
+        raise UpstreamServiceError("Upstream service returned an unexpected shape.")
+    return result
+
+
+def tool_error(exc: UpstreamServiceError) -> dict[str, str]:
+    """Turn an upstream failure into an error the assistant can act on."""
+    if exc.status_code in {400, 422}:
+        hint = "A filter value was rejected. Check its format and try again."
+    else:
+        hint = UNREACHABLE_HINT
+    return {"error": str(exc), "hint": hint}
+
+
+def report_urls(*record_lists: list[dict[str, Any]]) -> list[str]:
+    """Collect the distinct report links from records, in first-seen order."""
+    urls = (record.get("url") for records in record_lists for record in records)
+    return list(dict.fromkeys(url for url in urls if url))
 
 
 def paginate(items: list[Any], limit: int, offset: int) -> dict[str, Any]:

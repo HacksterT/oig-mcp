@@ -37,7 +37,9 @@ mcp = FastMCP(
         "vaoig.gov. Cite the report number and link for every finding, state "
         "the data_as_of date, and flag stale data. Read vaoig://about for the "
         "data's scope and citation rules. Start with vaoig_get_dataset_status "
-        "when current status matters."
+        "when current status matters. Use search to find findings and the "
+        "analysis tool to count them; a search total is never a count. Pass on "
+        "any caveat or basis text a tool returns."
     ),
     auth=SharedTokenVerifier(settings.mcp_auth_token)
     if settings.mcp_auth_token
