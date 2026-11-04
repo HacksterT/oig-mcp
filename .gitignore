@@ -5,6 +5,7 @@ tasks/
 docs/agent-handoff*.md
 docs/web-handoff*.md
 docs/FOLLOWUP_HANDOFF.md
+docs/qna2_old.md
 
 # Virtual environments
 .venv/

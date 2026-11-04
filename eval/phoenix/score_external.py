@@ -47,8 +47,12 @@ QNA_ORDER = [
 ]
 
 
-def parse(path: Path) -> list[dict]:
-    """Split the file into scored answers, with the tools each one reports."""
+def parse(path: Path, native: bool = False) -> list[dict]:
+    """Split the file into scored answers, with the tools each one reports.
+
+    With `native`, score the single paragraph after `**Native Answer:**` instead of the
+    logged answer.
+    """
     text = path.read_text()
     sections = re.split(r"^## Q\d+:.*$", text, flags=re.M)[1:]
     if len(sections) != len(QNA_ORDER):
@@ -66,6 +70,13 @@ def parse(path: Path) -> list[dict]:
             else re.findall(r"vaoig_\w+", reported)
         )
         answer = re.sub(r"\*\*Tools used:\*\*.*\n", "", answer).strip()
+        if native:
+            marked = re.search(
+                r"\*\*Native Answer:\*\*\s*(.*?)(?:\n\s*\n|\Z)", answer, re.S
+            )
+            if not marked:
+                raise SystemExit(f"No native answer for {gold_id}.")
+            answer = marked.group(1).strip()
         runs.append(
             {
                 "id": gold_id,
@@ -84,7 +95,7 @@ async def main_async(args) -> None:
     numbers, urls = load_index()
     llm = anthropic.AsyncAnthropic(max_retries=5)
     records = []
-    for run in parse(Path(args.path)):
+    for run in parse(Path(args.path), args.native):
         question = gold[run["id"]]
         score = score_code(question, run, numbers, urls)
         score["judge"] = await score_judge(question, run, llm, args.judge_model)
@@ -167,6 +178,7 @@ def main() -> None:
     parser.add_argument("path")
     parser.add_argument("--label", required=True)
     parser.add_argument("--name", required=True)
+    parser.add_argument("--native", action="store_true", help="Score native answers")
     parser.add_argument("--judge-model", default="claude-opus-5-5")
     asyncio.run(main_async(parser.parse_args()))
 

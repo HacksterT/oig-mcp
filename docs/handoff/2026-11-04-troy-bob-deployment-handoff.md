@@ -51,7 +51,7 @@ The bearer token is the only authentication built. OAuth is not. It is one share
 | Both connections accept right and refuse wrong credentials: 21 checks | Container, and through a public HTTPS tunnel | Pass |
 | Missing or wrong Cloudflare token gives a clean refusal without the API address | Container | Pass |
 | No secret in the image, tool responses, or logs | Container | Pass |
-| An independent MCP client with a different model answers the questions | Hermes Agent running DeepSeek V4 Pro 0813, through the tunnel | Facts all correct, 18 questions. It gave report numbers but almost no links, in a logging format that may have caused that. See D10 |
+| An independent MCP client with a different model answers the questions | Hermes Agent running DeepSeek V4 Pro 0813, through the tunnel | Facts all correct, 18 questions. Its answers named reports but gave almost no links, under test instructions that may have caused that. See D10 |
 | 24 gold questions, on two Claude models | Container | 23 of 24 each. See [`docs/evaluation.md`](../evaluation.md) |
 
 **Not tested at all:** IBM's network, Code Engine, Orchestrate's import, its connections, and its model.

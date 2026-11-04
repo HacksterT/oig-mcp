@@ -55,22 +55,22 @@ Traces, datasets, and experiments are recorded in Arize Phoenix. Run records and
 
 ## An independent client: DeepSeek through Hermes Agent
 
-A separate agent, Hermes Agent running DeepSeek V4 Pro 0813, answered 18 of the questions over public HTTPS, on the final server and data. Its answers, with a note on how each checked out, are in the [test bank](https://www.troymd.com/mcp-hackathon-test-bank) and [`qna2.md`](qna2.md). Scores are in [`eval/results/2026-11-04-hermes-deepseek-v4-pro-0813/`](../eval/results/2026-11-04-hermes-deepseek-v4-pro-0813/).
+A separate agent, Hermes Agent running DeepSeek V4 Pro 0813, answered 18 of the questions over public HTTPS, on the final server and data. It logged a longer answer, its tools, and its observations, because the tester asked for them. The tester then asked it to add a native answer to each question, the answer it would have given if simply asked. These are in the [test bank](https://www.troymd.com/mcp-hackathon-test-bank) and [`qna2.md`](qna2.md), and scores are in [`eval/results/`](../eval/results/).
 
-| Measure | Result |
-|---|---|
-| Exact facts present | 11 of 11 |
-| Agrees with the gold reference | 18 of 18 |
-| Caveats and behaviors | 10 of 13 |
-| Data date stated, where required | 4 of 4 |
-| Report number and link together, where required | 0 of 6 |
-| Report numbers that do not exist | 1 |
+| Measure | Native answers | Longer logged answers |
+|---|---|---|
+| Exact facts present | 11 of 11 | 11 of 11 |
+| Agrees with the gold reference | 18 of 18 | 18 of 18 |
+| Caveats and behaviors | 12 of 13 | 10 of 13 |
+| Report numbers that do not exist | 0 | 1 |
+| Data date stated, where required | 1 of 4 | 4 of 4 |
+| Report number and link together, where required | 0 of 6 | 0 of 6 |
 
-**This run was not blind or isolated.** It was a second round across several sessions, with access to the first round's answers, and it followed a logging format the tester set. That format added a tools line and observations that a normal answer would not have, and it asked for a source naming a report number, URL, or provenance. So 0 of 6 may reflect the format, not the server: its tool results did carry report links and the citation line. Isolated Claude runs gave a number and link on 15 of 16 required answers.
+**This was not a blind or isolated run, and the native answers are not a fresh one.** The agent had access to its first-round answers, ran across several sessions, and wrote the native answers mostly from its own log, with few new tool calls. It was told to leave out metadata, which may be why links and dates are missing. Its tool results did carry report links and the citation line. Isolated Claude runs gave a number and link on 15 of 16 required answers.
 
-**The one wrong number** was 26-00254-277, written for report 25-00254-277. No Claude run produced a report number that does not exist.
+**The one wrong number,** 26-00254-277 for report 25-00254-277, is in a logged answer. No native answer repeats it, and no Claude run produced a report number that does not exist.
 
-Reading the answers by hand also found overreach, such as calling a peer finding the "single highest-probability" item for a facility. A model can still go beyond what the tools return, whatever the server says.
+Reading the answers by hand also found overreach the judge passed, such as calling a recommendation "the cheapest insurance available." A model can still go beyond what the tools return, whatever the server says.
 
 ## What the evaluation changed
 

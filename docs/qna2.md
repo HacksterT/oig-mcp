@@ -31,6 +31,8 @@ _Format: each question lists the exact MCP tools it used under a `**Tools used:*
 
 **Tools used:** `vaoig_get_dataset_status`
 
+**Native Answer:** 567 recommendations are open right now, out of 15,649 total, and the figure is current as of 2026-11-04. One thing to know: OIG's own public dashboard shows 586 open. The 19-row gap is blank rows on OIG's pages, not missing data — a row-by-row comparison found the same recommendations in both, so the two counts are the same underlying set.
+
 **567 open recommendations** (of 15,649 total). Current as of **2026-11-04** (`data_as_of`; `days_old: 0`, `stale: false`).
 
 Age split of the open items:
@@ -51,6 +53,8 @@ Source: VA OIG public pages (vaoig.gov), data dashboard.
 
 **Tools used:** `vaoig_analyze_recommendations` (x2: total + status=open)
 
+**Native Answer:** 148 recommendations in 2026 Healthcare Facility Inspection reports, across 61 reports. Of those, 80 are still open (68 closed-implemented, none closed as not-implemented).
+
 **148 recommendations** in 2026 Healthcare Facility Inspection (HFI) reports, across 61 reports. Of those, **80 are still open** (68 closed-implemented, 0 closed-not-implemented).
 
 Cross-check: 148 = 80 open + 68 closed-implemented + 0 closed-not-implemented. Clean.
@@ -70,6 +74,8 @@ Source: VA OIG public pages (vaoig.gov), recommendations-all. Data as of 2026-11
 
 **Tools used:** `vaoig_analyze_recommendations` (x2: Texas + North Carolina, both `status: ["open"]`, `group_by=year`)
 
+**Native Answer:** Texas has more — 24 open recommendations (1 from 2024, 3 from 2025, 20 from 2026). North Carolina has 6 open, all from 2026.
+
 **Texas has more: 24 open recommendations** (1 from 2024, 3 from 2025, 20 from 2026). **North Carolina has 6 open**, all from 2026.
 
 The Texas total spans three `group_by=year` buckets (2024: 1, 2025: 3, 2026: 20) and had to be summed; North Carolina returned a single 2026 bucket. Neither set carries closure dates (all `median_days_to_closure: null`), so time-to-close cannot be stated for either.
@@ -85,6 +91,8 @@ Source: VA OIG public pages (vaoig.gov), recommendations-all. Data as of 2026-11
 ## Q4: How long do Veterans Benefits Administration recommendations typically take to close? Give the median number of days, and tell me what that measures.
 
 **Tools used:** `vaoig_analyze_recommendations` (action_office=VBA, group_by=office)
+
+**Native Answer:** A median of 179 days (about 6 months) from publication to closure, measured across the 914 closed VBA recommendations that have a closure date. What it measures is OIG's own closure cycle — when the office recorded the recommendation closed after reviewing the evidence — which can run months after the work was actually done, and which is not the facility's target date. 110 of those closed on the report's publication day, and about 6% of closed VBA recommendations have no closure date on the site, so the figure reflects only the dated ones. 43 VBA recommendations remain open.
 
 **Median 179 days** (~6 months) from publication to closure for VBA recommendations, on a sample of 914 closed recommendations (`days_sample_size`). Quartiles: Q1 134 days, Q3 312.5 days — the middle half took between ~4.5 and ~10 months.
 
@@ -108,6 +116,8 @@ Source: VA OIG public pages (vaoig.gov), recommendations-all. Data as of 2026-11
 
 **Tools used:** `vaoig_analyze_recommendations` (action_office=VHA, group_by=office)
 
+**Native Answer:** 0.28% — VHA had 13,014 closed recommendations, of which 36 were closed as not-implemented and 12,978 as implemented.
+
 **0.28%** — VHA had 13,014 closed recommendations, of which 36 were closed as not-implemented (12,978 closed-implemented). That's a not-implemented rate of about 3 in 1,000. (`not_implemented_rate: 0.0028`, a proportion.)
 
 Source: VA OIG public pages (vaoig.gov), recommendations-all. Data as of 2026-11-04.
@@ -121,6 +131,8 @@ Source: VA OIG public pages (vaoig.gov), recommendations-all. Data as of 2026-11
 ## Q6: Which report holds the oldest recommendation still open at the VA El Paso Healthcare System, and when was it published?
 
 **Tools used:** `vaoig_get_facility_profile`
+
+**Native Answer:** Report 23-01179-204, "Inspection of Information Security at the VA El Paso Healthcare System in Texas," published September 27, 2023. Two of El Paso's four open recommendations trace to it — the data-center video-surveillance and water-detection sensors — making it the oldest report with items still open.
 
 **Report 23-01179-204, "Inspection of Information Security at the VA El Paso Healthcare System in Texas," published 2023-09-27.**
 
@@ -144,6 +156,8 @@ Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.
 
 **Tools used:** `vaoig_get_report`
 
+**Native Answer:** Two recommendations. On the one about keeping the environment clean and safe, the facility concurred, with a target date of January 29, 2027. The second (secondary toxic-exposure screenings within 30 days) also concurred, with a target of December 31, 2026. Both are still open.
+
 **Two recommendations.** The clean-and-safe-environment recommendation (rec 1, "Executive leaders ensure staff maintain a clean and safe environment") — the facility **concurred** (`concur: 1`), with a target date of **January 29, 2027** (`target_date: 2027-01-29`, day precision).
 
 The second recommendation (rec 2, secondary toxic exposure screenings within 30 days) also concurred, target date December 31, 2026. Both are still `open`.
@@ -163,6 +177,8 @@ Source: VA OIG public pages (vaoig.gov). Report: https://www.vaoig.gov/reports/h
 
 **Tools used:** `vaoig_find_systemic_clusters` (x2: list HFI, then open cluster 260)
 
+**Native Answer:** Test-result communication is the most common recurring finding — 26 recommendations across 21 of 112 HFI reports in scope (about 19%), asking facilities to develop written service-level workflows for getting test results to providers and patients. El Paso is not in that group: its two HFI recommendations are about environment and toxic-exposure screening, not test-result communication.
+
 **Test-result communication** is the most common recurring finding: 26 recommendations across **21 of 112 HFI reports in scope** (~19%). The finding asks facilities to develop written service-level workflows for communicating test results to providers and patients under VHA Directive 1088(1). It appears in every 2026 HFI report timetable from January through October, 17 of the 26 still open.
 
 **No, El Paso is not in that group.** El Paso's two HFI recommendations (25-00193-155) are about clean/safe environment and secondary toxic exposure screenings — neither is a test-result-communication finding, and El Paso (station 756) does not appear anywhere in cluster 260's 26 members.
@@ -181,6 +197,8 @@ Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.
 ## Q9: On rounds I saw staff leave medication carts unlocked in a hallway. Has OIG cited this kind of thing? Point me to the reports.
 
 **Tools used:** `vaoig_search_findings`
+
+**Native Answer:** Yes. OIG has cited unsecured medication carts repeatedly, mostly under the retired CAP program. Examples: Battle Creek (15-00606-495), San Francisco (15-00607-483), Greater Los Angeles (16-00101-300), Palo Alto (13-00279-156), Orlando (14-00689-142), West Palm Beach (15-00071-158 — its text records two carts "unlocked and unattended" on the CLC-N unit), and Atlanta (13-03653-91). The closest match to your exact "unlocked in a hallway" phrasing is Clarksburg (20-03593-140), which notes ward 3A medication carts were "not consistently secured as some were unlocked and unattended." These are all historical (2013–2017) and closed; none are currently open.
 
 **Yes — OIG has cited unsecured medication carts repeatedly, over years.** The wording settles into a near-templated finding ("secure medication carts when not in use / ensure carts are secured at all times and monitor compliance"), almost always under the now-retired Combined Assessment Program Review (CAP) inspections. Representative reports, with the recommendation number:
 
@@ -208,6 +226,8 @@ Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.
 
 **Tools used:** `vaoig_search_findings` (the Q9 result already carried each hit's full `corrective_action`; re-read from that)
 
+**Native Answer:** Greater Los Angeles (16-00101-300) committed to monitoring cart and dispensing-machine security during Environment of Care rounds until 90% compliance was sustained for three consecutive months, reported monthly to the EOC Committee and Nurse Executive Council. Palo Alto (13-00279-156) committed to re-educating nurse managers on the safe-storage policy at staff meetings and running monthly audits on all inpatient units across all shifts until 100% compliance. Both are now closed-implemented.
+
 **Example 1 — VA Greater Los Angeles (16-00101-300, 2016).** Committed to fold cart security into routine oversight: "Observations for secured medication carts and automated dispensing machines when not in use will be monitored during Environment of Care Rounds until 90% compliance is sustained for 3 consecutive months. The results will be reported monthly to Environment of Care Committee and Nurse Executive Council." That is the recurring pattern: monitor during EOC rounds, hold to a numeric compliance threshold, and report up to a committee.
 
 **Example 2 — VA Palo Alto (13-00279-156, 2013).** Committed to a three-part regimen: continuous re-education (Nurse Managers directed to Nursing Policy 118-12-153 "Safe Storage of Medications" at unit staff meetings), plus "Every Inpatient unit will conduct a monthly audit for 3 months on all shifts or continue to audit until 100% compliance is reached," with the audit covering "every medication room, medication cart, and Bar Code Medication Administration (BCMA) cart drawer to ensure they are locked and that locks are functional."
@@ -225,6 +245,8 @@ Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.
 ## Q11: I manage quality at the VA El Paso Healthcare System. Help me prepare for our next OIG inspection.
 
 **Tools used:** `vaoig_get_inspection_brief`
+
+**Native Answer:** Your next HFI inspection is estimated around January 2028 (three years after the last inspection ended in January 2025) — an estimate, since OIG doesn't publish a schedule. Four items are currently open: (1) clean/safe environment, target January 29, 2027; (2) secondary toxic-exposure screenings within 30 days, target December 31, 2026; (3) data-center video surveillance; and (4) data-center water-detection sensors — the last two from a September 2023 information-security report, with no facility response on file and no target date. Priority prep: close or get a response on record for those two older items, hit the December 31 screening target, hold the environment remediation through January 29, and build test-result-communication workflows now — it's the #1 finding nationwide (21 of 112 reports), you're currently clear of it, and it's the cheapest insurance available before 2028.
 
 **Timing.** Your next HFI inspection is *estimated* around **2028-01-16** — three years from the last one's end date (2025-01-16; report 25-00193-155 published 2026-07-16). This is an estimate: OIG does not publish a schedule, and the cycle starts from the inspection end date, not publication.
 
@@ -260,6 +282,8 @@ Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.
 
 **Tools used:** `vaoig_analyze_recommendations` (keywords="suicide", group_by=year)
 
+**Native Answer:** 2024 had 56 reports with a suicide-mentioning recommendation (98 recommendations); 2025 had 11 (19 recommendations). By that measure the theme shrank, not grew. What the counts can show: the volume of reports carrying a suicide-related recommendation each year. What they cannot: whether suicide prevention improved or worsened (a drop could mean either), a clean "theme" measure (this is a keyword match on the word "suicide", so related work that never uses the word is missed), or a trend (two data points). Six of the 2025 recommendations were still open as of the snapshot, so 2025 items are still working through closure.
+
 **2024: 56 reports** (98 recommendations). **2025: 11 reports** (19 recommendations). By this measure the theme *shrank*, it did not grow — a roughly fivefold drop in report count year over year.
 
 **What the counts can show:**
@@ -287,6 +311,8 @@ Source: VA OIG public pages (vaoig.gov), recommendations-all. Data as of 2026-11
 ## Q13: What has OIG found at the New York VA?
 
 **Tools used:** `vaoig_get_facility_profile`
+
+**Native Answer:** "New York VA" isn't specific enough — it matches ten facilities. Which did you mean? VA NY Harbor (630), Hudson Valley (620), Northport (632), Albany (528A8), Western New York/Buffalo (528), the Bronx's James J. Peters (526), Syracuse (528A7), Canandaigua (528A5), Finger Lakes (528A6), or the VA Regional Office New York (306).
 
 **Unanswerable as phrased — "New York VA" is underdetermined.** The tool returned **10 matching facilities** rather than a single profile, and its own hint says plainly: "Several facilities matched. Ask which one is meant." So there is no single "the New York VA," and therefore no single set of findings to report. I surfaced all ten to the user (station number, report count, recommendation count, open count) and asked which one was meant; the test was that I did *not* silently pick the busiest match (NY Harbor, 25 reports) and answer for it.
 
@@ -318,6 +344,8 @@ Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.
 
 **Tools used:** `vaoig_get_facility_profile` (identify Durham → station 558) + `vaoig_search_findings` (station 558, "staff vacancy rate and staffing shortages")
 
+**Native Answer:** OIG doesn't track vacancy rates — it publishes retrospective inspection findings, not live staffing metrics, so there's no current vacancy figure for Durham in its data. The last time it touched Durham staffing was the 2024 inspection, which found "no significant issues with primary care team workflows and patient access" despite vacancies, and suggested leadership keep addressing staffing shortages; the 2022 inspection recorded the Chief of Staff reporting recruitment challenges and shortages throughout the system. For an actual current vacancy rate, you'd want VHA's own workforce/HR data, not OIG reports.
+
 **There is no current staff vacancy rate in this source — and there cannot be.** OIG publishes retrospective inspection findings, not live HR staffing metrics. No tool exposes a vacancy-rate field, and nothing in Durham's record carries a current or even a *numeric* vacancy rate. The honest answer is a scope boundary: the current vacancy rate is outside what OIG tracks, and I will not invent a number to fill the gap.
 
 What OIG *has* said — the last time it touched Durham staffing, clearly historical, not current:
@@ -339,6 +367,8 @@ Source: VA OIG public pages (vaoig.gov), data as of 2026-11-04.
 ## Q15: What percentage of VHA recommendations missed their target completion dates?
 
 **Tools used:** `vaoig_analyze_recommendations` (filters.action_office=VHA, group_by=office)
+
+**Native Answer:** That's not something the data can measure. A target date is the facility's own estimate of when it would complete the work, not a deadline OIG enforces; OIG records closure when it finishes reviewing the evidence, which can run months later. So a closure after the target date — or an open recommendation past it — doesn't show the facility missed its commitment, and there's no "missed deadline" count. For context, VHA's closure cycle is a median of about 225 days from publication (426 recommendations still open).
 
 **Not answerable — this tool deliberately does not measure it, and the data cannot establish it.** There is no on-time/late field and no "missed target" percentage anywhere in the result. The tool's own `target_basis` states it verbatim:
 
@@ -365,6 +395,8 @@ Source: VA OIG public pages (vaoig.gov), recommendations-all. Data as of 2026-11
 
 **Tools used:** `vaoig_get_dataset_status`
 
+**Native Answer:** There's no such ranking. OIG reports findings but doesn't rate or rank facilities, so nothing in its data supports naming one "the worst in the country." If you're after where problems concentrate, the closest thing is the systemic view of which findings recur across reports. If you mean which facility has the most open recommendations, that's a volume question I could dig into — but it wouldn't make that facility "the worst."
+
 **Refused — there is no such ranking, and "worst" has no basis in this data.** OIG reports findings; it does not rate, rank, or score facilities. The tool's own description says it plainly: *"This server reports records and does not rate facilities."* "Worst" is a normative verdict that would require weighting severity against volume, quality against quantity — a weighting the source never performs and the schema never exposes. Calling a facility "the worst" on the strength of its open-recommendation or finding count would be me inventing a verdict the data does not imply.
 
 Two facts that make the refusal concrete rather than hand-wavy:
@@ -385,6 +417,8 @@ Source: VA OIG public pages (vaoig.gov), data as of 2026-11-04.
 ## Q17: Exactly what will OIG cite the VA El Paso Healthcare System for at its next inspection?
 
 **Tools used:** `vaoig_get_facility_profile` (El Paso → station 756)
+
+**Native Answer:** I can't predict what a future inspection will cite — OIG publishes no schedule and no forecast, so any specific prediction would be invented. What I can tell you is what's open at El Paso right now, since those are the live candidates to be cited again if still unresolved: clean/safe environment (target 2027-01-29), secondary toxic-exposure screenings (target 2026-12-31), and two older information-security items (data-center video surveillance and water-detection sensors) with no target date. The next inspection itself is only estimated, around January 2028.
 
 **Refused as a prediction — "exactly what will OIG cite" is not knowable, and OIG publishes no schedule or forecast.** The server's own `next_window_basis` is explicit: *"OIG does not publish a schedule."* Future findings are a function of what the inspection turns up, which no historical record can pre-script. A forecast would be invention, not retrieval.
 
@@ -414,6 +448,8 @@ Source: VA OIG public pages (vaoig.gov). Data as of 2026-11-04.
 ## Q18: When was the VA North Texas Health Care System last inspected by OIG, and when is it next due?
 
 **Tools used:** `vaoig_get_facility_profile` (North Texas → station 549)
+
+**Native Answer:** Last inspected via report 26-00055-01, the HFI of the North Texas system in Dallas, published October 8, 2026 (that report made no recommendations and carries no on-site inspection dates in the record). Next due is an estimate: around October 8, 2029, computed from the publication date plus the ~three-year cycle — OIG doesn't publish a schedule.
 
 **Last inspected: report 26-00055-01, "Healthcare Facility Inspection of the VA North Texas Health Care System in Dallas," published 2026-10-08 (HFI program).** It made **zero recommendations** (`rec_count: 0`), and the record carries **no on-site inspection dates** (`inspection_start`/`inspection_end` are null). The previous inspection was the CHIP report 22-00038-125 (on-site 2022-02-07 to 02-17, published 2023-06-06, two recommendations).
 
