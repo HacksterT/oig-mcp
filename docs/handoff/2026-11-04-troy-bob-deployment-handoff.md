@@ -15,7 +15,7 @@ Read this first, and then [`docs/project-overview.md`](../project-overview.md) f
 
 | Item | Notes |
 |---|---|
-| Repository access | The repository will be public, so cloning needs no credentials. Pushing `ibm/` branches does (assumption A1) |
+| Repository access | The repository is private for now, so cloning needs access from Troy, and so does pushing `ibm/` branches (assumption A1). If history is rewritten or the repository goes public later, Troy will tell you to clone it again |
 | Initials | `TES`. Required in every IBM resource name |
 | IBM account, resource group, Code Engine project | Assumption A5 |
 | Orchestrate instance URL and API key | Entered in the VM, never written to a file in the repository |
@@ -84,7 +84,7 @@ Report each one as confirmed or wrong in your phase reports.
 
 | # | Assumption | Basis | If wrong |
 |---|---|---|---|
-| A1 | The VM can reach GitHub and clone the public repository. Push access to `ibm/` branches is arranged with Troy | Assumed | Troy supplies a zip. Reports come back through Troy instead of a branch |
+| A1 | The VM can reach GitHub, and Troy arranges access to clone this private repository and push `ibm/` branches. Treat that credential like any other secret | Assumed | Troy supplies a zip. Reports come back through Troy instead of a branch |
 | A2 | The VM has `podman` or `docker`. The template's commands use `podman` and a `Containerfile`. This repository has a `Dockerfile`, so pass `-f Dockerfile` | Template | Report it. Code Engine can also build from source, but do not switch without asking |
 | A3 | The VM can pull `docker.io/library/python:3.11-slim` and reach PyPI during the build. The base image no longer needs `ghcr.io` | Assumed | Report the exact error. A mirror may be needed |
 | A4 | The VM is `linux/amd64`, or images get built for it | Assumed | Build with `--platform linux/amd64` |
@@ -252,7 +252,7 @@ The rules in `docs/project-overview.md` section 9 apply. The ones most likely to
 
 ## Questions for Troy
 
-1. How should Bob push `ibm/` branches from the VM (A1)?
+1. How does Bob get access to clone this private repository and push `ibm/` branches from the VM (A1)?
 
 ## Troy's response
 
