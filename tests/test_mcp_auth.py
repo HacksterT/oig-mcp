@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 
+import fastmcp
 import httpx
 import pytest
 from fastmcp import FastMCP
@@ -67,6 +68,16 @@ async def test_mcp_accepts_correct_token() -> None:
     assert "auth-test" in response.text
 
 
+async def test_mcp_rejects_token_in_query_string() -> None:
+    async with mcp_client() as client:
+        response = await client.post(
+            f"/mcp?token={TOKEN}&access_token={TOKEN}",
+            json=INITIALIZE,
+            headers=MCP_HEADERS,
+        )
+    assert response.status_code == 401
+
+
 @pytest.mark.parametrize("path", ["/health", "/version"])
 async def test_operational_routes_stay_open(path: str) -> None:
     async with mcp_client() as client:
@@ -106,6 +117,26 @@ def test_streamable_http_refuses_to_start_without_token(monkeypatch) -> None:
     with pytest.raises(SystemExit, match="MCP_AUTH_TOKEN"):
         app_module.main()
     assert calls == []
+
+
+def test_platform_port_serves_stateless_http_with_token(monkeypatch) -> None:
+    calls = _capture_run(monkeypatch)
+    monkeypatch.setenv("PORT", "8080")
+    monkeypatch.setattr(app_module.settings, "mcp_auth_token", TOKEN)
+    app_module.main()
+    assert calls == [
+        {
+            "transport": "http",
+            "host": "0.0.0.0",
+            "port": 8080,
+            "stateless_http": True,
+        }
+    ]
+
+
+def test_server_does_not_check_pypi_for_updates() -> None:
+    assert fastmcp.settings.check_for_updates == "off"
+    assert fastmcp.settings.show_server_banner is False
 
 
 def test_stdio_starts_without_token(monkeypatch) -> None:

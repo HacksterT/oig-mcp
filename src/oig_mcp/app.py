@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import os
 
+import fastmcp
 from fastmcp import FastMCP
 
 from oig_mcp.auth import SharedTokenVerifier
@@ -27,6 +28,11 @@ from oig_mcp.prompts import register_prompts
 from oig_mcp.resources import register_resources
 from oig_mcp.routes import register_routes
 from oig_mcp.tools import register_tools
+
+# The startup banner checks PyPI for a newer FastMCP. Turn it off, so the data API
+# really is the only origin this server contacts.
+fastmcp.settings.show_server_banner = False
+fastmcp.settings.check_for_updates = "off"
 
 # The server name is what MCP clients display.
 mcp = FastMCP(
@@ -74,18 +80,28 @@ def main() -> None:
          Code, Zed) launch the server as a subprocess.
 
     Both HTTP paths require MCP_AUTH_TOKEN. Stdio does not use it.
+
+    HTTP runs stateless. Every tool is a read-only request and response, so no
+    session is needed, and a session kept in memory would break whenever the
+    platform restarted the container or sent a request to a second instance.
     """
     platform_port = os.getenv("PORT")
 
     if platform_port:
         _require_http_auth()
-        mcp.run(transport="http", host="0.0.0.0", port=int(platform_port))
+        mcp.run(
+            transport="http",
+            host="0.0.0.0",
+            port=int(platform_port),
+            stateless_http=True,
+        )
     elif settings.mcp_transport == "streamable-http":
         _require_http_auth()
         mcp.run(
             transport="streamable-http",
             host=settings.mcp_host,
             port=settings.mcp_port,
+            stateless_http=True,
         )
     else:
         mcp.run(transport="stdio")

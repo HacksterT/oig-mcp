@@ -20,3 +20,6 @@ tests/
 dist/
 build/
 *.egg-info/
+compose.yaml
+docs/
+tasks/
