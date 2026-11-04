@@ -1,0 +1,10 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "io.github.HacksterT/oig-mcp",
+  "description": "Answers cross-report questions about VA Office of Inspector General recommendations, with every answer cited to a vaoig.gov report.",
+  "repository": {
+    "url": "https://github.com/HacksterT/oig-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0"
+}

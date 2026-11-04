@@ -1,0 +1,39 @@
+"""Reference resources the client can read without a tool call."""
+
+from __future__ import annotations
+
+from fastmcp import FastMCP
+
+ABOUT = """\
+VA OIG Recommendations MCP Server
+
+What it is
+An MCP server that answers questions across VA Office of Inspector General
+(OIG) reports: which findings recur across facilities, whether a theme is
+growing, what peer facilities did in response, and how long similar
+recommendations take to close.
+
+Data
+A structured, regularly refreshed copy of what VA OIG publishes at vaoig.gov:
+reports, recommendations with status and closure dates, OIG's own topic,
+office, state, and VISN classifications, report PDF text, and the facility
+responses (concurrence, target date, corrective action) in inspection reports.
+No internal VA systems or nonpublic information are used.
+
+How to read answers
+- Every record carries a report number and a vaoig.gov link. Cite them.
+- Every response carries data_as_of. Statuses change after publication; say
+  when the data was collected and flag stale data.
+- The server returns records. It does not rate facilities or individuals.
+- Where a pattern supports more than one reading (for example, a finding that
+  fell off after an inspection protocol changed), present both.
+"""
+
+
+def register(mcp: FastMCP) -> None:
+    """Register reference resources with the MCP server."""
+
+    @mcp.resource("vaoig://about")
+    def about() -> str:
+        """What this server is, where its data comes from, and how to cite it."""
+        return ABOUT

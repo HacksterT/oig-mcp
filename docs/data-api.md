@@ -1,0 +1,62 @@
+# OIG Data API contract
+
+This server reads all of its data from one HTTP API, built and hosted by the `oig-data-source` repository (a Python API over a SQLite database, run in a container on Troy's Mac and exposed through Cloudflare Tunnel with Access service tokens). This file records what the MCP server expects from that API. The endpoints below are implemented in `oig-data-source`, not here.
+
+The API is deliberately generic: filter, paginate, and aggregate over reports, recommendations, facilities, clusters, and facility responses. The MCP tools compose these calls into goal-level answers. An endpoint that mirrors one tool is a sign that logic has leaked from the server into the API.
+
+## Conventions
+
+- Base URL: `OIG_DATA_API_BASE_URL`, for example `http://127.0.0.1:8787/v1/` with the oig-data-source container running (`docker compose up -d`).
+- Auth: `CF-Access-Client-Id` and `CF-Access-Client-Secret` headers when hosted; none locally.
+- All responses are JSON. Lists use the envelope `{total, count, offset, items, has_more, next_offset}`.
+- Every response includes `data_as_of` (YYYY-MM-DD).
+- Reports are keyed by `node_id` (the vaoig.gov Drupal node id); recommendations by `rec_id` = `<node_id>-<rec_no>`. vaoig.gov exposes a node id only for reports that have recommendations (about half of all reports; oig-data-source ADR-04), so report list items also carry `path`, and `node_id` may be null there.
+- Status values: `open`, `closed-implemented`, `closed-not-implemented`.
+
+## Endpoints
+
+| Method and path | Returns | Used by |
+|---|---|---|
+| `GET meta` | `data_as_of`, `counts`, `reconciliation` (database open counts versus the OIG dashboard), migration and parser versions | `vaoig_get_dataset_status` (implemented) |
+| `GET recommendations` | Recommendations filtered by `q` (FTS5), `status`, `action_office`, `topic`, `report_type`, `visn`, `state`, `published_from`, `published_to`; paginated | search, trends, facility profile |
+| `GET reports` | Reports filtered by `q` (title), `report_type`, `topic`, `visn`, `state`, dates, `report_number`, `path`, `has_recommendations`; paginated; reaches reports with no node id | report lookup |
+| `GET reports/{node_id}` | One report with all recommendations, closure dates, facility responses, standards cited, PDF URL | report detail |
+| `GET pages/search` | PDF page hits for `q` with `node_id`, `page_no`, snippet | narrative search |
+| `GET facilities` and `GET facilities/{station_number}` | Facility registry; one facility's reports, inspections, and recommendations | facility profile, inspection readiness |
+| `GET inspections` | Inspections by facility, program, and date, with the next-window estimate | inspection readiness |
+| `GET clusters` and `GET clusters/{cluster_id}` | Templated recommendation clusters with member reports and statuses | systemic clusters |
+| `GET metrics/closure` | Median and interquartile days to closure and not-implemented rate, grouped by `office`, `topic`, or `report_type` | closure performance |
+| `GET metrics/counts` | Report and recommendation counts by year for a filter set | theme trend |
+| `GET taxonomy/{facet}` | OIG facet values (topics, offices, states, VISNs) | resources |
+
+## Implemented
+
+Every endpoint above is live as of 2026-11-04. The API's own OpenAPI document is at `/openapi.json` and interactive docs at `/docs`.
+
+**Shared parameters.** `limit` (1 to 100, default 20) and `offset` (0 or more). An invalid value returns 422 with the parameter named in `detail[].loc`. `q` is full-text search (SQLite FTS5, porter stemming, BM25 ranking). With the default `q_mode=terms`, each word is quoted and all must match, so stray quotes or operators in user text are harmless. `q_mode=raw` passes FTS5 syntax through (`OR`, `NEAR`, phrases, prefix `*`). A raw query with bad syntax returns 400. Report filters are `report_type` (slug or label, for example `audit` or `Healthcare Facility Inspection`), `topic`, `visn`, `state` (label, case-insensitive, or the site's term id), `published_from` and `published_to` (YYYY-MM-DD, inclusive), and `report_number`.
+
+**`GET meta`.** `counts` adds `facility_responses`, `facilities`, `inspections`, and `clusters`. `reconciliation` compares the database with the totals OIG prints on `/recommendations-all` on `checked_on`: for each of `open`, `total_recommendations`, and `total_reports`, the `database` and `oig` values, the `difference`, and `within_tolerance`, plus `oig_open_by_age`. `derived` records how the derived tables were built, including the cluster method.
+
+**`GET recommendations`.** Adds `status` (repeat the parameter for several values), `action_office`, `node_id`, and `sort` (`relevance`, `newest`, `oldest`). `sort` defaults to `relevance` when `q` is set and `newest` otherwise. An `action_office` abbreviation such as `VHA` or `EHRM IO` matches the parenthesized form; any other value matches part of the office name. One recommendation can name several offices, joined by commas in `action_office`. Each item has `rec_id`, `node_id`, `rec_no`, `text`, `action_office`, `status`, `closure_date`, `report_number`, `title`, `published_at`, `url`, and `report_type`.
+
+**`GET reports`.** Adds `path` and `has_recommendations`. Each item has `node_id` (nullable), `path`, `report_number`, `title`, `url`, `report_type`, `published_at`, `rec_count`, `open_count`, and `topics`.
+
+**`GET reports/{node_id}`.** Returns the report fields plus `summary`, `pdf_url`, `monetary_impact` (`open` and `closed`, in dollars, as OIG totals them on the listing), `questioned_costs` and `better_use_of_funds` (from the report page), `facets` (facet name to labels), `standards_cited`, and `recommendations`. Each recommendation adds `response` (`domain`, `concur`, `target_date`, `target_date_precision`, `target_date_raw`, `corrective_action`, `page_no`, or null) and `status_history` (one `{observed_at, status, closure_date}` per crawl). `target_date` is `YYYY-MM-DD` at `day` precision and `YYYY-MM` at `month` precision; `target_date_raw` is the wording in the report, including values such as "Completed" that have no date. An unknown node id returns 404.
+
+**`GET pages/search`.** Requires `q`; takes `q_mode`, `node_id`, and the report filters. Items have `node_id`, `page_no` (the physical PDF page), `snippet` (matches wrapped in `**`), `report_number`, `title`, `url`, `pdf_url`, `published_at`, and `report_type`, in BM25 order. Only reports with recommendations have PDF text; the other reports on the site are not indexed.
+
+**`GET facilities`.** Filters are `q` (part of a name or alias, or an exact station number), `visn` (number, for example `17`), and `state`. Items have `station_number`, `name`, `aliases`, `visn`, `state`, `report_count`, `recommendation_count`, and `open_count`. The registry holds facilities named by a station number in a report's memo headers.
+
+**`GET facilities/{station_number}`.** The same fields plus `reports` (each with `link_method`: `station_number` when the PDF says so, `title_match` when inferred from the title), `inspections`, `next_window_basis`, and `recommendations`, which carry report fields and the flat response fields `domain`, `concur`, `target_date`, `target_date_precision`, `corrective_action`, and `response_page_no`. An unknown station returns 404.
+
+**`GET inspections`.** Filters are `station_number`, `program` (`HFI`, `CHIP`, or `CAP`, the program before CHIP), `published_from`, `published_to`, and `latest_only`. Items have `node_id`, `station_number`, `facility_name`, `program`, `inspection_start`, `inspection_end`, `published_at`, `report_number`, `title`, `url`, `is_latest`, `next_window_estimate`, and `next_window_is_estimate`. The estimate is set only on a facility's latest inspection and is the inspection end (or publication date) plus three years. **It is an estimate and must be labeled as one wherever it is shown**; `next_window_basis` in the response states why. OIG publishes no schedule.
+
+**`GET clusters`.** Filters are `q` (wording in the label or any member), `min_reports`, and `active_since` (a year). Items have `cluster_id`, `label` (one member's text), `method`, `threshold`, `member_count`, `report_count`, `first_year`, `last_year`, and `open_count`, largest first. A cluster is a group of recommendations whose opening words match after the addressee, numbers, punctuation, and facility names are removed, across five or more reports. It suggests a shared template; it does not prove a common cause.
+
+**`GET clusters/{cluster_id}`.** The same fields plus `status_counts` and `members`, the recommendations with status, closure date, report fields, `station_number`, and `facility_name`. An unknown cluster returns 404.
+
+**`GET metrics/closure`.** Requires `group_by` (`office`, `topic`, or `report_type`) and takes every `recommendations` filter and `q`. Items have `group`, `group_size`, `open_count`, `closed_count`, `closed_implemented_count`, `closed_not_implemented_count`, `not_implemented_rate` (share of closed), `days_sample_size`, `excluded_negative_days`, `median_days`, `q1_days`, and `q3_days`. Days run from publication to closure, and a closure dated before publication is left out of the day statistics and counted in `excluded_negative_days`. A recommendation naming two offices counts for both, and a report with two topics counts for both, so group sizes can sum to more than the filtered total.
+
+**`GET metrics/counts`.** Takes the same filters. Items are years, with `year`, `report_count`, `recommendation_count`, `open_count`, `closed_implemented_count`, `closed_not_implemented_count`, and `median_days_to_closure`. `report_count` counts every matching report when only report filters are set, including reports with no recommendations; with `q`, `status`, `action_office`, or `node_id` it counts reports with a matching recommendation.
+
+**`GET taxonomy/{facet}`.** Facets are `topic`, `state`, `visn`, `district`, `mmc`, `author_office`, `special_project`, `action_office`, and `report_type`. The response uses the list envelope plus `facet`, with every value on one page. Items have `value` and `report_count`. Report facets add `value_id`. `action_office` adds `abbreviation`, `recommendation_count`, and `open_count`. `report_type` adds `label`. An unknown facet returns 404.
