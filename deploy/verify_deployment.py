@@ -144,7 +144,8 @@ async def verify_end_to_end(report: Report, url: str, token: str) -> None:
     transport = StreamableHttpTransport(
         f"{url}/mcp", headers={"Authorization": f"Bearer {token}"}
     )
-    async with Client(transport, timeout=120) as client:
+    # The older handshake, which clients built on earlier MCP SDKs still use.
+    async with Client(transport, timeout=120, mode="legacy") as client:
         names = {tool.name for tool in await client.list_tools()}
         report.check("tools/list returns the seven tools", names == EXPECTED_TOOLS)
 

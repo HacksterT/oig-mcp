@@ -10,22 +10,19 @@ An entry in the [GSA MCP Server and AI Agent Government Hackathon](https://www.g
 
 ## Status
 
-Tools are built and run against the hosted data API. The full data build is still in progress, so facility and cluster results stay empty until those tables are filled.
+The server is built, and it answers from the full data build of November 4, 2026, covering 4,415 reports and 15,649 recommendations. It has been evaluated on Claude models, and deployment to IBM watsonx Orchestrate is next. Results are in [docs/evaluation.md](docs/evaluation.md).
 
-| Capability | Kind | Status |
-|---|---|---|
-| `vaoig_get_dataset_status`: data coverage, freshness, reconciliation with the OIG dashboard | Tool | Implemented |
-| `vaoig_search_findings`: the one search tool, keyword and semantic on every query | Tool | Implemented |
-| `vaoig_get_report`: one report with every recommendation and facility response | Tool | Implemented |
-| `vaoig_get_facility_profile`: one facility's reports, inspections, findings, and repeat findings | Tool | Implemented |
-| `vaoig_analyze_recommendations`: counts, trends, time to close, and aging by year, office, topic, or report type | Tool | Implemented |
-| `vaoig_find_systemic_clusters`: findings that recur across reports, and how common they are | Tool | Implemented |
-| `vaoig://about`: scope of the data and citation rules | Resource | Implemented |
-| `vaoig_get_inspection_brief`: one facility's history, common peer findings, peer commitments, and estimated next window | Tool | Implemented |
-| `vaoig://taxonomy/{facet}` and `vaoig://facilities`: OIG's filter values and the facility registry | Resources | Implemented |
-| Inspection readiness checklist and open-recommendation aging brief | Prompts | Implemented |
-| Inspection readiness checklist, aging brief | Prompts | Planned |
-| Phoenix evaluation harness with gold questions | Eval | Planned |
+| Capability | Kind |
+|---|---|
+| `vaoig_get_dataset_status`: data coverage, freshness, reconciliation with OIG, filter values | Tool |
+| `vaoig_search_findings`: the one search tool, keyword and semantic on every query | Tool |
+| `vaoig_get_report`: one report with every recommendation and facility response | Tool |
+| `vaoig_get_facility_profile`: one facility's reports, inspections, findings, and repeat findings | Tool |
+| `vaoig_analyze_recommendations`: counts, trends, time to close, and aging by year, office, topic, or report type | Tool |
+| `vaoig_find_systemic_clusters`: findings that recur across reports, and how common they are | Tool |
+| `vaoig_get_inspection_brief`: one facility's history, common peer findings, peer commitments, and estimated next window | Tool |
+| `vaoig://about`, `vaoig://facilities`, `vaoig://taxonomy/{facet}` | Resources |
+| Inspection readiness checklist, open-recommendation aging brief | Prompts |
 
 ## How it fits together
 
@@ -71,7 +68,7 @@ Without the data API running, `vaoig://about` still works and `vaoig_get_dataset
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `OIG_DATA_API_BASE_URL` | `http://127.0.0.1:8787/v1/` | The data API. Must be https unless local. |
+| `OIG_DATA_API_BASE_URL` | `http://127.0.0.1:8787/v1/` | The data API. Must be https unless local |
 | `CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET` | empty | Cloudflare Access service token for the hosted API |
 | `MCP_AUTH_TOKEN` | empty | Bearer token for `/mcp`. Required over HTTP, unused over stdio |
 | `STALE_AFTER_DAYS` | `30` | Age at which responses flag data as stale |
@@ -89,11 +86,15 @@ Each tool lives in its own file under `src/oig_mcp/tools/` with a `register(mcp)
 
 ## Deployment
 
-The target is IBM watsonx Orchestrate on IBM Cloud, deployed from an IBM-provided VM with IBM Bob. See [deploy/README.md](deploy/README.md) and [docs/project-overview.md](docs/project-overview.md). The `Dockerfile` serves streamable HTTP on port 8080 with `/mcp`, `/health`, and `/version`.
+The target is IBM watsonx Orchestrate on IBM Cloud, deployed from an IBM-provided VM with IBM Bob. See [deploy/README.md](deploy/README.md) and [docs/project-overview.md](docs/project-overview.md). The `Dockerfile` serves stateless streamable HTTP on port 8080 with `/mcp`, `/health`, and `/version`.
+
+## Evaluation
+
+An assistant answers 23 questions using only these tools, scored against answers computed by SQL from a pinned snapshot, with traces in Arize Phoenix. See [docs/evaluation.md](docs/evaluation.md) for results and [eval/README.md](eval/README.md) to run it.
 
 ## Security
 
-The outbound boundary is tested: one operator-configured origin, relative paths only, no redirects, no proxy environment, a response size cap, and sanitized upstream errors. The Access token is added by the client and cannot be overridden by a caller. See [SECURITY.md](SECURITY.md).
+Callers authenticate to `/mcp` with a bearer token, and the server authenticates to the data API with a separate Cloudflare Access token. The outbound boundary is tested: one operator-configured origin, relative paths only, no redirects, no proxy environment, a response size cap, and sanitized upstream errors. See [SECURITY.md](SECURITY.md).
 
 ## Acknowledgements
 
