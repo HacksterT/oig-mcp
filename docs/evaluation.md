@@ -55,7 +55,7 @@ Traces, datasets, and experiments are recorded in Arize Phoenix. Run records and
 
 ## An independent client: DeepSeek through Hermes Agent
 
-A separate agent, Hermes Agent running DeepSeek V4 Pro 0813, answered 18 of the questions over public HTTPS, on the final server and data. It logged a longer answer, its tools, and its observations, because the tester asked for them. The tester then asked it to add a native answer to each question, the answer it would have given if simply asked. These are in the [test bank](https://www.troymd.com/mcp-hackathon-test-bank) and [`qna2.md`](qna2.md), and scores are in [`eval/results/`](../eval/results/).
+A separate agent, Hermes Agent running DeepSeek V4 Pro 0813, answered 18 of the questions over public HTTPS, on the final server and data. It logged a longer answer, its tools, and its observations, because the tester asked for them. The tester then asked it to add a native answer to each question, the answer it would have given if simply asked. These are in the [test bank](https://www.troymd.com/mcp-hackathon-test-bank) and [`qna2.md`](../eval/results/2026-11-04-hermes-deepseek-native/qna2.md), and scores are in [`eval/results/`](../eval/results/).
 
 | Measure | Native answers | Longer logged answers |
 |---|---|---|

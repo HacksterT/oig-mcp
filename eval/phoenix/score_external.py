@@ -1,6 +1,6 @@
 """Score answers from an agent outside this harness, using the same gold and judge.
 
-    uv run --group eval python eval/phoenix/score_external.py docs/qna.md \
+    uv run --group eval python eval/phoenix/score_external.py <answers>.md \
         --label "DeepSeek V4 Pro 0813 through Hermes Agent" --name <results folder>
 
 The file holds `## Q<n>: question` sections, in the order of QNA_ORDER, each with a
