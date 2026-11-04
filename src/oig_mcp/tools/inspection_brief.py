@@ -10,6 +10,7 @@ scores severity or rates a facility.
 
 from __future__ import annotations
 
+import asyncio
 from typing import Annotated, Any
 
 from fastmcp import FastMCP
@@ -170,10 +171,9 @@ def register(mcp: FastMCP) -> None:
 
         station = profile.get("station_number")
         items = clusters.get("items", [])
-        # One at a time: the API can fail on concurrent searches.
-        searches = [
-            await _peer_actions(item.get("label", ""), station) for item in items
-        ]
+        searches = await asyncio.gather(
+            *(_peer_actions(item.get("label", ""), station) for item in items)
+        )
         cited_here = {
             r.get("cluster_id")
             for r in profile.get("recommendations", [])
