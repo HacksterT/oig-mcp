@@ -42,11 +42,12 @@ Then ask: "Read vaoig://about, then check the OIG dataset status." The resource 
 ## 4. Run over HTTP
 
 ```bash
+export MCP_AUTH_TOKEN=$(openssl rand -hex 32)
 MCP_TRANSPORT=streamable-http uv run oig-mcp
 curl http://localhost:8000/health
 ```
 
-The MCP endpoint is `http://localhost:8000/mcp`. In a container or on IBM Code Engine, a platform-set `PORT` switches the server to HTTP automatically.
+The MCP endpoint is `http://localhost:8000/mcp`, and callers must send `Authorization: Bearer <MCP_AUTH_TOKEN>`. The server will not start over HTTP without a token. In a container or on IBM Code Engine, a platform-set `PORT` switches the server to HTTP automatically.
 
 ## 5. Verify
 

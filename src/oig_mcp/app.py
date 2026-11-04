@@ -21,6 +21,7 @@ import os
 
 from fastmcp import FastMCP
 
+from oig_mcp.auth import SharedTokenVerifier
 from oig_mcp.config import settings
 from oig_mcp.prompts import register_prompts
 from oig_mcp.resources import register_resources
@@ -38,6 +39,9 @@ mcp = FastMCP(
         "data's scope and citation rules. Start with vaoig_get_dataset_status "
         "when current status matters."
     ),
+    auth=SharedTokenVerifier(settings.mcp_auth_token)
+    if settings.mcp_auth_token
+    else None,
 )
 
 # Wire up everything the server exposes. Each aggregator lives in its submodule.
@@ -45,6 +49,15 @@ register_tools(mcp)
 register_prompts(mcp)
 register_resources(mcp)
 register_routes(mcp)
+
+
+def _require_http_auth() -> None:
+    """Refuse to expose /mcp without a token, so a bad deploy cannot start open."""
+    if not settings.mcp_auth_token:
+        raise SystemExit(
+            "MCP_AUTH_TOKEN must be set to serve over HTTP. "
+            "Generate one with: openssl rand -hex 32"
+        )
 
 
 def main() -> None:
@@ -57,12 +70,16 @@ def main() -> None:
          `MCP_HOST`:`MCP_PORT` (see config.py / .env).
       3. Otherwise → stdio, which is how local clients (Claude Desktop, Claude
          Code, Zed) launch the server as a subprocess.
+
+    Both HTTP paths require MCP_AUTH_TOKEN. Stdio does not use it.
     """
     platform_port = os.getenv("PORT")
 
     if platform_port:
+        _require_http_auth()
         mcp.run(transport="http", host="0.0.0.0", port=int(platform_port))
     elif settings.mcp_transport == "streamable-http":
+        _require_http_auth()
         mcp.run(
             transport="streamable-http",
             host=settings.mcp_host,

@@ -78,7 +78,7 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 | IBM Cloud deployment | Planned (F05). This is Bob's area |
 | `oig-data-source` crawler, database, and API | Planned. **Not built yet.** No live data API exists today |
 
-Because the data API does not exist yet, a deployment today can verify the server, the container, Code Engine, and Orchestrate registration, but not live answers. That is still worth doing: it proves the IBM path early.
+The data API is live at `https://data-api.example.com/v1/`, behind Cloudflare Access, so a deployment can verify live answers as well as the server, the container, Code Engine, and Orchestrate registration.
 
 ## 5. Repository tour
 
@@ -96,7 +96,6 @@ Because the data API does not exist yet, a deployment today can verify the serve
 | `docs/data-api.md` | The API contract this server expects from `oig-data-source` |
 | `docs/project-overview.md` | This document |
 | `deploy/README.md` | Deployment notes; no deployment kit is checked in yet |
-| `tasks/` | Feature and story plans (F01 done; F02 to F05 in `tasks/backlog/`) |
 | `Dockerfile` | Python 3.11 slim image; serves streamable HTTP on port 8080 |
 | `.agents/skills/` | Agent skills carried from the GSA template: `ibm-cloud-iaas-deploy`, `mcp-builder`, `mcp-eval`. Kept for Bob to assess against its own deployment skill (section 8) |
 | `docs/handoff/` | Handoff reports between Bob and Troy, and `TEMPLATE.md` for writing them |
@@ -112,7 +111,7 @@ If Bob changes code, these rules apply. Troy does most development on his Mac, s
 - **Errors** return `{"error": ..., "hint": ...}` with a short, safe message. Never return upstream response bodies, URLs, headers, or stack traces.
 - **Outbound calls** go only through `fetch_json()` with a relative path. Never add another HTTP client, and never accept a URL from a tool argument.
 - **Before any commit:** `uv run ruff check .`, `uv run ruff format --check .`, and `uv run pytest tests/` must pass.
-- **Planning** uses feature canvases and stories in `tasks/` (F##-S## naming). Record what was done in the relevant story.
+- **Planning** documents are kept outside this repository. Record what was done in a handoff report under `docs/handoff/`.
 
 ## 7. Bob's role and the deployment plan
 
@@ -140,14 +139,15 @@ The server reads these environment variables:
 
 | Variable | Value | Secret? |
 |---|---|---|
-| `OIG_DATA_API_BASE_URL` | The public HTTPS URL of the data API on Troy's pilot site, ending in `/v1/`. Troy provides it when the API exists | No |
+| `MCP_AUTH_TOKEN` | Bearer token Orchestrate presents to `/mcp`. Generate a new one for IBM with `openssl rand -hex 32`. The server will not start over HTTP without it | Yes |
+| `OIG_DATA_API_BASE_URL` | `https://data-api.example.com/v1/` | No |
 | `CF_ACCESS_CLIENT_ID` | Cloudflare Access service token ID. Troy provides it | Yes |
 | `CF_ACCESS_CLIENT_SECRET` | Cloudflare Access service token secret. Troy provides it | Yes |
 | `STALE_AFTER_DAYS` | `30` | No |
 
-- Store the two `CF_ACCESS_*` values as platform secrets, never in files or commits.
+- Store `MCP_AUTH_TOKEN` and the two `CF_ACCESS_*` values as platform secrets, never in files or commits. They are separate credentials: the bearer token protects `/mcp`, and the Access token protects the data API.
 - `OIG_DATA_API_BASE_URL` must be `https` for any non-local host; the server refuses to start with a plain `http` remote URL.
-- **Until the data API exists, deploy without these values.** The server starts on its defaults. The default data API URL points at a local address that does not resolve in Code Engine, so `vaoig_get_dataset_status` returns its "data API not reachable" hint. That is the expected result for now.
+- Without the `CF_ACCESS_*` values the server still starts, but the data API rejects its requests and `vaoig_get_dataset_status` returns its "data API not reachable" hint.
 
 ### Phase 0: Verify the clone in the VM
 
@@ -155,6 +155,7 @@ The server reads these environment variables:
 uv sync --group dev
 uv run ruff check . && uv run ruff format --check .
 uv run pytest tests/ -q
+export MCP_AUTH_TOKEN=$(openssl rand -hex 32)
 MCP_TRANSPORT=streamable-http uv run oig-mcp     # then, in another shell:
 curl http://localhost:8000/health
 ```
@@ -163,14 +164,15 @@ curl http://localhost:8000/health
 
 ### Phase 1: Build and run the container locally
 
-**Done when:** the image builds from the `Dockerfile`, runs with port 8080 mapped, and `/health` returns healthy.
+**Done when:** the image builds from the `Dockerfile`, runs with port 8080 mapped and `MCP_AUTH_TOKEN` set, and `/health` returns healthy. Without the token the container should exit at startup.
 
 ### Phase 2: Deploy to IBM Cloud (Bob's deployment skill)
 
-**Done when:** the deployed app URL answers `/health` and `/version`, and an MCP `initialize` POST to `/mcp` returns the server name "VA OIG Recommendations". For example:
+**Done when:** the deployed app URL answers `/health` and `/version`, and an MCP `initialize` POST to `/mcp` returns the server name "VA OIG Recommendations" with the token and 401 without it. For example:
 
 ```bash
 curl -s -X POST https://<APP_URL>/mcp \
+  -H "Authorization: Bearer $MCP_AUTH_TOKEN" \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"smoke","version":"0"}}}'
@@ -178,11 +180,22 @@ curl -s -X POST https://<APP_URL>/mcp \
 
 ### Phase 3: Register in watsonx Orchestrate
 
-Register the deployed `/mcp` URL as a remote MCP toolkit, named `oig_mcp_<INITIALS>`, with transport `streamable_http` and all tools. If the ADK reports a transport mismatch, retry with the base URL without `/mcp`, or with `sse`. Suggested toolkit description: "VA OIG recommendations: dataset status and, as they are added, cross-report lookups and analytics, with citations to vaoig.gov."
+Create a bearer connection holding the same token as the Code Engine secret. Orchestrate fetches `tools/list` during import, so the credentials must be set before importing:
+
+```bash
+orchestrate connections add -a oig_mcp_auth_<INITIALS>
+orchestrate connections configure -a oig_mcp_auth_<INITIALS> --env draft -t team -k bearer
+orchestrate connections set-credentials -a oig_mcp_auth_<INITIALS> --env draft --token <MCP_AUTH_TOKEN>
+# repeat configure and set-credentials with --env live
+```
+
+IBM's documentation conflicts on this step: the remote MCP page says `--app-id` accepts only `key_value` connections, while the connections page says bearer is supported and key-value is not. If import rejects the bearer connection, stop and tell Troy.
+
+Register the deployed `/mcp` URL as a remote MCP toolkit, named `oig_mcp_<INITIALS>`, with transport `streamable_http`, all tools, and `--app-id oig_mcp_auth_<INITIALS>`. If the ADK reports a transport mismatch, retry with the base URL without `/mcp`, or with `sse`. Suggested toolkit description: "VA OIG recommendations: dataset status and, as they are added, cross-report lookups and analytics, with citations to vaoig.gov."
 
 Then create an agent in the Orchestrate UI that uses the toolkit, with this instruction: cite the report number and link for every finding, state the data date, and flag stale data.
 
-**Done when:** the agent lists `vaoig_get_dataset_status`, and calling it returns the expected "not reachable" hint until the data API is live.
+**Done when:** the agent lists `vaoig_get_dataset_status`, and calling it returns live data with a `data_as_of` date.
 
 ### Phase 4: End to end, once the data API exists
 
@@ -241,7 +254,7 @@ Do not edit or delete anything in `.agents/skills/` during the assessment. Recom
 - Push the branch and tell Troy it is ready. Troy reviews and merges into `main`.
 - Never push to `main` directly. Never force-push. Never rewrite history.
 - Before committing code changes, run lint and tests (section 6). Handoff reports alone do not need them.
-- Planning documents in `tasks/` are Troy's. Bob may propose changes in a handoff report but should not edit them, except to record a phase's outcome when Troy asks.
+- Planning documents are Troy's and are not in this repository. Bob may propose changes in a handoff report.
 
 ## 9. Rules for the IBM side
 
