@@ -339,7 +339,99 @@ async def test_profile_asks_for_more_than_the_api_default(api: FakeApi) -> None:
     api.routes["facilities/528A6"] = {**_profile(), "recommendations_has_more": True}
     result = await call("vaoig_get_facility_profile", facility="West Haven")
     assert api.last.url.params["recommendations_limit"] == "100"
-    assert result["recommendations_has_more"] is True
+    assert result["recommendations"]["has_older_beyond_100"] is True
+    assert "recommendations_has_more" not in result
+
+
+async def test_profile_page_flags_do_not_conflict(api: FakeApi) -> None:
+    api.routes["facilities"] = _lookup(_facility())
+    api.routes["facilities/528A6"] = {**_profile(), "recommendations_has_more": False}
+    result = await call("vaoig_get_facility_profile", facility="West Haven", limit=1)
+    assert result["recommendations"]["has_more"] is True
+    assert result["recommendations"]["has_older_beyond_100"] is False
+    assert "recommendations_has_more" not in result
+
+
+async def test_profile_shortens_corrective_actions(api: FakeApi) -> None:
+    profile = _profile()
+    profile["recommendations"][1]["corrective_action"] = "x" * 2000
+    api.routes["facilities"] = _lookup(_facility())
+    api.routes["facilities/528A6"] = profile
+    result = await call("vaoig_get_facility_profile", facility="West Haven")
+    finding = result["recommendations"]["items"][0]
+    assert len(finding["corrective_action"]) == 300
+    assert finding["corrective_action_truncated"] is True
+
+
+async def test_profile_explains_a_missing_response(api: FakeApi) -> None:
+    api.routes["facilities"] = _lookup(_facility())
+    api.routes["facilities/528A6"] = _profile()
+    result = await call("vaoig_get_facility_profile", facility="West Haven")
+    assert "does not show" in " ".join(result["notices"])
+
+
+async def test_profile_omits_the_notice_when_every_response_exists(
+    api: FakeApi,
+) -> None:
+    profile = _profile()
+    for record in profile["recommendations"]:
+        record["corrective_action"] = "Trained staff."
+    api.routes["facilities"] = _lookup(_facility())
+    api.routes["facilities/528A6"] = profile
+    result = await call("vaoig_get_facility_profile", facility="West Haven")
+    assert result["notices"] == []
+
+
+async def test_search_shortens_only_long_corrective_actions(api: FakeApi) -> None:
+    api.routes["search"] = {
+        **AS_OF,
+        **ENVELOPE,
+        "search_mode": "hybrid",
+        "items": [
+            {"response": {"corrective_action": "x" * 2000}},
+            {"response": {"corrective_action": "short"}},
+            {"response": None},
+        ],
+    }
+    result = await call("vaoig_search_findings", question="carts")
+    first, second, third = result["items"]
+    assert len(first["response"]["corrective_action"]) == 800
+    assert first["response"]["corrective_action_truncated"] is True
+    assert second["response"] == {"corrective_action": "short"}
+    assert third["response"] is None
+
+
+async def test_findings_and_totals_carry_different_citation_rules(
+    api: FakeApi,
+) -> None:
+    api.routes["search"] = {**AS_OF, **ENVELOPE, "search_mode": "hybrid", "items": []}
+    api.routes["metrics/counts"] = {**AS_OF, **ENVELOPE, "items": []}
+    found = await call("vaoig_search_findings", question="carts")
+    totals = await call("vaoig_analyze_recommendations", group_by="year")
+    assert "report number and link" in found["provenance"]["citation"]
+    assert "no single report" in totals["provenance"]["citation"]
+
+
+async def test_year_median_of_zero_is_explained(api: FakeApi) -> None:
+    api.routes["metrics/counts"] = {
+        **AS_OF,
+        **ENVELOPE,
+        "items": [{"year": 2026, "median_days_to_closure": 0}],
+    }
+    result = await call("vaoig_analyze_recommendations", group_by="year")
+    assert "not a typical time to close" in " ".join(result["caveats"])
+
+
+async def test_status_explains_oig_open_total(api: FakeApi) -> None:
+    api.routes["meta"] = {
+        **AS_OF,
+        "reconciliation": {
+            "open": {"database": 567, "oig": 586},
+            "open_set": {"oig_blank_rows": 19},
+        },
+    }
+    result = await call("vaoig_get_dataset_status")
+    assert "19 blank rows" in result["reconciliation"]["note"]
 
 
 async def test_profile_lists_open_findings_first(api: FakeApi) -> None:
@@ -566,7 +658,7 @@ async def test_status_lists_filter_values_for_tool_only_clients(api: FakeApi) ->
     }
     async with Client(mcp) as client:
         result = await client.call_tool("vaoig_get_dataset_status", {})
-    values = result.structured_content["result"]["filter_values"]
+    values = result.structured_content["filter_values"]
     assert values["report_type"] == ["audit"]
     assert values["action_office"] == ["VHA"]
     assert "topic" not in values  # a facet that cannot be read is left out

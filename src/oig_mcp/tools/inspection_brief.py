@@ -16,7 +16,11 @@ from typing import Annotated, Any
 from fastmcp import FastMCP
 from pydantic import Field
 
-from oig_mcp.tools.facility_profile import fetch_profile
+from oig_mcp.tools.facility_profile import (
+    NO_RESPONSE_NOTICE,
+    fetch_profile,
+    lacks_response,
+)
 from oig_mcp.tools.systemic_clusters import CLUSTER_CAVEAT
 from oig_mcp.utils import (
     READ_ONLY_TOOL,
@@ -206,6 +210,8 @@ def register(mcp: FastMCP) -> None:
             notices.insert(0, _PEER_ACTIONS_FAILED)
         if any(s and s.get("search_mode") != "hybrid" for s in searches):
             notices.insert(0, _FALLBACK_NOTICE)
+        if lacks_response(_own_history(profile)["open_findings"]):
+            notices.append(NO_RESPONSE_NOTICE)
         if profile.get("recommendations_has_more"):
             notices.append(
                 "This facility has more recommendations than were checked, so "

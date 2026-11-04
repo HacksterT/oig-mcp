@@ -11,8 +11,8 @@ from typing import Any
 
 from fastmcp import FastMCP
 
-from oig_mcp.models import ResponseFormat
 from oig_mcp.utils import (
+    CITE_TOTALS,
     UNREACHABLE_HINT,
     UpstreamServiceError,
     build_provenance,
@@ -42,6 +42,24 @@ async def _filter_values() -> dict[str, list[str]]:
     return values
 
 
+def _explain_reconciliation(reconciliation: dict[str, Any]) -> dict[str, Any]:
+    """Say why OIG's open total differs, so its age bands are not read as ours."""
+    open_counts = reconciliation.get("open") or {}
+    blank_rows = (reconciliation.get("open_set") or {}).get("oig_blank_rows")
+    if not blank_rows or open_counts.get("oig") == open_counts.get("database"):
+        return reconciliation
+    return {
+        **reconciliation,
+        "note": (
+            f"OIG's dashboard shows {open_counts.get('oig')} open and this data has "
+            f"{open_counts.get('database')}. A row-by-row comparison found the same "
+            f"recommendations in both; the difference is {blank_rows} blank rows on "
+            "OIG's pages. oig_open_by_age follows OIG's total, so it does not add up "
+            "to this data's open count."
+        ),
+    }
+
+
 def register(mcp: FastMCP) -> None:
     """Register the dataset status tool with the MCP server."""
 
@@ -55,9 +73,7 @@ def register(mcp: FastMCP) -> None:
             "openWorldHint": True,
         },
     )
-    async def vaoig_get_dataset_status(
-        response_format: ResponseFormat = ResponseFormat.JSON,
-    ) -> dict[str, Any] | str:
+    async def vaoig_get_dataset_status() -> dict[str, Any]:
         """Report the coverage and freshness of the VA OIG recommendations data.
 
         Use this before answering questions about current recommendation status,
@@ -69,7 +85,8 @@ def register(mcp: FastMCP) -> None:
             data_as_of (collection date), counts of reports and recommendations,
             open-recommendation reconciliation against the OIG dashboard,
             filter_values (valid values for search and analysis filters), and a
-            provenance block with a stale flag. On failure, an error with a hint.
+            provenance block with a stale flag and how to cite. On failure, an error
+            with a hint.
         """
         try:
             meta = await fetch_json("meta")
@@ -83,29 +100,16 @@ def register(mcp: FastMCP) -> None:
             }
 
         provenance = build_provenance(
-            meta.get("data_as_of"), ["https://www.vaoig.gov/reports/data-dashboard"]
+            meta.get("data_as_of"),
+            ["https://www.vaoig.gov/reports/data-dashboard"],
+            citation=CITE_TOTALS,
         )
         result = {
             "data_as_of": meta.get("data_as_of"),
             "counts": meta.get("counts", {}),
-            "reconciliation": meta.get("reconciliation", {}),
+            "reconciliation": _explain_reconciliation(meta.get("reconciliation", {})),
             "filter_values": await _filter_values(),
             "provenance": provenance,
         }
-
-        if response_format is ResponseFormat.MARKDOWN:
-            counts = result["counts"] or {}
-            lines = [
-                "# VA OIG recommendations data",
-                "",
-                f"- Data as of: {result['data_as_of'] or 'unknown'}",
-            ]
-            lines += [f"- {k.replace('_', ' ')}: {v}" for k, v in counts.items()]
-            if provenance["stale"]:
-                lines.append(
-                    f"- Warning: data is {provenance['days_old']} days old; "
-                    "statuses may have changed."
-                )
-            return "\n".join(lines)
 
         return result

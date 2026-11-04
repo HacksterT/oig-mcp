@@ -15,8 +15,8 @@ Read this first, and then [`docs/project-overview.md`](../project-overview.md) f
 
 | Item | Notes |
 |---|---|
-| Repository access | The repository is private for now. Reading and pushing `ibm/` branches both need access (assumption A1) |
-| Initials | Required in every IBM resource name |
+| Repository access | The repository will be public, so cloning needs no credentials. Pushing `ibm/` branches does (assumption A1) |
+| Initials | `TES`. Required in every IBM resource name |
 | IBM account, resource group, Code Engine project | Assumption A5 |
 | Orchestrate instance URL and API key | Entered in the VM, never written to a file in the repository |
 | `OIG_DATA_API_BASE_URL`, `CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET` | Provided directly. Treat all three as secrets, although the URL is not strictly one |
@@ -45,14 +45,14 @@ The bearer token is the only authentication built. OAuth is not. It is one share
 
 | Check | Where it ran | Result |
 |---|---|---|
-| Unit tests and lint | Mac | 110 tests pass |
+| Unit tests and lint | Mac | 118 tests pass |
 | Image builds for `linux/amd64` and imports the package | Mac, under emulation | Pass. It has not run a full request cycle on amd64 |
 | Refuses to start without a token, with a short token, or with a plain-HTTP remote API | Container | Pass |
 | Both connections accept right and refuse wrong credentials: 21 checks | Container, and through a public HTTPS tunnel | Pass |
 | Missing or wrong Cloudflare token gives a clean refusal without the API address | Container | Pass |
 | No secret in the image, tool responses, or logs | Container | Pass |
-| An independent MCP client with a different model connects and finds the tools | Hermes Agent, through the tunnel | Pass. Its question-by-question results are being reviewed |
-| 23 gold questions, on two Claude models | Container | 22 of 23 each. See [`docs/evaluation.md`](../evaluation.md) |
+| An independent MCP client with a different model answers the questions | Hermes Agent running DeepSeek V4 Pro 0813, through the tunnel | Facts all correct. It gave report numbers but no links, which led to the citation field described in D10 |
+| Gold questions, on two Claude models | Container | 22 of 23 each. See [`docs/evaluation.md`](../evaluation.md), which notes what was rerun |
 
 **Not tested at all:** IBM's network, Code Engine, Orchestrate's import, its connections, and its model.
 
@@ -66,7 +66,7 @@ Report each one as confirmed or wrong in your phase reports.
 
 | # | Assumption | Basis | If wrong |
 |---|---|---|---|
-| A1 | The VM can reach GitHub, and Troy can give it read access and push access to `ibm/` branches | Assumed | Troy supplies a zip. Reports come back through Troy instead of a branch |
+| A1 | The VM can reach GitHub and clone the public repository. Push access to `ibm/` branches is arranged with Troy | Assumed | Troy supplies a zip. Reports come back through Troy instead of a branch |
 | A2 | The VM has `podman` or `docker`. The template's commands use `podman` and a `Containerfile`. This repository has a `Dockerfile`, so pass `-f Dockerfile` | Template | Report it. Code Engine can also build from source, but do not switch without asking |
 | A3 | The VM can pull `docker.io/library/python:3.11-slim` and reach PyPI during the build. The base image no longer needs `ghcr.io` | Assumed | Report the exact error. A mirror may be needed |
 | A4 | The VM is `linux/amd64`, or images get built for it | Assumed | Build with `--platform linux/amd64` |
@@ -91,7 +91,7 @@ Report each one as confirmed or wrong in your phase reports.
 
 | # | Assumption | Basis | If wrong |
 |---|---|---|---|
-| C1 | A Code Engine app may call an API hosted on a participant's own machine. **Troy has this open with the organizers** | Assumed | Stop and tell Troy. The fallback is the same API on a cloud host behind the same Access policy, needing no change here |
+| C1 | The data API stays on Troy's machine, which is his decision. A Code Engine app can call it like any public HTTPS service | Troy's decision. Not yet run from IBM | Tell Troy. The fallback is the same API on a cloud host behind the same Access policy, needing no change here |
 | C2 | Code Engine's outbound traffic reaches Cloudflare, with no allowlist or proxy needed. The HTTP client ignores proxy settings by design, and must keep doing so | Assumed | Report the exact tool error. Do not add a proxy |
 | C3 | Cloudflare admits IBM's addresses. The Access policy is service token only, with no IP rule, but any bot or firewall setting on the zone has not been tested against a datacenter address | Assumed for the bot rules | A tool returning status 403, or an error where `verify_deployment.py` passes on the Mac, points here. Tell Troy, who controls Cloudflare |
 | C4 | The data API is up. It runs on one machine, so it can go down, and tools then return an error with a hint | Known | Tell Troy. Do not treat this as a deployment failure |
@@ -109,7 +109,7 @@ Report each one as confirmed or wrong in your phase reports.
 | D7 | Orchestrate calls tools with a timeout of about 2 minutes. MCP has no asynchronous mode there | Docs, in the Tool Performance Guide | Should not matter at about 2 seconds per tool |
 | D8 | No response size limit gets in the way. IBM documents none. The largest response seen was about 112,000 characters, from a facility profile with 100 recommendations. Others stayed under about 40,000 | No documented limit | If responses fail or are cut off, record which tool and which facility. `vaoig_get_facility_profile` accepts a smaller `limit`, and Troy decides on the default |
 | D9 | MCP prompts and resources do not import, only tools. IBM's page is silent. The tools carry what is needed, and `vaoig_get_dataset_status` returns the filter values | Assumed | No change needed. Good news if they do import |
-| D10 | Orchestrate may not pass the server's `instructions` to its model. Tool descriptions carry the key rules, but citation behavior could weaken | Assumed | See "The agent" below |
+| D10 | Orchestrate may not pass the server's `instructions` to its model. Hermes Agent appears not to, and left links out of its answers. So each tool result now carries a `provenance.citation` line saying how to cite it | Hermes observed. Orchestrate unknown | See Phase 4 |
 | D11 | Orchestrate's outbound traffic can reach a Code Engine public URL | Assumed | Report the exact error |
 | D12 | A `409 Gateway name already exists` after deleting a toolkit is a known leftover. Use a new unique name | Docs | |
 
@@ -143,16 +143,16 @@ Use your deployment skill for the registry and registry secret, with initials in
 
 ```bash
 # Write the three secret values to a file outside the repository, readable only by you.
-ibmcloud ce secret create --name oig-mcp-secrets-<INITIALS> --from-env-file <file>
+ibmcloud ce secret create --name oig-mcp-secrets-TES --from-env-file <file>
 
 ibmcloud ce application create \
-  --name oig-mcp-<INITIALS> \
-  --image private.us.icr.io/<NAMESPACE>/oig-mcp-<INITIALS>:latest \
+  --name oig-mcp-TES \
+  --image private.us.icr.io/<NAMESPACE>/oig-mcp-TES:latest \
   --registry-secret <REGISTRY_SECRET> \
   --port 8080 \
   --min-scale 1 \
   --max-scale 2 \
-  --env-from-secret oig-mcp-secrets-<INITIALS>
+  --env-from-secret oig-mcp-secrets-TES
 ```
 
 The secret file holds `MCP_AUTH_TOKEN`, `OIG_DATA_API_BASE_URL`, `CF_ACCESS_CLIENT_ID`, and `CF_ACCESS_CLIENT_SECRET`. Delete it afterward. Then, from the VM:
@@ -169,20 +169,20 @@ uv run python deploy/verify_deployment.py --url https://<APP_URL>
 Test D2 first, because everything else waits on it.
 
 ```bash
-orchestrate connections add -a oig_mcp_auth_<INITIALS>
-orchestrate connections configure -a oig_mcp_auth_<INITIALS> --env draft -t team -k bearer
-orchestrate connections set-credentials -a oig_mcp_auth_<INITIALS> --env draft --token <MCP_AUTH_TOKEN>
-orchestrate connections configure -a oig_mcp_auth_<INITIALS> --env live -t team -k bearer
-orchestrate connections set-credentials -a oig_mcp_auth_<INITIALS> --env live --token <MCP_AUTH_TOKEN>
+orchestrate connections add -a oig_mcp_auth_TES
+orchestrate connections configure -a oig_mcp_auth_TES --env draft -t team -k bearer
+orchestrate connections set-credentials -a oig_mcp_auth_TES --env draft --token <MCP_AUTH_TOKEN>
+orchestrate connections configure -a oig_mcp_auth_TES --env live -t team -k bearer
+orchestrate connections set-credentials -a oig_mcp_auth_TES --env live --token <MCP_AUTH_TOKEN>
 
 orchestrate toolkits add \
   --kind mcp \
-  --name oig_mcp_<INITIALS> \
+  --name oig_mcp_TES \
   --description "VA OIG reports and recommendations: search, facility history, closure measures, recurring findings, and inspection preparation, cited to vaoig.gov." \
   --url https://<APP_URL>/mcp \
   --transport streamable_http \
   --tools "*" \
-  --app-id oig_mcp_auth_<INITIALS>
+  --app-id oig_mcp_auth_TES
 ```
 
 The token on the command line may land in your shell history. Clear it or use a method your skill prefers. **Done when:** the import succeeds, and all seven tools are listed.
@@ -216,7 +216,7 @@ These answers come from Orchestrate's model, not the Claude models in the evalua
 |---|---|
 | Health check at `/ping` | `/health` |
 | `Containerfile` | `Dockerfile` |
-| Image names like `gsa-jmd-mcp-app` | `oig-mcp-<INITIALS>` |
+| Image names like `gsa-jmd-mcp-app` | `oig-mcp-TES` |
 | `cat` the API key file to read it | Do not print secrets |
 | Deploy with no app environment | Needs `--env-from-secret` |
 
@@ -232,15 +232,13 @@ The rules in `docs/project-overview.md` section 9 apply. The ones most likely to
 - Do not delete or rename IBM resources without Troy's initials.
 - Ask before creating anything paid that is not listed here.
 
-## Known issue in the data
+## If the data has been rebuilt
 
-Inspection reports with no recommendations are missing from the backend's inspection table, so about 14 facilities get a next-window estimate that is too early. VA North Texas shows February 2025, after a report published in October 2026. It is a backend matter, filed with the data source. El Paso is not affected, which is why it is used in the checks above. If the data is rebuilt to fix this, the API's address and credentials stay the same, and nothing changes on your side.
+Troy is having backend issues fixed before you start, so a new snapshot may change some figures in Phase 4. He will tell you if question 2's numbers changed. The API's address and credentials stay the same, and nothing else changes on your side.
 
 ## Questions for Troy
 
-1. Has the organizers' answer on C1 come in?
-2. How should Bob get repository access in the VM (A1)?
-3. Troy's initials for resource names.
+1. How should Bob push `ibm/` branches from the VM (A1)?
 
 ## Troy's response
 
