@@ -71,7 +71,7 @@ Use the links to confirm anything you plan to act on or repeat. OIG's site remai
 
 Treat this as directional. The test is small, an AI judged relevance rather than a person, and we wrote the questions knowing how this project performed, so they favor it. OIG lists results newest first, so its top five are its newest matches, not necessarily its best. Corrective actions were not judged.
 
-**The difference.** The gain is reach and access, not sharper results. The manager can use their own words and still find something, without first learning how OIG phrases things. About half of the results from each search were relevant, and on identical keywords OIG's did better, so results still need checking against the cited reports. The larger difference is that an AI assistant can search, count, and compare the whole record, and cite each result.
+**The difference.** The gain is reach and access, not sharper results. The manager can use their own words and still find something, without first learning how OIG phrases things. About half of the results from each search were relevant, and on identical keywords OIG's did better. On two of the ten questions, no search found anything relevant. So results still need checking against the cited reports. The larger difference is that an AI assistant can search, count, and compare the whole record, and cite each result.
 
 ## Use case 2: Preparing for an inspection
 
