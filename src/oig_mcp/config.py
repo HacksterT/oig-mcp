@@ -69,6 +69,10 @@ class Settings(BaseSettings):
     # removed without affecting the rest. deploy/mcp_clients.py manages this list.
     mcp_client_tokens: str = ""
 
+    # Optional file for the usage log, which also goes to stderr. It records the
+    # client, tool, outcome, and duration of each call, never the arguments.
+    mcp_usage_log: str = ""
+
     # ── OIG data API (served by the oig-data-source repository) ───────────────
     # The one outbound origin this server calls. Operator-controlled: never
     # taken from a tool argument. Defaults to the local oig-data-source container.

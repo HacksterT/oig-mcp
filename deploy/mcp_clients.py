@@ -4,11 +4,13 @@
     python3 deploy/mcp_clients.py add alice
     python3 deploy/mcp_clients.py list
     python3 deploy/mcp_clients.py remove alice
+    python3 deploy/mcp_clients.py usage
 
 Tokens are kept in MCP_CLIENT_TOKENS in `.env`. A change recreates the container,
 which takes the server down for a few seconds. `add` prints the new token once, so
 run it in your own terminal and not through a tool that records its output. `list`
-prints names only. MCP_AUTH_TOKEN isn't managed here.
+prints names only. `usage` summarizes logs/usage.log for each client, where
+mcp-client is MCP_AUTH_TOKEN. MCP_AUTH_TOKEN isn't managed here.
 """
 
 from __future__ import annotations
@@ -30,6 +32,9 @@ KEY = "MCP_CLIENT_TOKENS"
 NAME = re.compile(r"[a-z0-9][a-z0-9_-]*")
 HEALTH_URL = "http://127.0.0.1:8000/health"
 HEALTH_TIMEOUT_SECONDS = 60
+USAGE_LINE = re.compile(
+    r"(?P<time>\S+) client=(?P<client>\S+) tool=\S+ outcome=(?P<outcome>\S+) ms=\d+$"
+)
 
 
 def read_clients(env_file: Path) -> dict[str, str]:
@@ -57,6 +62,27 @@ def write_clients(env_file: Path, clients: dict[str, str]) -> None:
     os.replace(handle.name, env_file)
 
 
+def summarize_usage(log_file: Path) -> str:
+    """One row per client: calls, calls that didn't succeed, and the last call."""
+    if not log_file.exists():
+        return "No usage recorded."
+    totals: dict[str, dict[str, object]] = {}
+    for line in log_file.read_text().splitlines():
+        match = USAGE_LINE.match(line)
+        if not match:
+            continue
+        row = totals.setdefault(match["client"], {"calls": 0, "failed": 0, "last": ""})
+        row["calls"] += 1
+        row["failed"] += match["outcome"] != "ok"
+        row["last"] = match["time"]
+    if not totals:
+        return "No usage recorded."
+    rows = [f"{'client':<20} {'calls':>6} {'failed':>6}  last call (UTC)"]
+    for client, row in sorted(totals.items()):
+        rows.append(f"{client:<20} {row['calls']:>6} {row['failed']:>6}  {row['last']}")
+    return "\n".join(rows)
+
+
 def restart_server() -> bool:
     """Recreate the container so it reads the new list, then wait for it."""
     subprocess.run(
@@ -80,11 +106,16 @@ def restart_server() -> bool:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("action", choices=["add", "list", "remove"])
+    parser.add_argument("action", choices=["add", "list", "remove", "usage"])
     parser.add_argument("name", nargs="?")
     parser.add_argument("--env-file", type=Path, default=ROOT / ".env")
+    parser.add_argument("--log-file", type=Path, default=ROOT / "logs" / "usage.log")
     parser.add_argument("--no-restart", action="store_true")
     args = parser.parse_args()
+
+    if args.action == "usage":
+        print(summarize_usage(args.log_file))
+        return 0
 
     clients = read_clients(args.env_file)
 

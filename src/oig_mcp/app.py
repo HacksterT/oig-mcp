@@ -24,6 +24,7 @@ from fastmcp import FastMCP
 
 from oig_mcp.auth import BearerTokenVerifier
 from oig_mcp.config import settings
+from oig_mcp.middleware import add_usage_controls, configure_usage_log
 from oig_mcp.prompts import register_prompts
 from oig_mcp.resources import register_resources
 from oig_mcp.routes import register_routes
@@ -57,6 +58,9 @@ register_tools(mcp)
 register_prompts(mcp)
 register_resources(mcp)
 register_routes(mcp)
+
+configure_usage_log(settings.mcp_usage_log)
+add_usage_controls(mcp)
 
 
 def _require_http_auth() -> None:
