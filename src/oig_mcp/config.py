@@ -6,22 +6,49 @@ Every field can be overridden by an environment variable of the same name
 
 from __future__ import annotations
 
+import re
 from urllib.parse import urlsplit
 
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
 _MIN_AUTH_TOKEN_LENGTH = 32
+_CLIENT_NAME = re.compile(r"[a-z0-9][a-z0-9_-]*")
+# The client name given to MCP_AUTH_TOKEN, so no named token may use it.
+_PRIMARY_CLIENT = "mcp-client"
+
+
+def _parse_client_tokens(value: str) -> dict[str, str]:
+    """Read `name:token,name:token`. Errors name the client, never the token."""
+    tokens: dict[str, str] = {}
+    for entry in filter(None, (part.strip() for part in value.split(","))):
+        # Without a separator, the whole entry could be a bare token.
+        name, separator, token = entry.partition(":")
+        if not separator or not _CLIENT_NAME.fullmatch(name):
+            raise ValueError("MCP_CLIENT_TOKENS entries must look like name:token")
+        if name == _PRIMARY_CLIENT:
+            raise ValueError(f"MCP_CLIENT_TOKENS can't use the name {_PRIMARY_CLIENT}")
+        if name in tokens:
+            raise ValueError(f"MCP_CLIENT_TOKENS lists {name} twice")
+        if len(token) < _MIN_AUTH_TOKEN_LENGTH:
+            raise ValueError(
+                f"MCP_CLIENT_TOKENS: the token for {name} must be at least "
+                f"{_MIN_AUTH_TOKEN_LENGTH} characters"
+            )
+        tokens[name] = token
+    return tokens
 
 
 class Settings(BaseSettings):
     """MCP server settings. Override any field via environment variables."""
 
+    # Token settings would otherwise appear in validation errors, and so in logs.
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
+        hide_input_in_errors=True,
     )
 
     # ── Transport ─────────────────────────────────────────────────────────────
@@ -37,6 +64,10 @@ class Settings(BaseSettings):
     # Bearer token callers must present to /mcp. Required to serve over HTTP;
     # unused over stdio. Not related to the Cloudflare Access token below.
     mcp_auth_token: str = ""
+
+    # Optional tokens for other clients, as `name:token,name:token`, so one can be
+    # removed without affecting the rest. deploy/mcp_clients.py manages this list.
+    mcp_client_tokens: str = ""
 
     # ── OIG data API (served by the oig-data-source repository) ───────────────
     # The one outbound origin this server calls. Operator-controlled: never
@@ -61,6 +92,25 @@ class Settings(BaseSettings):
                 f"MCP_AUTH_TOKEN must be at least {_MIN_AUTH_TOKEN_LENGTH} characters"
             )
         return value
+
+    @field_validator("mcp_client_tokens")
+    @classmethod
+    def _validate_client_tokens(cls, value: str) -> str:
+        _parse_client_tokens(value)
+        return value
+
+    @model_validator(mode="after")
+    def _require_distinct_tokens(self) -> Settings:
+        """Removing a client must end its access, so no two may share a token."""
+        tokens = list(self.inbound_tokens().values())
+        if len(tokens) != len(set(tokens)):
+            raise ValueError("MCP tokens must all be different")
+        return self
+
+    def inbound_tokens(self) -> dict[str, str]:
+        """Every bearer token /mcp accepts, by client name."""
+        primary = {_PRIMARY_CLIENT: self.mcp_auth_token} if self.mcp_auth_token else {}
+        return primary | _parse_client_tokens(self.mcp_client_tokens)
 
     @field_validator("oig_data_api_base_url")
     @classmethod
