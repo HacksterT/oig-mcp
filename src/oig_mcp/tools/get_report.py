@@ -9,6 +9,7 @@ from pydantic import Field
 
 from oig_mcp.utils import (
     READ_ONLY_TOOL,
+    ToolFailure,
     UpstreamServiceError,
     build_provenance,
     fetch_object,
@@ -45,10 +46,10 @@ def register(mcp: FastMCP) -> None:
         date, status history, and facility response, plus provenance.
         """
         if (report_number is None) == (node_id is None):
-            return {
-                "error": "Provide exactly one of report_number or node_id.",
-                "hint": "Search results carry both.",
-            }
+            raise ToolFailure(
+                "Provide exactly one of report_number or node_id.",
+                "Search results carry both.",
+            )
         try:
             if node_id is None:
                 listing = await fetch_object(
@@ -76,7 +77,7 @@ def register(mcp: FastMCP) -> None:
                     "error": f"No report has the node id {node_id}.",
                     "hint": "Use vaoig_search_findings to find the report.",
                 }
-            return tool_error(exc)
+            raise tool_error(exc) from exc
 
         return {
             **report,

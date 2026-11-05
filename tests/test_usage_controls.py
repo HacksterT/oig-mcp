@@ -14,6 +14,7 @@ from fastmcp import FastMCP
 
 from oig_mcp.auth import BearerTokenVerifier
 from oig_mcp.middleware import add_usage_controls, configure_usage_log, usage_log
+from oig_mcp.utils import ToolFailure
 
 ALICE = "a" * 64
 BOB = "b" * 64
@@ -34,6 +35,10 @@ async def mcp_client(burst: int = 100):
     @server.tool
     def fail(query: str) -> str:
         raise ValueError(query)
+
+    @server.tool
+    def upstream_down(query: str) -> dict:
+        raise ToolFailure("Upstream service request failed.", "Start the API.")
 
     add_usage_controls(server, requests_per_second=0.001, burst=burst)
     http_app = server.http_app(stateless_http=True, json_response=True)
@@ -94,6 +99,21 @@ async def test_failed_tool_is_logged_as_an_error(usage_lines) -> None:
         await call(client, ALICE, tool="fail")
     assert "tool=fail outcome=error" in usage_lines[0]
     assert PRIVATE_QUERY not in usage_lines[0]
+
+
+async def test_tool_failure_is_logged_as_an_error_and_keeps_its_hint(
+    usage_lines,
+) -> None:
+    """The bug this guards: an upstream failure used to be logged as outcome=ok."""
+    async with mcp_client() as client:
+        response = await call(client, ALICE, tool="upstream_down")
+    result = response["result"]
+    assert result["isError"] is True
+    assert result["structuredContent"] == {
+        "error": "Upstream service request failed.",
+        "hint": "Start the API.",
+    }
+    assert "tool=upstream_down outcome=error" in usage_lines[0]
 
 
 async def test_unsafe_tool_name_does_not_reach_the_log(usage_lines) -> None:

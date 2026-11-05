@@ -154,7 +154,7 @@ def register(mcp: FastMCP) -> None:
         try:
             result = await fetch_object(path, params)
         except UpstreamServiceError as exc:
-            return tool_error(exc)
+            raise tool_error(exc) from exc
 
         items = [
             {key: value for key, value in item.items() if key not in _TARGET_FIELDS}

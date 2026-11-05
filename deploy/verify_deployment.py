@@ -81,7 +81,8 @@ def load_dotenv(path: Path) -> None:
 
 
 def tool_payload(result) -> dict:
-    """The tool's result, from its first text block."""
+    """The tool's result, from its first text block. A failed call carries
+    {"error", "hint"} there too, so a check reports it instead of crashing."""
     return json.loads(result.content[0].text)
 
 
@@ -149,7 +150,9 @@ async def verify_end_to_end(report: Report, url: str, token: str) -> None:
         names = {tool.name for tool in await client.list_tools()}
         report.check("tools/list returns the seven tools", names == EXPECTED_TOOLS)
 
-        status = tool_payload(await client.call_tool("vaoig_get_dataset_status", {}))
+        status = tool_payload(
+            await client.call_tool("vaoig_get_dataset_status", {}, raise_on_error=False)
+        )
         text = json.dumps(status)
         report.check(
             "status tool returns live data",
@@ -160,7 +163,9 @@ async def verify_end_to_end(report: Report, url: str, token: str) -> None:
 
         found = tool_payload(
             await client.call_tool(
-                "vaoig_search_findings", {"question": "unlocked medication carts"}
+                "vaoig_search_findings",
+                {"question": "unlocked medication carts"},
+                raise_on_error=False,
             )
         )
         report.check(

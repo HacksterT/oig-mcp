@@ -175,7 +175,7 @@ def register(mcp: FastMCP) -> None:
                 "clusters", {"report_type": _CURRENT_PROGRAM, "limit": top_findings}
             )
         except UpstreamServiceError as exc:
-            return tool_error(exc)
+            raise tool_error(exc) from exc
 
         station = profile.get("station_number")
         items = clusters.get("items", [])

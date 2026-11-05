@@ -13,10 +13,11 @@ from fastmcp import FastMCP
 
 from oig_mcp.utils import (
     CITE_TOTALS,
-    UNREACHABLE_HINT,
+    ToolFailure,
     UpstreamServiceError,
     build_provenance,
     fetch_json,
+    tool_error,
 )
 
 _FILTER_FACETS = ("report_type", "topic", "action_office", "state", "visn")
@@ -91,13 +92,13 @@ def register(mcp: FastMCP) -> None:
         try:
             meta = await fetch_json("meta")
         except UpstreamServiceError as exc:
-            return {"error": str(exc), "hint": UNREACHABLE_HINT}
+            raise tool_error(exc) from exc
 
         if not isinstance(meta, dict):
-            return {
-                "error": "The data API returned an unexpected shape for meta.",
-                "hint": "Check that the API and this server versions match.",
-            }
+            raise ToolFailure(
+                "The data API returned an unexpected shape for meta.",
+                "Check that the API and this server versions match.",
+            )
 
         provenance = build_provenance(
             meta.get("data_as_of"),

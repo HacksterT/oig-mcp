@@ -75,7 +75,7 @@ def register(mcp: FastMCP) -> None:
         try:
             result = await fetch_object("search", params)
         except UpstreamServiceError as exc:
-            return tool_error(exc)
+            raise tool_error(exc) from exc
 
         items = result.get("items", [])
         page_hits = result.get("page_hits", [])
