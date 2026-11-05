@@ -7,6 +7,9 @@ docs/web-handoff*.md
 docs/FOLLOWUP_HANDOFF.md
 docs/qna2_old.md
 
+# Usage log from the container
+logs/
+
 # Virtual environments
 .venv/
 venv/

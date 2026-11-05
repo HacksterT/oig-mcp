@@ -16,9 +16,13 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:8000:8080"
+    # Keeps the usage log when the container is recreated.
+    volumes:
+      - ./logs:/logs
     environment:
       MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN:?set MCP_AUTH_TOKEN in .env}
       MCP_CLIENT_TOKENS: ${MCP_CLIENT_TOKENS:-}
+      MCP_USAGE_LOG: /logs/usage.log
       OIG_DATA_API_BASE_URL: ${OIG_DATA_API_BASE_URL:?set OIG_DATA_API_BASE_URL in .env}
       CF_ACCESS_CLIENT_ID: ${CF_ACCESS_CLIENT_ID:?set CF_ACCESS_CLIENT_ID in .env}
       CF_ACCESS_CLIENT_SECRET: ${CF_ACCESS_CLIENT_SECRET:?set CF_ACCESS_CLIENT_SECRET in .env}
