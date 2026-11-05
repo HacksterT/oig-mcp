@@ -18,6 +18,7 @@ All real logic lives in the submodules:
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 import fastmcp
 from fastmcp import FastMCP
@@ -29,6 +30,7 @@ from oig_mcp.prompts import register_prompts
 from oig_mcp.resources import register_resources
 from oig_mcp.routes import register_routes
 from oig_mcp.tools import register_tools
+from oig_mcp.tracing import TraceStore
 
 # The startup banner checks PyPI for a newer FastMCP. Turn it off, so the data API
 # really is the only origin this server contacts.
@@ -60,7 +62,14 @@ register_resources(mcp)
 register_routes(mcp)
 
 configure_usage_log(settings.mcp_usage_log)
-add_usage_controls(mcp)
+add_usage_controls(
+    mcp,
+    trace_store=TraceStore(
+        Path(settings.mcp_trace_dir), settings.mcp_trace_max_mb * 1_000_000
+    )
+    if settings.mcp_trace_dir
+    else None,
+)
 
 
 def _require_http_auth() -> None:

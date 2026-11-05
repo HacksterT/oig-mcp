@@ -7,11 +7,13 @@ I/O and formatting here keeps each tool file focused on its own logic.
 from __future__ import annotations
 
 import json
+import time
 from typing import Any
 from urllib.parse import unquote, urlsplit
 
 import httpx
 
+from oig_mcp import tracing
 from oig_mcp.config import settings
 
 # Federal APIs can be slow or intermittently unresponsive — always use an
@@ -103,7 +105,12 @@ async def fetch_json(
     """
     safe_path = _validate_relative_path(path)
     request_headers = {"Accept": "application/json", **(headers or {})}
+    request_headers.update(tracing.headers())
     request_headers.update(_access_headers())
+    started = time.monotonic()
+    status: int | None = None
+    content = bytearray()
+    error: str | None = None
     try:
         async with httpx.AsyncClient(
             base_url=API_BASE_URL,
@@ -114,8 +121,8 @@ async def fetch_json(
             async with client.stream(
                 "GET", safe_path, params=params, headers=request_headers
             ) as response:
+                status = response.status_code
                 response.raise_for_status()
-                content = bytearray()
                 async for chunk in response.aiter_bytes():
                     content.extend(chunk)
                     if len(content) > MAX_RESPONSE_BYTES:
@@ -123,17 +130,30 @@ async def fetch_json(
                             "Upstream response exceeded the size limit."
                         )
                 return json.loads(content)
-    except UpstreamServiceError:
+    except UpstreamServiceError as exc:
+        error = str(exc)
         raise
     except httpx.HTTPStatusError as exc:
+        error = f"status {exc.response.status_code}"
         raise UpstreamServiceError(
             f"Upstream service returned status {exc.response.status_code}.",
             status_code=exc.response.status_code,
         ) from None
     except (httpx.DecodingError, json.JSONDecodeError, UnicodeDecodeError):
+        error = "invalid JSON"
         raise UpstreamServiceError("Upstream service returned invalid JSON.") from None
-    except httpx.RequestError:
+    except httpx.RequestError as exc:
+        error = type(exc).__name__
         raise UpstreamServiceError("Upstream service request failed.") from None
+    finally:
+        tracing.api_call(
+            safe_path,
+            params,
+            status,
+            round((time.monotonic() - started) * 1000),
+            len(content),
+            error,
+        )
 
 
 async def fetch_object(

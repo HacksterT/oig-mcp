@@ -73,6 +73,11 @@ class Settings(BaseSettings):
     # client, tool, outcome, and duration of each call, never the arguments.
     mcp_usage_log: str = ""
 
+    # Full tool-call traces for closed testing (tracing.py): arguments, API calls,
+    # and results. Empty turns them off. Keep them off for public use.
+    mcp_trace_dir: str = ""
+    mcp_trace_max_mb: int = 400
+
     # ── OIG data API (served by the oig-data-source repository) ───────────────
     # The one outbound origin this server calls. Operator-controlled: never
     # taken from a tool argument. Defaults to the local oig-data-source container.
