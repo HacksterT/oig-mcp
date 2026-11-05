@@ -113,6 +113,7 @@ async def test_dataset_status_returns_hint_when_api_unreachable(monkeypatch) -> 
 
     monkeypatch.setattr("oig_mcp.tools.dataset_status.fetch_json", boom)
     result = await mcp.call_tool("vaoig_get_dataset_status", {})
+    assert result.is_error
     payload = result.structured_content
     assert payload["error"] == "Upstream service request failed."
     assert "oig-data-source" in payload["hint"]

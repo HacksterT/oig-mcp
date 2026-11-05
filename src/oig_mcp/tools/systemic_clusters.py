@@ -129,7 +129,7 @@ def register(mcp: FastMCP) -> None:
                     "error": f"No cluster has the id {cluster_id}.",
                     "hint": "Search for clusters without cluster_id to find one.",
                 }
-            return tool_error(exc)
+            raise tool_error(exc) from exc
 
         in_scope = result.get("reports_in_scope")
         return {

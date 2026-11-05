@@ -139,7 +139,7 @@ def register(mcp: FastMCP) -> None:
         try:
             profile = await fetch_profile(facility)
         except UpstreamServiceError as exc:
-            return tool_error(exc)
+            raise tool_error(exc) from exc
         if "error" in profile or "matches" in profile:
             return profile
 

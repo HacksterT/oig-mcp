@@ -12,6 +12,7 @@ from typing import Any
 from urllib.parse import unquote, urlsplit
 
 import httpx
+from fastmcp.exceptions import ToolError
 
 from oig_mcp import tracing
 from oig_mcp.config import settings
@@ -167,13 +168,27 @@ async def fetch_object(
     return result
 
 
-def tool_error(exc: UpstreamServiceError) -> dict[str, str]:
-    """Turn an upstream failure into an error the assistant can act on."""
+class ToolFailure(ToolError):
+    """A tool call that failed, with an error and a hint the assistant can act on.
+
+    Raise it from a tool. middleware.ToolFailureMiddleware returns it as a result
+    marked isError that keeps {"error", "hint"} as structured content, so clients,
+    the usage log, and traces all see a failure. Answers such as "not found" or
+    "several facilities match" are not failures: return those normally.
+    """
+
+    def __init__(self, error: str, hint: str) -> None:
+        super().__init__(f"{error} {hint}")
+        self.body = {"error": error, "hint": hint}
+
+
+def tool_error(exc: UpstreamServiceError) -> ToolFailure:
+    """Turn an upstream failure into a ToolFailure for the tool to raise."""
     if exc.status_code in {400, 422}:
         hint = "A filter value was rejected. Check its format and try again."
     else:
         hint = UNREACHABLE_HINT
-    return {"error": str(exc), "hint": hint}
+    return ToolFailure(str(exc), hint)
 
 
 def shorten_responses(

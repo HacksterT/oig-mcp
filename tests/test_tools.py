@@ -68,6 +68,14 @@ async def call(name: str, **arguments: Any) -> dict[str, Any]:
         return (await client.call_tool(name, arguments)).structured_content
 
 
+async def call_failing(name: str, **arguments: Any) -> dict[str, Any]:
+    """Call a tool expected to fail, and return its structured error body."""
+    async with Client(mcp) as client:
+        result = await client.call_tool(name, arguments, raise_on_error=False)
+    assert result.is_error, f"{name} should report isError"
+    return result.structured_content
+
+
 async def test_tool_surface_is_exactly_the_agreed_list() -> None:
     """Guards the design rule: new facts become fields, not tools."""
     names = {tool.name for tool in await mcp.list_tools()}
@@ -165,14 +173,41 @@ async def test_unknown_filter_is_rejected_not_ignored(api: FakeApi) -> None:
 
 async def test_upstream_failure_returns_sanitized_error(api: FakeApi) -> None:
     api.routes["search"] = 500
-    result = await call("vaoig_search_findings", question="carts")
+    result = await call_failing("vaoig_search_findings", question="carts")
     assert result["error"] == "Upstream service returned status 500."
     assert "upstream detail" not in str(result)
 
 
+# Each tool with the arguments and the first API path it calls.
+_FIRST_CALLS = [
+    ("vaoig_get_dataset_status", {}, "meta"),
+    ("vaoig_search_findings", {"question": "carts"}, "search"),
+    ("vaoig_get_report", {"node_id": 1}, "reports/1"),
+    ("vaoig_get_facility_profile", {"facility": "Tampa"}, "facilities"),
+    ("vaoig_analyze_recommendations", {"group_by": "year"}, "metrics/counts"),
+    ("vaoig_find_systemic_clusters", {}, "clusters"),
+    ("vaoig_get_inspection_brief", {"facility": "Tampa"}, "facilities"),
+]
+
+
+@pytest.mark.parametrize(
+    ("tool", "arguments", "path"), _FIRST_CALLS, ids=[c[0] for c in _FIRST_CALLS]
+)
+async def test_every_tool_reports_an_unreachable_api_as_an_error(
+    api: FakeApi, tool: str, arguments: dict[str, Any], path: str
+) -> None:
+    """A dead data API must reach the client as isError, with a hint to act on."""
+    api.routes[path] = 503
+    result = await call_failing(tool, **arguments)
+    assert result == {
+        "error": "Upstream service returned status 503.",
+        "hint": utils.UNREACHABLE_HINT,
+    }
+
+
 async def test_rejected_filter_does_not_claim_the_api_is_down(api: FakeApi) -> None:
     api.routes["search"] = 422
-    result = await call("vaoig_search_findings", question="carts")
+    result = await call_failing("vaoig_search_findings", question="carts")
     assert "not reachable" not in result["hint"]
 
 
@@ -763,11 +798,12 @@ async def test_report_without_node_id_returns_its_listing(api: FakeApi) -> None:
 async def test_report_requires_exactly_one_identifier(
     api: FakeApi, arguments: dict[str, Any]
 ) -> None:
-    result = await call("vaoig_get_report", **arguments)
+    result = await call_failing("vaoig_get_report", **arguments)
     assert "exactly one" in result["error"]
     assert api.requests == []
 
 
 async def test_unknown_report_is_reported_as_not_found(api: FakeApi) -> None:
+    """Not found is an answer, not a failure, so it is not marked isError."""
     result = await call("vaoig_get_report", node_id=1)
     assert result["error"] == "No report has the node id 1."

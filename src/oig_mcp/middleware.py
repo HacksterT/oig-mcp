@@ -23,8 +23,10 @@ from fastmcp.server.middleware.rate_limiting import (
     RateLimitError,
     RateLimitingMiddleware,
 )
+from fastmcp.tools import ToolResult
 
 from oig_mcp import tracing
+from oig_mcp.utils import ToolFailure
 
 # An agent can fan out several searches at once, so allow a burst. A steady two
 # requests a second is still far beyond a person working with an agent.
@@ -117,6 +119,23 @@ class ToolTraceMiddleware(Middleware):
                     usage_log.warning("could not write trace")
 
 
+class ToolFailureMiddleware(Middleware):
+    """Return a ToolFailure as an isError result that keeps its error and hint.
+
+    A plain ToolError reaches the client as text only. This keeps the structured
+    body, so the assistant still gets a separate hint field. It runs innermost, so
+    the usage log and traces see the isError result.
+    """
+
+    async def on_call_tool(
+        self, context: MiddlewareContext, call_next: CallNext
+    ) -> Any:
+        try:
+            return await call_next(context)
+        except ToolFailure as failure:
+            return ToolResult(structured_content=failure.body, is_error=True)
+
+
 class ClientRateLimitMiddleware(RateLimitingMiddleware):
     """Limit callers with a token. Stdio has no token and only one local user."""
 
@@ -155,7 +174,11 @@ def add_usage_controls(
     burst: int = BURST,
     trace_store: tracing.TraceStore | None = None,
 ) -> None:
-    """Attach logging and tracing outside the limit, so refused calls appear too."""
+    """Attach logging and tracing outside the limit, so refused calls appear too.
+
+    The first middleware added is the outermost. ToolFailureMiddleware goes last,
+    nearest the tool, so every layer above it sees a failed call as isError.
+    """
     server.add_middleware(UsageLogMiddleware())
     server.add_middleware(ToolTraceMiddleware(trace_store))
     server.add_middleware(
@@ -165,3 +188,4 @@ def add_usage_controls(
             get_client_id=_client_name,
         )
     )
+    server.add_middleware(ToolFailureMiddleware())
