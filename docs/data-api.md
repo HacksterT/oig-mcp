@@ -8,6 +8,7 @@ The API is deliberately generic: filter, paginate, and aggregate over reports, r
 
 - Base URL: `OIG_DATA_API_BASE_URL`, for example `http://127.0.0.1:8787/v1/` with the oig-data-source container running (`docker compose up -d`).
 - Auth: `CF-Access-Client-Id` and `CF-Access-Client-Secret` headers when hosted; none locally.
+- Tracing: within a tool call, the MCP server sends `X-Trace-Id`, `X-OIG-Client`, and `X-OIG-Tool`. The API ignores them unless its test traces are on, and then records them so each request can be matched to its tool call.
 - All responses are JSON. Lists use the envelope `{total, count, offset, items, has_more, next_offset}`.
 - Every response includes `data_as_of` (YYYY-MM-DD).
 - Reports are keyed by `node_id` (the vaoig.gov Drupal node id); recommendations by `rec_id` = `<node_id>-<rec_no>`. vaoig.gov exposes a node id only for reports that have recommendations (about half of all reports; oig-data-source ADR-04), so report list items also carry `path`, and `node_id` may be null there.
