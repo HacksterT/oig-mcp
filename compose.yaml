@@ -3,8 +3,8 @@
 #
 #   docker compose up -d --build
 #
-# Compose reads the values below from `.env`. Only these four reach the container,
-# so anything else in that file, such as an evaluation API key, stays out of it.
+# Compose reads the values below from `.env`. Only these reach the container, so
+# anything else in that file, such as an evaluation API key, stays out of it.
 #
 # MCP endpoint: http://127.0.0.1:8000/mcp, with Authorization: Bearer <MCP_AUTH_TOKEN>
 
@@ -18,6 +18,7 @@ services:
       - "127.0.0.1:8000:8080"
     environment:
       MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN:?set MCP_AUTH_TOKEN in .env}
+      MCP_CLIENT_TOKENS: ${MCP_CLIENT_TOKENS:-}
       OIG_DATA_API_BASE_URL: ${OIG_DATA_API_BASE_URL:?set OIG_DATA_API_BASE_URL in .env}
       CF_ACCESS_CLIENT_ID: ${CF_ACCESS_CLIENT_ID:?set CF_ACCESS_CLIENT_ID in .env}
       CF_ACCESS_CLIENT_SECRET: ${CF_ACCESS_CLIENT_SECRET:?set CF_ACCESS_CLIENT_SECRET in .env}

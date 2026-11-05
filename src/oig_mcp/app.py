@@ -22,7 +22,7 @@ import os
 import fastmcp
 from fastmcp import FastMCP
 
-from oig_mcp.auth import SharedTokenVerifier
+from oig_mcp.auth import BearerTokenVerifier
 from oig_mcp.config import settings
 from oig_mcp.prompts import register_prompts
 from oig_mcp.resources import register_resources
@@ -47,7 +47,7 @@ mcp = FastMCP(
         "analysis tool to count them; a search total is never a count. Pass on "
         "any caveat or basis text a tool returns."
     ),
-    auth=SharedTokenVerifier(settings.mcp_auth_token)
+    auth=BearerTokenVerifier(settings.inbound_tokens())
     if settings.mcp_auth_token
     else None,
 )
