@@ -116,17 +116,19 @@ Because these changes followed earlier results, the final run is not a blind tes
 
 ## Tool latency
 
-Measured through the server, in the container that IBM will run, against the hosted API. Sample sizes are small, and these ran soon after the backend machine restarted, so they are slower than earlier runs on the same tools. The status and brief tools make several API calls each.
+Measured through the server, in the container that IBM will run, against the hosted API, during the 2026-11-10 Opus run. That run followed two changes that cut round trips: one pooled HTTP client instead of a new connection per call, and dataset status reading its five filter lists at once. Sample sizes are small. The status and brief tools make several API calls each, and the brief runs up to ten searches.
 
-| Tool | Median, Opus run | Slowest in either run |
-|---|---|---|
-| `vaoig_analyze_recommendations` | about 0.3 s | about 1.4 s |
-| `vaoig_find_systemic_clusters` | about 0.2 s | about 0.2 s |
-| `vaoig_get_dataset_status` | about 2.7 s | about 3.9 s |
-| `vaoig_get_facility_profile` | about 0.8 s | about 2.0 s |
-| `vaoig_get_inspection_brief` | about 2.8 s | about 4.0 s |
-| `vaoig_get_report` | about 0.4 s | about 0.8 s |
-| `vaoig_search_findings` | about 0.8 s | about 1.7 s |
+| Tool | Calls | Median | Slowest |
+|---|---|---|---|
+| `vaoig_analyze_recommendations` | 16 | about 0.13 s | about 0.24 s |
+| `vaoig_find_systemic_clusters` | 3 | about 0.15 s | about 0.24 s |
+| `vaoig_get_dataset_status` | 23 | about 0.27 s | about 0.40 s |
+| `vaoig_get_facility_profile` | 8 | about 0.29 s | about 0.38 s |
+| `vaoig_get_inspection_brief` | 2 | about 2.0 s | about 2.0 s |
+| `vaoig_get_report` | 1 | about 0.24 s | about 0.24 s |
+| `vaoig_search_findings` | 4 | about 0.32 s | about 0.36 s |
+
+The 2026-11-04 runs were slower, for example 2.7 s for dataset status and 2.8 s for the brief, but they ran soon after the backend machine restarted, so the difference is not all from these changes. A controlled comparison on 2026-11-10, alternating per-call and pooled clients against the same API, put the pooled client's gain at about 30 percent for search and 50 percent for dataset status.
 
 ## Authentication tests
 

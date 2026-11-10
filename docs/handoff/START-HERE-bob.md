@@ -15,7 +15,7 @@ Work through Phases 0 to 4 in the handoff, one at a time. Stop at the end of eac
 
 Use the initials `TES` in every IBM resource name.
 
-Troy will give you these values directly when you need them: the data API URL, the Cloudflare client ID and secret, his IBM account details, and the Orchestrate URL and key. Generate `MCP_AUTH_TOKEN` yourself, as the handoff describes. Confirm you received a secret without repeating its value, and never put a secret in a commit, a log, or a report.
+Troy will give you these values directly when you need them: the data API URL, the Cloudflare client ID and secret, the data API key, his IBM account details, and the Orchestrate URL and key. Generate `MCP_AUTH_TOKEN` yourself, as the handoff describes. Confirm you received a secret without repeating its value, and never put a secret in a commit, a log, or a report.
 
 If the server cannot reach the data API or Orchestrate rejects the connection, stop and send Troy the exact error. Do not weaken authentication, add a proxy, or change the transport to get past it. Ask before creating anything paid that the handoff does not list.
 
