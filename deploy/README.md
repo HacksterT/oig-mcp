@@ -40,6 +40,18 @@ uv run python deploy/verify_deployment.py --url https://<APP_URL>
 
 This tests both connections from outside: who may reach `/mcp`, and whether tools get live data through the API. It needs `MCP_AUTH_TOKEN`. With the API URL and Cloudflare token set too, it also tests the API directly. Without them, it skips that part and says so.
 
+## Add or remove a tester
+
+Each tester gets a named token, so one can be removed without affecting the rest. Run these on the machine serving `/mcp`, from this repo. `add` creates the token, writes it to `MCP_CLIENT_TOKENS` in `.env`, restarts the server, and prints only the token, so pipe it to the clipboard rather than the screen:
+
+```bash
+python3 deploy/mcp_clients.py add <name> | pbcopy
+python3 deploy/mcp_clients.py list
+python3 deploy/mcp_clients.py remove <name>
+```
+
+Names are lowercase letters, digits, `-`, and `_`. Each change restarts the server for a few seconds. To replace an exposed token, `remove` and then `add`. Send the tester [docs/testers.md](../docs/testers.md) and the token, and paste the token before copying anything else.
+
 ## Run it locally for any MCP client
 
 ```bash
