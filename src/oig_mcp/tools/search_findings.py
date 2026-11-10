@@ -14,6 +14,7 @@ from pydantic import Field
 from oig_mcp.models import RecommendationFilters, SearchResult, output_schema
 from oig_mcp.utils import (
     READ_ONLY_TOOL,
+    VISN_NUMBERING_NOTICE,
     UpstreamServiceError,
     build_provenance,
     fetch_object,
@@ -92,6 +93,8 @@ def register(mcp: FastMCP) -> None:
         page_hits = result.get("page_hits", [])
         search_mode = result.get("search_mode")
         notices = [_SHORTLIST_NOTICE]
+        if filters and filters.visn:
+            notices.append(VISN_NUMBERING_NOTICE)
         if search_mode != "hybrid":
             notices.insert(0, _FALLBACK_NOTICE)
         return {

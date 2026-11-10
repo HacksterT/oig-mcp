@@ -64,18 +64,25 @@ async def test_about_resource_is_discoverable():
     assert "vaoig://about" in {str(r.uri) for r in resources}
 
 
+def _undescribed(schema: dict, path: str) -> list[str]:
+    """Paths of properties without a description, including inside nested objects."""
+    missing = []
+    for name, prop in schema.get("properties", {}).items():
+        if not prop.get("description"):
+            missing.append(f"{path}.{name}")
+        for arm in prop.get("anyOf", []):
+            missing += _undescribed(arm, f"{path}.{name}")
+        missing += _undescribed(prop, f"{path}.{name}")
+    for model, definition in schema.get("$defs", {}).items():
+        missing += _undescribed(definition, f"{path}.{model}")
+    return missing
+
+
 async def test_every_tool_parameter_has_a_description():
     """A model fills parameters from their descriptions, so none may be blank."""
     missing = []
     for tool in await mcp.list_tools():
-        schema = tool.parameters
-        for name, prop in schema.get("properties", {}).items():
-            if not prop.get("description"):
-                missing.append(f"{tool.name}.{name}")
-        for model, definition in schema.get("$defs", {}).items():
-            for name, prop in definition.get("properties", {}).items():
-                if not prop.get("description"):
-                    missing.append(f"{tool.name}.{model}.{name}")
+        missing += _undescribed(tool.parameters, tool.name)
     assert missing == []
 
 

@@ -954,3 +954,53 @@ async def test_analysis_description_explains_counting_and_no_facility_rows() -> 
     )
     assert "count one topic" in tool.description
     assert "does not rate or rank facilities" in tool.description
+
+
+# ── VISN numbering changed in August 2026 (oig-data-source schema.md) ───────
+
+
+async def test_visn_filter_explains_the_two_numberings(api: FakeApi) -> None:
+    api.routes["metrics/counts"] = {**AS_OF, **ENVELOPE, "items": []}
+    api.routes["search"] = {**AS_OF, **ENVELOPE, "search_mode": "hybrid", "items": []}
+    analysis = await call(
+        "vaoig_analyze_recommendations", group_by="year", filters={"visn": "1"}
+    )
+    search = await call(
+        "vaoig_search_findings", question="carts", filters={"visn": "1"}
+    )
+    for result in (analysis, search):
+        assert utils.VISN_NUMBERING_NOTICE in result["notices"]
+
+
+async def test_state_filter_has_no_visn_numbering_notice(api: FakeApi) -> None:
+    api.routes["metrics/counts"] = {**AS_OF, **ENVELOPE, "items": []}
+    result = await call(
+        "vaoig_analyze_recommendations", group_by="year", filters={"state": "Texas"}
+    )
+    assert utils.VISN_NUMBERING_NOTICE not in result["notices"]
+    assert "count others twice" in " ".join(result["notices"])
+
+
+async def test_facility_visn_is_flagged_as_possibly_former(api: FakeApi) -> None:
+    profile = _profile()
+    profile["visn"] = "1"
+    api.routes["facilities"] = {
+        **AS_OF,
+        **ENVELOPE,
+        "total": 1,
+        "items": [{"station_number": profile["station_number"]}],
+    }
+    api.routes[f"facilities/{profile['station_number']}"] = profile
+    result = await call("vaoig_get_facility_profile", facility="Tampa")
+    assert utils.FACILITY_VISN_NOTICE in result["notices"]
+
+
+async def test_visn_filter_description_names_the_change() -> None:
+    tool = next(t for t in await mcp.list_tools() if t.name == "vaoig_search_findings")
+    filters = next(
+        arm
+        for arm in tool.parameters["properties"]["filters"]["anyOf"]
+        if "properties" in arm
+    )
+    visn = filters["properties"]["visn"]
+    assert "August 2026" in visn["description"]

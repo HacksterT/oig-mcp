@@ -15,6 +15,7 @@ from pydantic import Field
 from oig_mcp.models import FacilityMatches, FacilityProfile, NotFound, output_schema
 from oig_mcp.utils import (
     CITE_TOTALS,
+    FACILITY_VISN_NOTICE,
     READ_ONLY_TOOL,
     UpstreamServiceError,
     build_provenance,
@@ -167,6 +168,7 @@ def register(mcp: FastMCP) -> None:
             **rest,
             "recommendations": page,
             "notices": [
+                *([FACILITY_VISN_NOTICE] if profile.get("visn") else []),
                 *([NO_RESPONSE_NOTICE] if lacks_response(page["items"]) else []),
                 *([PAST_WINDOW_NOTICE] if window_has_passed(profile) else []),
             ],

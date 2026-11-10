@@ -73,6 +73,22 @@ CITE_TOTALS = (
     "source."
 )
 
+# VA replaced its 18 VISNs with five on July 15, 2026. OIG tags reports from
+# August 2026 with the new labels and did not retag older ones, so one label can
+# name two regions (oig-data-source docs/schema.md, "VISN numbering").
+VISN_NUMBERING_NOTICE = (
+    "VISN labels on reports published before August 2026 are VA's former 18 "
+    "networks; later reports use the five networks VA created on July 15, 2026. "
+    "Labels 1, 2, 4, and 5 name different regions in each, and OIG did not retag "
+    "older reports. To follow a region across the change, filter by state, or split "
+    "by publication date."
+)
+FACILITY_VISN_NOTICE = (
+    "A facility's visn comes from OIG's report tags or memo headers, mostly in VA's "
+    "former numbering, so it may not be the facility's VISN under the five networks "
+    "VA created on July 15, 2026."
+)
+
 READ_ONLY_TOOL = {
     "readOnlyHint": True,
     "destructiveHint": False,

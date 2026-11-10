@@ -64,7 +64,14 @@ class RecommendationFilters(BaseModel):
         ),
     )
     visn: str | None = Field(
-        default=None, max_length=10, description="VISN number, for example 17."
+        default=None,
+        max_length=10,
+        description=(
+            "VISN label as OIG tagged the report. Before August 2026 these are VA's "
+            "former 18 networks; from August 2026, the five new networks, so 1, 2, "
+            "4, and 5 mean different regions in each. Use state to follow a region "
+            "across the change."
+        ),
     )
     state: str | None = Field(default=None, max_length=50, description="State name.")
     published_from: str | None = Field(
