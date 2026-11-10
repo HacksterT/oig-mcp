@@ -17,6 +17,7 @@ from oig_mcp.models import Analysis, AnalysisGroup, RecommendationFilters, outpu
 from oig_mcp.utils import (
     CITE_TOTALS,
     READ_ONLY_TOOL,
+    VISN_NUMBERING_NOTICE,
     UpstreamServiceError,
     build_provenance,
     fetch_object,
@@ -44,10 +45,11 @@ _TOPIC_COVERAGE = (
     "cover only those reports."
 )
 _NO_GEOGRAPHY = (
-    "A VISN or state filter leaves out recommendations that carry no VISN or state, "
-    "such as those from national reviews and from reports covering more than one "
-    "VISN. Results added up across every VISN or state can fall well short of the "
-    "total; run the same analysis without that filter to see the full count."
+    "A VISN or state filter leaves out recommendations from reports OIG did not "
+    "tag with one, such as national reviews. A report can also carry several VISNs "
+    "or states, so results added up across them can miss some recommendations and "
+    "count others twice. Run the same analysis without that filter for the full "
+    "count."
 )
 _TOPIC_CO_TAGS = (
     "Grouping by topic with a topic filter also returns the other topics those "
@@ -118,6 +120,8 @@ def _notices(
         notices.append(_TOPIC_CO_TAGS)
     if filters and (filters.visn or filters.state):
         notices.append(_NO_GEOGRAPHY)
+    if filters and filters.visn:
+        notices.append(VISN_NUMBERING_NOTICE)
     return notices
 
 
@@ -165,7 +169,8 @@ def register(mcp: FastMCP) -> None:
         theme exactly. Group by office, topic, or report_type for closure and aging
         measures. Facilities cannot be a grouping, because this server reports
         records and does not rate or rank facilities. To compare places, filter by
-        one VISN or state at a time; the result names the filters it used.
+        one state at a time; VISN labels changed meaning in August 2026. Each result
+        names the filters it used.
 
         Always pass on every entry in notices, and target_basis when discussing
         target dates.

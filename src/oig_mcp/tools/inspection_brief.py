@@ -26,6 +26,7 @@ from oig_mcp.tools.facility_profile import (
 )
 from oig_mcp.tools.systemic_clusters import CLUSTER_CAVEAT
 from oig_mcp.utils import (
+    FACILITY_VISN_NOTICE,
     READ_ONLY_TOOL,
     UpstreamServiceError,
     build_provenance,
@@ -224,6 +225,8 @@ def register(mcp: FastMCP) -> None:
             notices.append(NO_RESPONSE_NOTICE)
         if window_has_passed(profile):
             notices.append(PAST_WINDOW_NOTICE)
+        if profile.get("visn"):
+            notices.append(FACILITY_VISN_NOTICE)
         if profile.get("recommendations_has_more"):
             notices.append(
                 "This facility has more recommendations than were checked, so "

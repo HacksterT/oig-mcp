@@ -27,6 +27,9 @@ How to read answers
 - Every response carries data_as_of. Statuses change after publication; say
   when the data was collected and flag stale data.
 - The server returns records. It does not rate facilities or individuals.
+- VA replaced its 18 VISNs with five on July 15, 2026. OIG kept the old labels
+  on older reports, so VISN 1, 2, 4, and 5 each name two different regions.
+  Use state to follow a region across the change.
 - A search result is a ranked shortlist, not a count. Use the analysis tool to count.
 - Where a pattern supports more than one reading (for example, a finding that
   fell off after an inspection protocol changed), present both.
