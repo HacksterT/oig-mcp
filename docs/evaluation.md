@@ -130,3 +130,5 @@ Run against the same container, and again through a temporary public HTTPS tunne
 | MCP server to data API | No credentials; wrong Cloudflare token; the MCP bearer token | The right Cloudflare token |
 
 The server refuses to start without a bearer token, with one under 32 characters, or with a plain-HTTP remote API. With a missing or wrong Cloudflare token, it starts, and its tools return a short refusal that does not reveal the API's address. No secret appeared in tool responses, server logs, or the image.
+
+Local HTTP binds `127.0.0.1` and checks Host and Origin headers. Tested 2026-11-10 against a live local server: a foreign Host header got 421, a foreign Origin 403, and a request without a token 401. The container path listens on all interfaces behind Cloudflare and the bearer token, and the deployment check above still passes against it.
