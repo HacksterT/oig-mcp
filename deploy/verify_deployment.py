@@ -179,7 +179,9 @@ async def verify_end_to_end(report: Report, url: str, token: str) -> None:
         )
 
 
-def verify_api_gate(report: Report, api_url: str, token: str, access: dict) -> None:
+def verify_api_gate(
+    report: Report, api_url: str, token: str, access: dict, api_key: str = ""
+) -> None:
     """Connection 2 directly: who may reach the data API."""
     print("\nData API, called directly")
     if not api_url or not api_url.startswith("https://") or not access:
@@ -202,9 +204,17 @@ def verify_api_gate(report: Report, api_url: str, token: str, access: dict) -> N
                 response.status_code in {401, 403} and not leaked,
                 f"HTTP {response.status_code}",
             )
+        if api_key:
+            response = client.get("meta", headers=access)
+            report.check(
+                "refuses Access token without the API key",
+                response.status_code == 401 and "data_as_of" not in response.text,
+                f"HTTP {response.status_code}",
+            )
+            access = {**access, "Authorization": f"Bearer {api_key}"}
         response = client.get("meta", headers=access)
         report.check(
-            "accepts the Access token",
+            "accepts the Access token" + (" and API key" if api_key else ""),
             response.status_code == 200 and "data_as_of" in response.text,
             f"HTTP {response.status_code}",
         )
@@ -229,14 +239,17 @@ def main() -> int:
         if client_id and client_secret
         else {}
     )
-    report = Report([token, client_id, client_secret])
+    api_key = os.environ.get("OIG_DATA_API_KEY", "")
+    report = Report([token, client_id, client_secret, api_key])
 
     verify_mcp_gate(report, url, token, access)
     try:
         asyncio.run(verify_end_to_end(report, url, token))
     except Exception as exc:  # A failed connection is a result here, not a crash.
         report.check("MCP client session", False, type(exc).__name__)
-    verify_api_gate(report, os.environ.get("OIG_DATA_API_BASE_URL", ""), token, access)
+    verify_api_gate(
+        report, os.environ.get("OIG_DATA_API_BASE_URL", ""), token, access, api_key
+    )
 
     print(f"\n{report.passed} passed, {report.failed} failed")
     return 1 if report.failed else 0

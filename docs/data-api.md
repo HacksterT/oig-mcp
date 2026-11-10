@@ -7,7 +7,7 @@ The API is deliberately generic: filter, paginate, and aggregate over reports, r
 ## Conventions
 
 - Base URL: `OIG_DATA_API_BASE_URL`, for example `http://127.0.0.1:8787/v1/` with the oig-data-source container running (`docker compose up -d`).
-- Auth: `CF-Access-Client-Id` and `CF-Access-Client-Secret` headers when hosted; none locally.
+- Auth: `CF-Access-Client-Id` and `CF-Access-Client-Secret` headers when hosted, plus `Authorization: Bearer <OIG_DATA_API_KEY>` when the API sets `OIG_API_KEY` (a missing or wrong key is 401). `/health` needs neither. None locally.
 - Tracing: within a tool call, the MCP server sends `X-Trace-Id`, `X-OIG-Client`, and `X-OIG-Tool`. The API ignores them unless its test traces are on, and then records them so each request can be matched to its tool call.
 - All responses are JSON. Lists use the envelope `{total, count, offset, items, has_more, next_offset}`.
 - Every response includes `data_as_of` (YYYY-MM-DD).

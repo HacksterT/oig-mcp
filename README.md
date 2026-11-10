@@ -70,6 +70,7 @@ Without the data API running, `vaoig://about` still works and `vaoig_get_dataset
 |---|---|---|
 | `OIG_DATA_API_BASE_URL` | `http://127.0.0.1:8787/v1/` | The data API. Must be https unless local |
 | `CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET` | empty | Cloudflare Access service token for the hosted API |
+| `OIG_DATA_API_KEY` | empty | The data API's own key, sent as `Authorization: Bearer` behind Access. Must match the API's `OIG_API_KEY` |
 | `MCP_AUTH_TOKEN` | empty | Bearer token for `/mcp`. Required over HTTP, unused over stdio |
 | `MCP_CLIENT_TOKENS` | empty | More bearer tokens, as `name:token,name:token`, so one client can be removed alone. Managed with `deploy/mcp_clients.py` |
 | `MCP_USAGE_LOG` | empty | File for the usage log, which also goes to stderr. Records client, tool, outcome, and duration, never arguments |

@@ -29,4 +29,6 @@ services:
       OIG_DATA_API_BASE_URL: ${OIG_DATA_API_BASE_URL:?set OIG_DATA_API_BASE_URL in .env}
       CF_ACCESS_CLIENT_ID: ${CF_ACCESS_CLIENT_ID:?set CF_ACCESS_CLIENT_ID in .env}
       CF_ACCESS_CLIENT_SECRET: ${CF_ACCESS_CLIENT_SECRET:?set CF_ACCESS_CLIENT_SECRET in .env}
+      # The data API's own key, behind Access. Empty if the API doesn't require one.
+      OIG_DATA_API_KEY: ${OIG_DATA_API_KEY:-}
       STALE_AFTER_DAYS: ${STALE_AFTER_DAYS:-30}
