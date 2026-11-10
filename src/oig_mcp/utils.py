@@ -52,13 +52,16 @@ READ_ONLY_TOOL = {
 
 
 def _access_headers() -> dict[str, str]:
-    """Cloudflare Access service-token headers, when configured."""
+    """Cloudflare Access service-token headers and the data API key, when set.
+
+    Applied last in fetch_json, so a caller can't replace them."""
+    headers = {}
     if settings.cf_access_client_id and settings.cf_access_client_secret:
-        return {
-            "CF-Access-Client-Id": settings.cf_access_client_id,
-            "CF-Access-Client-Secret": settings.cf_access_client_secret,
-        }
-    return {}
+        headers["CF-Access-Client-Id"] = settings.cf_access_client_id
+        headers["CF-Access-Client-Secret"] = settings.cf_access_client_secret
+    if settings.oig_data_api_key:
+        headers["Authorization"] = f"Bearer {settings.oig_data_api_key}"
+    return headers
 
 
 class UpstreamServiceError(RuntimeError):

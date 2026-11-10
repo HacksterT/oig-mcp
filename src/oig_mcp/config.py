@@ -89,6 +89,11 @@ class Settings(BaseSettings):
     cf_access_client_id: str = ""
     cf_access_client_secret: str = ""
 
+    # Optional key for the data API's own check behind Access (its OIG_API_KEY).
+    # When set, it is sent as Authorization: Bearer on every API request. It is a
+    # different secret from the MCP tokens above, which are never forwarded.
+    oig_data_api_key: str = ""
+
     # Responses flag data older than this many days as stale.
     stale_after_days: int = 30
 
@@ -99,6 +104,15 @@ class Settings(BaseSettings):
         if value and len(value) < _MIN_AUTH_TOKEN_LENGTH:
             raise ValueError(
                 f"MCP_AUTH_TOKEN must be at least {_MIN_AUTH_TOKEN_LENGTH} characters"
+            )
+        return value
+
+    @field_validator("oig_data_api_key")
+    @classmethod
+    def _validate_data_api_key(cls, value: str) -> str:
+        if value and len(value) < _MIN_AUTH_TOKEN_LENGTH:
+            raise ValueError(
+                f"OIG_DATA_API_KEY must be at least {_MIN_AUTH_TOKEN_LENGTH} characters"
             )
         return value
 

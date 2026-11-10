@@ -7,6 +7,7 @@ Please report security issues privately through GitHub's "Report a vulnerability
 ## Design
 
 - **One outbound origin.** The server calls only `OIG_DATA_API_BASE_URL`, set by the operator. Tool arguments never choose a host. The URL must be https unless it points at localhost, and may not carry credentials, a query, or a fragment.
+- **Two keys to the data API.** Every request carries the Cloudflare Access service token and, when `OIG_DATA_API_KEY` is set, the API's own bearer key, so the API stays closed if the Access policy is ever removed. Both are applied after any caller-supplied headers, never logged or traced, and separate from the MCP tokens, which are never forwarded.
 - **No other outbound calls.** FastMCP's startup check for a newer version is turned off, since it would contact PyPI.
 - **Hardened HTTP client.** Relative paths only (absolute, encoded, and traversal paths are rejected), no redirects, environment proxies ignored, a 5 MB response cap, and a 30 second timeout.
 - **Sanitized errors.** Upstream failures return a short fixed message and a hint. Response bodies, headers, URLs, and stack traces are not passed to the client or logged.

@@ -92,6 +92,30 @@ async def test_no_access_headers_when_unconfigured(monkeypatch) -> None:
     assert "CF-Access-Client-Id" not in _CaptureClient.headers
 
 
+@pytest.mark.asyncio
+async def test_data_api_key_sent_when_configured(monkeypatch) -> None:
+    monkeypatch.setattr(utils.httpx, "AsyncClient", _CaptureClient)
+    monkeypatch.setattr(utils.settings, "oig_data_api_key", "k" * 40)
+    await utils.fetch_json("meta", headers={"Authorization": "Bearer spoofed"})
+    assert _CaptureClient.headers["Authorization"] == "Bearer " + "k" * 40
+
+
+@pytest.mark.asyncio
+async def test_no_data_api_key_when_unconfigured(monkeypatch) -> None:
+    monkeypatch.setattr(utils.httpx, "AsyncClient", _CaptureClient)
+    monkeypatch.setattr(utils.settings, "oig_data_api_key", "")
+    await utils.fetch_json("meta")
+    assert "Authorization" not in _CaptureClient.headers
+
+
+def test_data_api_key_too_short_is_refused_without_echo() -> None:
+    from oig_mcp.config import Settings
+
+    with pytest.raises(ValueError) as caught:
+        Settings(oig_data_api_key="short-key-value")
+    assert "short-key-value" not in str(caught.value)
+
+
 def test_provenance_flags_stale_data() -> None:
     old = (date.today() - timedelta(days=45)).isoformat()
     p = utils.build_provenance(old)
