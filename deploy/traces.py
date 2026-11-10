@@ -2,7 +2,7 @@
 """Read the test traces: each tool call, and what the data API did for it.
 
     python3 deploy/traces.py list              # recent tool calls
-    python3 deploy/traces.py list --client mkuprian -n 50
+    python3 deploy/traces.py list --client <name> -n 50
     python3 deploy/traces.py show latest       # one call, with the API's side
     python3 deploy/traces.py show 3f9c2a1b7d6e4f00 --full
     python3 deploy/traces.py api               # recent API requests, from any caller
