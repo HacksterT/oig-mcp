@@ -86,10 +86,10 @@ def main() -> None:
     """Start the server, choosing a transport based on the environment.
 
     Precedence:
-      1. A platform-injected `PORT` (IBM Code Engine sets this) → run HTTP on
-         that port.
-      2. `MCP_TRANSPORT=streamable-http` in the environment → run HTTP on
-         `MCP_HOST`:`MCP_PORT` (see config.py / .env).
+      1. A platform-injected `PORT` (IBM Code Engine and the Dockerfile set it)
+         → HTTP on all interfaces, on that port.
+      2. `MCP_TRANSPORT=streamable-http` → local HTTP on `MCP_HOST`:`MCP_PORT`,
+         loopback by default (see config.py / .env).
       3. Otherwise → stdio, which is how local clients (Claude Desktop, Claude
          Code, Zed) launch the server as a subprocess.
 
@@ -101,27 +101,28 @@ def main() -> None:
     request to a second instance, and some proxies buffer or drop event streams.
     """
     platform_port = os.getenv("PORT")
-
-    if platform_port:
-        _require_http_auth()
-        mcp.run(
-            transport="http",
-            host="0.0.0.0",
-            port=int(platform_port),
-            stateless_http=True,
-            json_response=True,
-        )
-    elif settings.mcp_transport == "streamable-http":
-        _require_http_auth()
-        mcp.run(
-            transport="streamable-http",
-            host=settings.mcp_host,
-            port=settings.mcp_port,
-            stateless_http=True,
-            json_response=True,
-        )
-    else:
+    if not platform_port and settings.mcp_transport == "stdio":
         mcp.run(transport="stdio")
+        return
+
+    _require_http_auth()
+    if platform_port:
+        # A container must listen on every interface to receive traffic. Host
+        # checks stay off: the platform's proxy can reach the app over loopback
+        # with the public hostname, which a loopback-only allowlist would refuse.
+        host, port, host_checks = "0.0.0.0", int(platform_port), False
+    else:
+        # Local HTTP checks Host and Origin, so a web page can't reach a server
+        # on this machine through DNS rebinding. The bearer token still applies.
+        host, port, host_checks = settings.mcp_host, settings.mcp_port, "auto"
+    mcp.run(
+        transport="streamable-http",
+        host=host,
+        port=port,
+        stateless_http=True,
+        json_response=True,
+        host_origin_protection=host_checks,
+    )
 
 
 if __name__ == "__main__":

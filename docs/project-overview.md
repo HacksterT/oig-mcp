@@ -175,7 +175,7 @@ These are unresolved. Do not decide them; flag anything that depends on them. Th
 
 **Server endpoints over HTTP:** `/mcp` (MCP, streamable HTTP, stateless, JSON responses, no SSE), `/health`, `/version`.
 
-**Transport selection:** if the platform sets `PORT` (Code Engine and the Dockerfile do), the server runs HTTP on that port. Otherwise `MCP_TRANSPORT=streamable-http` runs HTTP on `MCP_HOST:MCP_PORT`. Otherwise it runs over stdio.
+**Transport selection:** if the platform sets `PORT` (Code Engine and the Dockerfile do), the server runs HTTP on that port. Otherwise `MCP_TRANSPORT=streamable-http` runs HTTP on `MCP_HOST:MCP_PORT`, loopback by default, with Host and Origin checks. Otherwise it runs over stdio. Any other `MCP_TRANSPORT` value stops startup.
 
 **Current capabilities:**
 

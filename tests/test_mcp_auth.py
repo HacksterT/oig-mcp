@@ -229,13 +229,51 @@ def test_platform_port_serves_stateless_http_with_token(monkeypatch) -> None:
     app_module.main()
     assert calls == [
         {
-            "transport": "http",
+            "transport": "streamable-http",
             "host": "0.0.0.0",
             "port": 8080,
             "stateless_http": True,
             "json_response": True,
+            "host_origin_protection": False,
         }
     ]
+
+
+def test_platform_port_wins_over_mcp_transport(monkeypatch) -> None:
+    calls = _capture_run(monkeypatch)
+    monkeypatch.setenv("PORT", "8080")
+    monkeypatch.setattr(app_module.settings, "mcp_transport", "stdio")
+    monkeypatch.setattr(app_module.settings, "mcp_auth_token", TOKEN)
+    app_module.main()
+    assert calls[0]["transport"] == "streamable-http"
+
+
+def test_local_http_binds_loopback_and_checks_host(monkeypatch) -> None:
+    calls = _capture_run(monkeypatch)
+    monkeypatch.delenv("PORT", raising=False)
+    monkeypatch.delenv("MCP_HOST", raising=False)
+    monkeypatch.setattr(app_module.settings, "mcp_transport", "streamable-http")
+    monkeypatch.setattr(app_module.settings, "mcp_auth_token", TOKEN)
+    monkeypatch.setattr(
+        app_module.settings, "mcp_host", Settings.model_fields["mcp_host"].default
+    )
+    app_module.main()
+    assert calls == [
+        {
+            "transport": "streamable-http",
+            "host": "127.0.0.1",
+            "port": app_module.settings.mcp_port,
+            "stateless_http": True,
+            "json_response": True,
+            "host_origin_protection": "auto",
+        }
+    ]
+
+
+@pytest.mark.parametrize("value", ["streamable_http", "http", "sse", ""])
+def test_unknown_transport_stops_at_startup(value: str) -> None:
+    with pytest.raises(ValidationError, match="mcp_transport"):
+        Settings(_env_file=None, mcp_transport=value)
 
 
 def test_server_does_not_check_pypi_for_updates() -> None:

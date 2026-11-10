@@ -76,7 +76,7 @@ Without the data API running, `vaoig://about` still works and `vaoig_get_dataset
 | `MCP_USAGE_LOG` | empty | File for the usage log, which also goes to stderr. Records client, tool, outcome, and duration, never arguments |
 | `MCP_TRACE_DIR`, `MCP_TRACE_MAX_MB` | empty, `400` | Full tool-call traces for closed testing, including arguments and results. Read them with `deploy/traces.py`. Keep off for public use |
 | `STALE_AFTER_DAYS` | `30` | Age at which responses flag data as stale |
-| `MCP_TRANSPORT`, `MCP_HOST`, `MCP_PORT` | `stdio`, `0.0.0.0`, `8000` | Transport; a platform-injected `PORT` switches to HTTP automatically |
+| `MCP_TRANSPORT`, `MCP_HOST`, `MCP_PORT` | `stdio`, `127.0.0.1`, `8000` | Transport (`stdio` or `streamable-http`; anything else stops startup) and the local HTTP address. A platform-injected `PORT` switches to HTTP on all interfaces |
 
 ## Development
 

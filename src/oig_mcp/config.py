@@ -7,6 +7,7 @@ Every field can be overridden by an environment variable of the same name
 from __future__ import annotations
 
 import re
+from typing import Literal
 from urllib.parse import urlsplit
 
 from pydantic import field_validator, model_validator
@@ -56,9 +57,11 @@ class Settings(BaseSettings):
     # "streamable-http" — remote HTTP server (containers, cloud deploys)
     #
     # app.py also auto-selects HTTP when the platform injects PORT (IBM Code
-    # Engine does), so you usually do NOT need to set this on a cloud host.
-    mcp_transport: str = "stdio"
-    mcp_host: str = "0.0.0.0"
+    # Engine does), so you usually do NOT need to set this on a cloud host. Any
+    # other value stops the server at startup, rather than quietly running stdio.
+    mcp_transport: Literal["stdio", "streamable-http"] = "stdio"
+    # Local HTTP only. A container sets PORT and listens on every interface instead.
+    mcp_host: str = "127.0.0.1"
     mcp_port: int = 8000
 
     # Bearer token callers must present to /mcp. Required to serve over HTTP;
