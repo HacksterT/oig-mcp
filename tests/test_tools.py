@@ -241,6 +241,20 @@ async def test_tools_that_return_report_text_say_it_is_quoted() -> None:
         assert tools[name].annotations.read_only_hint is True, name
 
 
+async def test_routing_hints_reach_the_client() -> None:
+    # FastMCP drops a docstring's Returns section from the description it sends,
+    # so a hint that steers the model to another tool must sit above it.
+    tools = {
+        tool.name: " ".join(tool.description.split()) for tool in await mcp.list_tools()
+    }
+    assert "Returns:" not in "".join(tools.values())
+    assert "filter value" in tools["vaoig_get_dataset_status"]
+    assert "vaoig_analyze_recommendations" in tools["vaoig_search_findings"]
+    assert "vaoig_get_inspection_brief" in tools["vaoig_get_facility_profile"]
+    for name in ("vaoig_search_findings", "vaoig_get_facility_profile"):
+        assert "vaoig_get_report has the full text" in tools[name], name
+
+
 async def test_report_text_is_marked_and_totals_are_not(api: FakeApi) -> None:
     api.routes["search"] = {**AS_OF, **ENVELOPE, "search_mode": "hybrid", "items": []}
     api.routes["metrics/counts"] = {**AS_OF, **ENVELOPE, "items": []}

@@ -359,7 +359,9 @@ class PeerAction(BaseModel):
     concur: Any = None
     target_date: str | None
     corrective_action: str
-    corrective_action_truncated: bool
+    corrective_action_truncated: bool = Field(
+        description="True when shortened; vaoig_get_report has the full text."
+    )
     pdf_page: int | None
 
 

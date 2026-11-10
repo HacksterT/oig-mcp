@@ -78,12 +78,12 @@ def register(mcp: FastMCP) -> None:
         annotations={"title": "Get OIG dataset status", **READ_ONLY_TOOL},
     )
     async def vaoig_get_dataset_status() -> dict[str, Any]:
-        """Report the coverage and freshness of the VA OIG recommendations data.
+        """Report how current the OIG data is, what it covers, and valid filter values.
 
-        Use this before answering questions about current recommendation status,
-        or when a user asks how up to date the data is. The data is a structured
-        copy of VA OIG's public reports, recommendations, and report PDFs,
-        refreshed on a schedule.
+        Call this first when an answer depends on current status, when a user asks
+        how up to date the data is, or to look up an exact filter value such as a
+        status, office, topic, or report type. The data is a structured copy of VA
+        OIG's public reports, recommendations, and report PDFs.
 
         Returns:
             data_as_of (collection date), counts of reports and recommendations,
