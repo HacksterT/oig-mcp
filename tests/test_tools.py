@@ -889,3 +889,68 @@ async def test_calls_share_one_client_that_closes_at_shutdown(
     assert len(made) == 1
     assert made[0].is_closed
     assert utils._shared_client is None
+
+
+# ── Analysis results name their scope (Hermes assessment, 2026-11-10) ───────
+
+
+async def test_analysis_echoes_its_filters_and_keywords(api: FakeApi) -> None:
+    api.routes["metrics/closure"] = {**AS_OF, **ENVELOPE, "items": []}
+    result = await call(
+        "vaoig_analyze_recommendations",
+        group_by="office",
+        keywords="suicide",
+        filters={"visn": "3", "topic": "Mental Health"},
+    )
+    assert result["keywords"] == "suicide"
+    assert result["filters"] == {"visn": "3", "topic": "Mental Health"}
+    assert result["recommendation_total"] is None  # office groups overlap
+
+
+async def test_year_grouping_states_the_exact_total(api: FakeApi) -> None:
+    api.routes["metrics/counts"] = {
+        **AS_OF,
+        **ENVELOPE,
+        "items": [
+            {"year": 2024, "recommendation_count": 7},
+            {"year": 2025, "recommendation_count": 5},
+        ],
+    }
+    result = await call("vaoig_analyze_recommendations", group_by="year")
+    assert result["recommendation_total"] == 12
+    assert result["filters"] == {}
+
+
+@pytest.mark.parametrize("geography", [{"visn": "1"}, {"state": "Texas"}])
+async def test_visn_or_state_filter_says_what_it_leaves_out(
+    api: FakeApi, geography: dict[str, str]
+) -> None:
+    api.routes["metrics/counts"] = {**AS_OF, **ENVELOPE, "items": []}
+    result = await call(
+        "vaoig_analyze_recommendations", group_by="year", filters=geography
+    )
+    assert "national reviews" in " ".join(result["notices"])
+
+
+async def test_no_geography_notice_without_a_visn_or_state(api: FakeApi) -> None:
+    api.routes["metrics/counts"] = {**AS_OF, **ENVELOPE, "items": []}
+    result = await call("vaoig_analyze_recommendations", group_by="year")
+    assert "national reviews" not in " ".join(result["notices"])
+
+
+async def test_topic_filter_grouped_by_topic_explains_co_tags(api: FakeApi) -> None:
+    api.routes["metrics/closure"] = {**AS_OF, **ENVELOPE, "items": []}
+    result = await call(
+        "vaoig_analyze_recommendations",
+        group_by="topic",
+        filters={"topic": "Mental Health"},
+    )
+    assert "group by year instead" in " ".join(result["notices"])
+
+
+async def test_analysis_description_explains_counting_and_no_facility_rows() -> None:
+    tool = next(
+        t for t in await mcp.list_tools() if t.name == "vaoig_analyze_recommendations"
+    )
+    assert "count one topic" in tool.description
+    assert "does not rate or rank facilities" in tool.description

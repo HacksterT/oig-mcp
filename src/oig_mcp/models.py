@@ -287,7 +287,17 @@ class Analysis(BaseModel):
     """Counts and closure measures for a filtered set, one item per group."""
 
     group_by: str
+    keywords: str | None = Field(description="The keywords used, echoed back.")
+    filters: dict[str, Any] = Field(
+        description="The filters used, echoed back, so the result names its scope."
+    )
     total_groups: int | None
+    recommendation_total: int | None = Field(
+        description=(
+            "Distinct recommendations in the set, the sum over years. Null for other "
+            "groupings, whose groups overlap."
+        )
+    )
     items: list[dict[str, Any]]
     notices: Notices
     target_basis: str | None = Field(
