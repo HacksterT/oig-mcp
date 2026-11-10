@@ -2,7 +2,7 @@
 
 You are deploying oig-mcp, an MCP server over public VA Office of Inspector General data, to IBM Code Engine, and registering it in watsonx Orchestrate. The server is built and tested on Troy's Mac. Nothing has run on IBM yet.
 
-Repository: https://github.com/HacksterT/oig-mcp (branch `main`)
+Repository: https://github.com/HacksterT/oig-mcp (branch `main`, public). The handoff was updated on 2026-11-10; its "What changed" section lists the differences from an earlier copy.
 
 Read these two files before doing anything else, in this order:
 
