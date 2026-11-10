@@ -102,7 +102,7 @@ Callers authenticate to `/mcp` with a bearer token, with a rate limit per token.
 
 ## Acknowledgements
 
-The project structure and outbound HTTP security boundary are adapted from the [GSA TTS MCP hackathon template](https://github.com/GSA-TTS/mcp-hackathon-template) (MIT). This repository is an independent project and is not maintained with that template.
+The project structure and outbound HTTP security boundary are adapted from the [GSA TTS MCP hackathon template](https://github.com/GSA-TTS/mcp-hackathon-template) (MIT). This repository is an independent project and is not maintained with that template. The agent skills in `.agents/skills/` came with that template; `mcp-builder` originates in [Anthropic's skills repository](https://github.com/anthropics/skills/tree/main/skills/mcp-builder) and is under the Apache License 2.0, included as `.agents/skills/mcp-builder/LICENSE.txt`.
 
 ## License
 
