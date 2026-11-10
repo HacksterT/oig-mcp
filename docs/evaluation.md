@@ -5,7 +5,7 @@
 
 ## Results
 
-These are the final runs, on the server as built today and the data snapshot the live API serves. Results for watsonx Orchestrate and its models are not included, because the server has not yet been deployed there.
+These are the final runs, on the server as built today and the data snapshot the live API serves. On 2026-11-10, after typed results, one `notices` field, and a tool selection guide in the instructions, Claude Opus 5.5 was run again ([`eval/results/2026-11-10-opus-5-5/`](../eval/results/2026-11-10-opus-5-5/)). Every measure matched its earlier run, including tool selection (20 of 20) and caveats (14 of 14), with the same one failure. Results for watsonx Orchestrate and its models are not included, because the server has not yet been deployed there.
 
 | Measure | Claude Opus 5.5 | Claude Sonnet 5.5 | Scored by |
 |---|---|---|---|
