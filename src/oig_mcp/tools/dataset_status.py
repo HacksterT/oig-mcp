@@ -104,6 +104,7 @@ def register(mcp: FastMCP) -> None:
             meta.get("data_as_of"),
             ["https://www.vaoig.gov/reports/data-dashboard"],
             citation=CITE_TOTALS,
+            quoted=False,
         )
         result = {
             "data_as_of": meta.get("data_as_of"),
