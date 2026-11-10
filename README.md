@@ -6,7 +6,7 @@ An entry in the [GSA MCP Server and AI Agent Government Hackathon](https://www.g
 
 - **Proposal:** [troymd.com/mcp-hackathon](https://www.troymd.com/mcp-hackathon)
 - **Project overview and deployment plan:** [docs/project-overview.md](docs/project-overview.md)
-- **Data:** a structured, regularly refreshed copy of what VA OIG publishes at vaoig.gov, built and served by the companion `oig-data-source` repository. No internal VA systems or nonpublic information are used.
+- **Data:** a structured, regularly refreshed copy of what VA OIG publishes at vaoig.gov, built and served by the companion `oig-data-source` repository, which is private. [docs/data-api.md](docs/data-api.md) documents the API this server expects from it. No internal VA systems or nonpublic information are used.
 
 ## Status
 
@@ -43,12 +43,12 @@ The server calls exactly one origin, configured by the operator, never by a tool
 Requires [uv](https://docs.astral.sh/uv/).
 
 ```bash
-cp .env.example .env
+cp .env.example .env      # then set OIG_DATA_API_BASE_URL; for the hosted API, also the Cloudflare and API key values
 uv sync
-uv run oig-mcp            # stdio; or: uv run python main.py
+uv run oig-mcp            # stdio: waits silently for an MCP client; Ctrl-C to stop
 ```
 
-Connect Claude Code or Claude Desktop with:
+Connect Claude Code (`.mcp.json`) or Claude Desktop (`claude_desktop_config.json`):
 
 ```json
 {
@@ -62,7 +62,17 @@ Connect Claude Code or Claude Desktop with:
 }
 ```
 
-Without the data API running, `vaoig://about` still works and `vaoig_get_dataset_status` returns an error with a hint. See [QUICKSTART.md](QUICKSTART.md) for more.
+Then ask: "Read vaoig://about, then check the OIG dataset status." Without the data API running, the resource still works and the status tool returns an error with a hint.
+
+To serve over HTTP on this machine:
+
+```bash
+export MCP_AUTH_TOKEN=$(openssl rand -hex 32)
+MCP_TRANSPORT=streamable-http uv run oig-mcp
+curl http://localhost:8000/health
+```
+
+The MCP endpoint is `http://localhost:8000/mcp`, and callers send `Authorization: Bearer <MCP_AUTH_TOKEN>`. The server will not start over HTTP without a token, listens on `127.0.0.1` only, and refuses requests whose Host or Origin header names another site. To run the container image instead, use `docker compose up -d --build`. To connect to the hosted copy as a tester, see [docs/testers.md](docs/testers.md).
 
 ## Configuration
 
