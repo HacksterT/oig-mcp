@@ -1,7 +1,7 @@
 # Project Overview and Deployment Plan
 
 **Audience:** IBM Bob, working in the IBM-provided VM on a clone of this repository, and Troy Sybert, the project owner.
-**Status as of:** 2026-11-04.
+**Status as of:** 2026-11-10.
 **Purpose:** Explain what this project is, how its parts fit together, what already exists, and what Bob should and should not do on the IBM side.
 
 Bob: start with [the deployment handoff](handoff/2026-11-04-troy-bob-deployment-handoff.md), which has the steps, what is tested, and every assumption about IBM. This document holds the background and the rules.
@@ -36,7 +36,7 @@ This is an entry in the GSA MCP Server and AI Agent Government Hackathon, **Data
 | This project's platform | IBM: watsonx Orchestrate on IBM Cloud |
 | Judging criteria | Technical quality (including participant-run evaluation and MCP design: Pydantic models, precise tool names, goal-oriented tools), innovation, mission alignment (service delivery and oversight), presentation |
 | Deliverables | A GitHub repository with documented server code, a presentation deck, and an evaluation document |
-| Key dates | Halfway check-in Nov 3, 2026; closing ceremony Dec 16, 2026; final submission deadline not yet announced |
+| Key dates | Halfway check-in Nov 3, 2026; submissions due Nov 20, 2026, subject to change; closing ceremony Dec 16, 2026 |
 
 ## 3. Architecture
 
@@ -54,11 +54,11 @@ vaoig.gov (public OIG pages and PDFs)
 oig-data-source on Troy's Mac
   SQLite database ──> JSON API ──> Cloudflare Tunnel ──> Cloudflare Access
                                                                          │
-                                       HTTPS + service token headers     │
+                         HTTPS + service token headers + API key         │
                                                                          ▼
 oig-mcp on IBM Code Engine  (container from this repo's Dockerfile)
   /mcp  /health  /version
-      │  streamable HTTP, Authorization: Bearer MCP_AUTH_TOKEN
+      │  Streamable HTTP, Authorization: Bearer MCP_AUTH_TOKEN
       ▼
 watsonx Orchestrate  (remote MCP toolkit + an agent that uses it)
       │
@@ -75,8 +75,9 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 | Seven tools, three resources, two prompts | Built and tested |
 | Bearer authentication on `/mcp` | Built and tested on both connections. See `deploy/verify_deployment.py` |
 | Container image | Built from `uv.lock`, runs as non-root, stateless HTTP with JSON responses |
-| Evaluation (Arize Phoenix) | Run on two Claude models. Results are in [`evaluation.md`](evaluation.md) |
-| `oig-data-source` crawler, database, and API | Live behind Cloudflare Access, with the full data build of 2026-11-04 |
+| Evaluation (Arize Phoenix) | Run on two Claude models, and on Opus again on 2026-11-10 after the last response changes. Results are in [`evaluation.md`](evaluation.md) |
+| `oig-data-source` crawler, database, and API | Live behind Cloudflare Access and its own API key, with search limits, and the full data build of 2026-11-04 |
+| Hosted test endpoint | The same image runs on Troy's Mac for testers and judges, through a Cloudflare Tunnel, with tool-call traces on through judging |
 | IBM Cloud deployment | Not started. This is Bob's area (F05) |
 
 ## 5. Repository tour
@@ -85,8 +86,10 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 |---|---|
 | `src/oig_mcp/app.py` | Creates the FastMCP server, registers everything, chooses the transport |
 | `src/oig_mcp/config.py` | Settings from environment variables; validates the data API URL |
-| `src/oig_mcp/utils.py` | The hardened HTTP client (`fetch_json`), Access headers, provenance helper |
-| `src/oig_mcp/models.py` | Pydantic models and enums: `RecommendationStatus`, `PaginationParams`, `Provenance` |
+| `src/oig_mcp/utils.py` | The hardened HTTP client (`fetch_json`, one pooled client per server), Access headers, `ToolFailure` and `tool_error`, provenance helper |
+| `src/oig_mcp/models.py` | Pydantic models: input filters and enums, `Provenance`, and the result models each tool declares as its output schema |
+| `src/oig_mcp/middleware.py` | Usage log, per-token rate limit, tool-call traces, and turning `ToolFailure` into an `isError` result |
+| `src/oig_mcp/tracing.py` | Trace IDs sent to the data API, and trace files when `MCP_TRACE_DIR` is set |
 | `src/oig_mcp/tools/` | One file per tool; `__init__.py` registers them |
 | `src/oig_mcp/auth.py` | The bearer token check for `/mcp` |
 | `src/oig_mcp/resources/` | `vaoig://about`, `vaoig://facilities`, `vaoig://taxonomy/{facet}` |
@@ -99,7 +102,7 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 | `docs/project-overview.md` | This document |
 | `deploy/` | Deployment settings, and scripts that check an image and a running server |
 | `compose.yaml` | Runs the image locally for testing with any MCP client |
-| `Dockerfile` | Python 3.11 slim image; serves streamable HTTP on port 8080 |
+| `Dockerfile` | Python 3.11 slim image; serves Streamable HTTP on port 8080 |
 | `.agents/skills/` | Agent skills carried from the GSA template. The handoff lists where they differ from this server |
 | `docs/handoff/` | Handoff reports between Bob and Troy, and `TEMPLATE.md` for writing them |
 
@@ -110,8 +113,8 @@ If Bob changes code, these rules apply. Troy does most development on his Mac, s
 - **One tool per file** in `src/oig_mcp/tools/`, each exposing `register(mcp)` and added to `tools/__init__.py`.
 - **Tool names** use the `vaoig_` prefix and a verb: `vaoig_get_...`, `vaoig_find_...`, `vaoig_search_...`.
 - **Typed inputs** with Pydantic models or enums; read-only annotations on every tool.
-- **Every response** includes a `provenance` block built with `build_provenance()`, and every record carries a report number and a vaoig.gov URL.
-- **Errors** return `{"error": ..., "hint": ...}` with a short, safe message. Never return upstream response bodies, URLs, headers, or stack traces.
+- **Every response** includes a `provenance` block built with `build_provenance()` and a `notices` list, and every record carries a report number and a vaoig.gov URL. Each tool declares its result shape with `output_schema=` from `models.py`.
+- **Failures** raise `ToolFailure` (usually through `tool_error()`), which reaches the client as an `isError` result with `{"error", "hint"}`. "Not found" and "several match" are answers, not failures, and return normally. Never return upstream response bodies, URLs, headers, or stack traces.
 - **Outbound calls** go only through `fetch_json()` with a relative path. Never add another HTTP client, and never accept a URL from a tool argument.
 - **Before any commit:** `uv run ruff check .`, `uv run ruff format --check .`, and `uv run pytest tests/` must pass.
 - **Planning** documents are kept outside this repository. Record what was done in a handoff report under `docs/handoff/`.
@@ -132,7 +135,7 @@ Troy develops on his Mac. Bob works in the IBM VM. GitHub is the only channel be
 | Initials for resource names | Known | `TES` |
 | IBM Cloud account, resource group, and Code Engine project to use | Before Phase 2 | Troy tells Bob directly |
 | watsonx Orchestrate instance URL and API key | Before Phase 3 | Entered by Troy in the VM only; never written to the repository |
-| Data API URL and Cloudflare Access service token | Before Phase 1 | Entered as platform secrets only; never written to the repository |
+| Data API URL, Cloudflare Access service token, and data API key | Before Phase 1 | Entered as platform secrets only; never written to the repository |
 
 When Bob receives a secret, confirm receipt without repeating its value anywhere.
 
@@ -197,5 +200,6 @@ These are unresolved. Do not decide them; flag anything that depends on them. Th
 - **Recommendation status:** `open`, `closed-implemented`, or `closed-not-implemented`.
 - **HFI / CHIP:** Healthcare Facility Inspection and Comprehensive Healthcare Inspection Program, OIG's facility inspection report series.
 - **VISN:** Veterans Integrated Service Network, a regional grouping of VA facilities.
-- **Provenance:** the block on every response that says where the data came from and how old it is.
+- **Provenance:** the block on every response that says where the data came from, how old it is, how to cite it, and which fields quote report text.
+- **Notices:** the list on every data result of text the assistant must pass on to the user.
 - **Cloudflare Access service token:** a client ID and secret sent as `CF-Access-Client-Id` and `CF-Access-Client-Secret` headers so only approved clients reach the data API.

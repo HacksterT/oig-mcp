@@ -19,7 +19,7 @@ Read this first, and then [`docs/project-overview.md`](../project-overview.md) f
 | Initials | `TES`. Required in every IBM resource name |
 | IBM account, resource group, Code Engine project | Assumption A5 |
 | Orchestrate instance URL and API key | Entered in the VM, never written to a file in the repository |
-| `OIG_DATA_API_BASE_URL`, `CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET` | Provided directly. Treat all three as secrets, although the URL is not strictly one. Troy refreshes the Cloudflare token before handing it over, because earlier testing exposed part of it. Use only the values he gives you, and nothing from older notes |
+| `OIG_DATA_API_BASE_URL`, `CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET`, `OIG_DATA_API_KEY` | Provided directly. Treat all four as secrets, although the URL is not strictly one. Troy refreshes the Cloudflare token before handing it over, because earlier testing exposed part of it. Use only the values he gives you, and nothing from older notes |
 
 You generate `MCP_AUTH_TOKEN` yourself with `openssl rand -hex 32`. Use a new one for IBM, not one from the Mac. Confirm you have received secrets without repeating their values, and never put them in commits, logs, command arguments that get logged, or handoff reports.
 
@@ -33,7 +33,8 @@ Orchestrate agent
    |  Stored in: Orchestrate connection, and a Code Engine secret
    v
 oig-mcp on Code Engine
-   |  HTTPS, CF-Access-Client-Id and CF-Access-Client-Secret
+   |  HTTPS, CF-Access-Client-Id and CF-Access-Client-Secret,
+   |  and Authorization: Bearer <OIG_DATA_API_KEY>
    |  Stored in: a Code Engine secret only. Orchestrate never sees it
    v
 Cloudflare Access, then the OIG data API on Troy's machine
@@ -63,10 +64,10 @@ The bearer token is the only authentication built. OAuth is not. It is one share
 
 | Check | Where it ran | Result |
 |---|---|---|
-| Unit tests and lint | Mac | 120 tests pass |
+| Unit tests and lint | Mac | 182 tests pass (2026-11-10) |
 | Image builds for `linux/amd64` and imports the package | Mac, under emulation | Pass. It has not run a full request cycle on amd64 |
 | Refuses to start without a token, with a short token, or with a plain-HTTP remote API | Container | Pass |
-| Both connections accept right and refuse wrong credentials: 21 checks | Container, and through a public HTTPS tunnel | Pass |
+| Both connections accept right and refuse wrong credentials: 22 checks, including the data API refusing the Access token without its key | Container, and through a public HTTPS tunnel | Pass |
 | Missing or wrong Cloudflare token gives a clean refusal without the API address | Container | Pass |
 | No secret in the image, tool responses, or logs | Container | Pass |
 | An independent MCP client with a different model answers the questions | Hermes Agent running DeepSeek V4 Pro 0813, through the tunnel | Facts all correct, 18 questions. Its answers named reports but gave almost no links, under test instructions that may have caused that. See D10 |
@@ -173,9 +174,13 @@ ibmcloud ce application create \
   --env-from-secret oig-mcp-secrets-TES
 ```
 
-The secret file holds `MCP_AUTH_TOKEN`, `OIG_DATA_API_BASE_URL`, `CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET`, and `OIG_DATA_API_KEY` (the data API's own key, added 2026-11-10; never print it).
+The secret file holds `MCP_AUTH_TOKEN`, `OIG_DATA_API_BASE_URL`, `CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET`, and `OIG_DATA_API_KEY` (the data API's own key, added 2026-11-10; never print it). Delete it afterward, and delete the `.env` from Phase 1 when you finish deploying.
 
-Rate limits are kept per instance, so with `--max-scale 2` a client's effective limit is up to twice the configured one: 4 requests a second, burst 60. That is acceptable for a few trusted testers. Use `--max-scale 1` if the configured limit must hold exactly. Delete it afterward, and delete the `.env` from Phase 1 when you finish deploying. Then, from the VM:
+Rate limits are kept per instance, so with `--max-scale 2` a client's effective limit is up to twice the configured one: 4 requests a second, burst 60. That is acceptable for a few trusted testers and judges. Use `--max-scale 1` if the configured limit must hold exactly.
+
+Troy keeps full tool-call traces on through judging, so he can see what people ask. Code Engine app storage is temporary and separate per instance, so traces written inside the container would be lost. Do not set `MCP_TRACE_DIR` until Troy decides where traces go on IBM; ask him in your Phase 2 report.
+
+Then, from the VM:
 
 ```bash
 export MCP_AUTH_TOKEN=<the same token>
