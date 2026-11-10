@@ -33,6 +33,7 @@ The design favors trust over polish:
 - **Every finding can be checked.** It carries a report number, a link to vaoig.gov, and the date the data was collected.
 - **It does not rate anyone.** It reports records and offers no facility scores or rankings. Grouping results by facility is deliberately not offered.
 - **It states its limits in the answer.** A repeat finding means the same issue was cited again, not that nothing was done. A next-inspection date is labeled as an estimate, because OIG publishes no schedule. Where a pattern has more than one explanation, it gives both.
+- **Report text is treated as a quotation.** Text from OIG reports reaches the assistant marked as source material, not instructions, and every tool only reads, so nothing written in a report can make the server act.
 
 ## For staff
 
