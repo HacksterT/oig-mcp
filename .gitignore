@@ -56,3 +56,6 @@ htmlcov/
 
 # Evaluation output
 eval/.phoenix/
+
+# Local Claude Code settings
+.claude/

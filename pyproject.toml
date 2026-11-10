@@ -23,8 +23,7 @@ build-backend = "hatchling.build"
 packages = ["src/oig_mcp"]
 
 [dependency-groups]
-# Dev deps. Install with `uv sync --group dev`.
-# Evaluation dependencies are added with the Phoenix harness (F04).
+# Dev deps: `uv sync --group dev`. Evaluation harness: `uv sync --group eval`.
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
