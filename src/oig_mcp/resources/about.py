@@ -30,6 +30,13 @@ How to read answers
 - A search result is a ranked shortlist, not a count. Use the analysis tool to count.
 - Where a pattern supports more than one reading (for example, a finding that
   fell off after an inspection protocol changed), present both.
+
+Recording
+During the hackathon, including judging, each tool call is recorded in full:
+the question or arguments, what the server asked the data API, and the answer
+it returned, so the builder can see how the server is used. Tokens are never
+recorded, and the conversation with your AI model is not visible to the server.
+Do not enter patient information or anything nonpublic.
 """
 
 

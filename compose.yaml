@@ -23,8 +23,9 @@ services:
       MCP_AUTH_TOKEN: ${MCP_AUTH_TOKEN:?set MCP_AUTH_TOKEN in .env}
       MCP_CLIENT_TOKENS: ${MCP_CLIENT_TOKENS:-}
       MCP_USAGE_LOG: /logs/usage.log
-      # Full tool-call traces for closed testing, capped at 400 MB. They hold what
-      # testers asked and the answers: set MCP_TRACE_DIR= (empty) in .env to stop.
+      # Full tool-call traces, capped at 400 MB, on through the hackathon including
+      # judging. They hold what people asked and the answers, and vaoig://about says
+      # so. Set MCP_TRACE_DIR= (empty) in .env to stop.
       MCP_TRACE_DIR: ${MCP_TRACE_DIR-/logs/traces}
       OIG_DATA_API_BASE_URL: ${OIG_DATA_API_BASE_URL:?set OIG_DATA_API_BASE_URL in .env}
       CF_ACCESS_CLIENT_ID: ${CF_ACCESS_CLIENT_ID:?set CF_ACCESS_CLIENT_ID in .env}

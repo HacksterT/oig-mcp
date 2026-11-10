@@ -3,7 +3,8 @@
 Each client has its own limit, so one runaway agent can't use up the shared Mac.
 The usage log records who called which tool and how it ended, never the arguments.
 Traces (tracing.py) record everything, including arguments and results, and are
-written only while MCP_TRACE_DIR is set, for closed testing.
+written only while MCP_TRACE_DIR is set. They stay on through the hackathon,
+including judging, to see what people ask; users are told in vaoig://about.
 """
 
 from __future__ import annotations
