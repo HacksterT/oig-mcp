@@ -11,7 +11,7 @@ cp .env.example .env
 uv sync
 ```
 
-Set `OIG_DATA_API_BASE_URL` in `.env` to the OIG data API. The default points at a local instance from the `oig-data-source` repository. For the hosted API, also set `CF_ACCESS_CLIENT_ID` and `CF_ACCESS_CLIENT_SECRET`.
+Set `OIG_DATA_API_BASE_URL` in `.env` to the OIG data API. The default points at a local instance from the `oig-data-source` repository. For the hosted API, also set `CF_ACCESS_CLIENT_ID` and `CF_ACCESS_CLIENT_SECRET`, and `OIG_DATA_API_KEY` if the API requires its own key.
 
 ## 2. Run over stdio
 
@@ -47,7 +47,7 @@ MCP_TRANSPORT=streamable-http uv run oig-mcp
 curl http://localhost:8000/health
 ```
 
-The MCP endpoint is `http://localhost:8000/mcp`, and callers must send `Authorization: Bearer <MCP_AUTH_TOKEN>`. The server will not start over HTTP without a token. In a container or on IBM Code Engine, a platform-set `PORT` switches the server to HTTP automatically. To run the container image locally instead, use `docker compose up -d --build`.
+The MCP endpoint is `http://localhost:8000/mcp`, and callers must send `Authorization: Bearer <MCP_AUTH_TOKEN>`. The server will not start over HTTP without a token. It listens on `127.0.0.1` only and refuses requests whose Host or Origin header names another site. `MCP_TRANSPORT` accepts only `stdio` or `streamable-http`. In a container or on IBM Code Engine, a platform-set `PORT` switches the server to HTTP automatically. To run the container image locally instead, use `docker compose up -d --build`.
 
 ## 5. Verify
 
