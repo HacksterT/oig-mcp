@@ -7,6 +7,7 @@ from typing import Annotated, Any
 from fastmcp import FastMCP
 from pydantic import Field
 
+from oig_mcp.models import NotFound, Report, output_schema
 from oig_mcp.utils import (
     READ_ONLY_TOOL,
     ToolFailure,
@@ -28,15 +29,21 @@ def register(mcp: FastMCP) -> None:
 
     @mcp.tool(
         name="vaoig_get_report",
+        output_schema=output_schema(Report, NotFound),
         annotations={"title": "Get one OIG report", **READ_ONLY_TOOL},
     )
     async def vaoig_get_report(
         report_number: Annotated[
             str | None,
-            Field(description="OIG report number, for example 15-00071-158."),
+            Field(
+                min_length=1,
+                max_length=30,
+                description="OIG report number, for example 15-00071-158.",
+            ),
         ] = None,
         node_id: Annotated[
-            int | None, Field(description="Report node id from another tool's result.")
+            int | None,
+            Field(ge=1, description="Report node id from another tool's result."),
         ] = None,
     ) -> dict[str, Any]:
         """Get one report with every recommendation and its facility response.
@@ -68,7 +75,7 @@ def register(mcp: FastMCP) -> None:
                 if node_id is None:
                     return {
                         **matches[0],
-                        "note": _NO_NODE_NOTE,
+                        "notices": [_NO_NODE_NOTE],
                         "provenance": build_provenance(
                             listing.get("data_as_of"), report_urls(matches)
                         ),
@@ -84,6 +91,7 @@ def register(mcp: FastMCP) -> None:
 
         return {
             **report,
+            "notices": [],
             "provenance": build_provenance(
                 report.get("data_as_of"), report_urls([report])
             ),

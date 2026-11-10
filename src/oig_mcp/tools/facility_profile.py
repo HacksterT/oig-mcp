@@ -12,6 +12,7 @@ from urllib.parse import quote
 from fastmcp import FastMCP
 from pydantic import Field
 
+from oig_mcp.models import FacilityMatches, FacilityProfile, NotFound, output_schema
 from oig_mcp.utils import (
     CITE_TOTALS,
     READ_ONLY_TOOL,
@@ -103,6 +104,7 @@ def register(mcp: FastMCP) -> None:
 
     @mcp.tool(
         name="vaoig_get_facility_profile",
+        output_schema=output_schema(FacilityProfile, FacilityMatches, NotFound),
         annotations={"title": "Get an OIG facility profile", **READ_ONLY_TOOL},
     )
     async def vaoig_get_facility_profile(
@@ -117,14 +119,20 @@ def register(mcp: FastMCP) -> None:
         limit: Annotated[
             int, Field(ge=1, le=100, description="Recommendations to return.")
         ] = 25,
-        offset: Annotated[int, Field(ge=0)] = 0,
+        offset: Annotated[
+            int,
+            Field(
+                ge=0, description="Recommendations to skip; use next_offset to page."
+            ),
+        ] = 0,
     ) -> dict[str, Any]:
         """Get one facility's reports, inspections, findings, and repeat findings.
 
         If several facilities match, returns them as matches so the user can choose.
         This server reports records and does not rate facilities.
 
-        Always pass on repeat_findings_basis when discussing repeat findings and
+        Always pass on every entry in notices, repeat_findings_basis when
+        discussing repeat findings, and
         next_window_basis when discussing the next inspection window. The next
         window is an estimate, must be labeled as one, and OIG publishes no schedule.
 

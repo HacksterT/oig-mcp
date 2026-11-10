@@ -90,6 +90,14 @@ The first run found problems, the Hermes test found more, and checking those ans
 
 Because these changes followed earlier results, the final run is not a blind test of those points. The gold set was written by the same person who built the system, knowing its strengths. The question about a miss rate, in particular, was passed after a fix made for that question.
 
+## Response design
+
+**Structured JSON only.** The MCP builder guidance suggests a `response_format` parameter offering JSON or Markdown. The tools return structured JSON only, by decision. Each result carries fields a model must keep separate from prose: provenance and how to cite it, notices to pass on, pagination, and which fields quote report text. The DeepSeek finding above shows the risk of relying on anything outside the result: that host dropped the server's instructions, and citations came back only once each result carried its own. Markdown would double the response surface of seven tools and invite a model to paraphrase notices away. If a client needs Markdown, one renderer over the typed results below could add it.
+
+**Typed results.** Each tool declares an output schema built from Pydantic models in `models.py`, and MCP clients check every successful result against it. Fields the server writes are typed exactly. Records passed through from the data API allow extra fields and nulls, so the API can add a field without breaking a client. A check of 76 live calls across all seven tools found no result outside its schema.
+
+**One field for pass-on text.** Text the server adds for the user is always in `notices`, a list present on every data result (a "not found" or "several match" answer has a hint instead). Text the data API writes about its own data stays beside that data in a field ending `_basis`, such as `next_window_basis`. The server instructions, tool descriptions, and prompts all name those two.
+
 ## Known limits
 
 **Estimates for clean inspections start later.** A report with no recommendations gives no inspection dates, so its next-window estimate counts from the publication date, which usually comes months after the inspection. 15 facilities have an estimate already past, which does not mean they are overdue, and the tools say so.

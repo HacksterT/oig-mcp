@@ -173,9 +173,9 @@ These are unresolved. Do not decide them; flag anything that depends on them. Th
 
 ## 11. Reference
 
-**Server endpoints over HTTP:** `/mcp` (MCP, streamable HTTP, stateless, JSON responses, no SSE), `/health`, `/version`.
+**Server endpoints over HTTP:** `/mcp` (MCP over Streamable HTTP, one of the two standard transports in the MCP specification along with stdio; stateless, JSON responses, no SSE), `/health`, `/version`.
 
-**Transport selection:** if the platform sets `PORT` (Code Engine and the Dockerfile do), the server runs HTTP on that port. Otherwise `MCP_TRANSPORT=streamable-http` runs HTTP on `MCP_HOST:MCP_PORT`, loopback by default, with Host and Origin checks. Otherwise it runs over stdio. Any other `MCP_TRANSPORT` value stops startup.
+**Transport selection:** if the platform sets `PORT` (Code Engine and the Dockerfile do), the server runs HTTP on that port. Otherwise `MCP_TRANSPORT=streamable-http` runs HTTP on `MCP_HOST:MCP_PORT`, loopback by default, with Host and Origin checks. Otherwise it runs over stdio. Any other `MCP_TRANSPORT` value stops startup. Stateless HTTP matches the specification's direction: the 2026-07-28 revision dropped the connection-scoped session, so every request carries its own metadata.
 
 **Current capabilities:**
 

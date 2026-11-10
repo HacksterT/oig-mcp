@@ -11,7 +11,7 @@ from typing import Annotated, Any
 from fastmcp import FastMCP
 from pydantic import Field
 
-from oig_mcp.models import RecommendationFilters
+from oig_mcp.models import RecommendationFilters, SearchResult, output_schema
 from oig_mcp.utils import (
     READ_ONLY_TOOL,
     UpstreamServiceError,
@@ -39,6 +39,7 @@ def register(mcp: FastMCP) -> None:
 
     @mcp.tool(
         name="vaoig_search_findings",
+        output_schema=output_schema(SearchResult),
         annotations={"title": "Search OIG findings", **READ_ONLY_TOOL},
     )
     async def vaoig_search_findings(
@@ -50,9 +51,16 @@ def register(mcp: FastMCP) -> None:
                 description="What to find, in any wording, including a full sentence.",
             ),
         ],
-        filters: RecommendationFilters | None = None,
-        limit: Annotated[int, Field(ge=1, le=100)] = 10,
-        offset: Annotated[int, Field(ge=0)] = 0,
+        filters: Annotated[
+            RecommendationFilters | None,
+            Field(description="Narrow the search, for example by status or facility."),
+        ] = None,
+        limit: Annotated[
+            int, Field(ge=1, le=100, description="Results to return, 1 to 100.")
+        ] = 10,
+        offset: Annotated[
+            int, Field(ge=0, description="Results to skip; use next_offset to page.")
+        ] = 0,
     ) -> dict[str, Any]:
         """Find OIG recommendations and corrective actions matching a question.
 

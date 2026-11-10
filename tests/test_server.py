@@ -62,3 +62,37 @@ async def test_dataset_status_tool_is_discoverable():
 async def test_about_resource_is_discoverable():
     resources = await mcp.list_resources()
     assert "vaoig://about" in {str(r.uri) for r in resources}
+
+
+async def test_every_tool_parameter_has_a_description():
+    """A model fills parameters from their descriptions, so none may be blank."""
+    missing = []
+    for tool in await mcp.list_tools():
+        schema = tool.parameters
+        for name, prop in schema.get("properties", {}).items():
+            if not prop.get("description"):
+                missing.append(f"{tool.name}.{name}")
+        for model, definition in schema.get("$defs", {}).items():
+            for name, prop in definition.get("properties", {}).items():
+                if not prop.get("description"):
+                    missing.append(f"{tool.name}.{model}.{name}")
+    assert missing == []
+
+
+@pytest.mark.parametrize(
+    ("tool", "arguments"),
+    [
+        ("vaoig_get_report", {"node_id": 0}),
+        ("vaoig_get_report", {"report_number": "x" * 31}),
+        ("vaoig_find_systemic_clusters", {"cluster_id": -1}),
+        ("vaoig_find_systemic_clusters", {"active_since": 26}),
+        ("vaoig_search_findings", {"question": "carts", "filters": {"node_id": 0}}),
+    ],
+)
+async def test_out_of_range_arguments_are_refused(tool, arguments):
+    from fastmcp import Client
+    from fastmcp.exceptions import ToolError
+
+    async with Client(mcp) as client:
+        with pytest.raises(ToolError):
+            await client.call_tool(tool, arguments)

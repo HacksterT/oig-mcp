@@ -173,7 +173,9 @@ ibmcloud ce application create \
   --env-from-secret oig-mcp-secrets-TES
 ```
 
-The secret file holds `MCP_AUTH_TOKEN`, `OIG_DATA_API_BASE_URL`, `CF_ACCESS_CLIENT_ID`, and `CF_ACCESS_CLIENT_SECRET`. Delete it afterward, and delete the `.env` from Phase 1 when you finish deploying. Then, from the VM:
+The secret file holds `MCP_AUTH_TOKEN`, `OIG_DATA_API_BASE_URL`, `CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET`, and `OIG_DATA_API_KEY` (the data API's own key, added 2026-11-10; never print it).
+
+Rate limits are kept per instance, so with `--max-scale 2` a client's effective limit is up to twice the configured one: 4 requests a second, burst 60. That is acceptable for a few trusted testers. Use `--max-scale 1` if the configured limit must hold exactly. Delete it afterward, and delete the `.env` from Phase 1 when you finish deploying. Then, from the VM:
 
 ```bash
 export MCP_AUTH_TOKEN=<the same token>
