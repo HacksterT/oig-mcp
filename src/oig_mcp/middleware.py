@@ -137,7 +137,14 @@ class ToolFailureMiddleware(Middleware):
 
 
 class ClientRateLimitMiddleware(RateLimitingMiddleware):
-    """Limit callers with a token. Stdio has no token and only one local user."""
+    """Limit callers with a token. Stdio has no token and only one local user.
+
+    It counts every MCP request a token makes, including tool listing, not only
+    tool calls. Buckets live in this process's memory, so they reset on restart
+    and each instance keeps its own: with N instances a client can reach N times
+    the limit. Everything else here is stateless; a shared store would fix this
+    and is not justified for a few trusted testers.
+    """
 
     async def on_request(self, context: MiddlewareContext, call_next: CallNext) -> Any:
         if get_access_token() is None:

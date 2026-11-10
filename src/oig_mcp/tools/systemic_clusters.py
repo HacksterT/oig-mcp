@@ -11,6 +11,7 @@ from typing import Annotated, Any
 from fastmcp import FastMCP
 from pydantic import Field
 
+from oig_mcp.models import ClusterDetail, ClusterList, NotFound, output_schema
 from oig_mcp.utils import (
     READ_ONLY_TOOL,
     UpstreamServiceError,
@@ -45,12 +46,15 @@ def register(mcp: FastMCP) -> None:
 
     @mcp.tool(
         name="vaoig_find_systemic_clusters",
+        output_schema=output_schema(ClusterList, ClusterDetail, NotFound),
         annotations={"title": "Find systemic OIG findings", **READ_ONLY_TOOL},
     )
     async def vaoig_find_systemic_clusters(
         cluster_id: Annotated[
             int | None,
-            Field(description="Open one cluster with its members. Ignores filters."),
+            Field(
+                ge=1, description="Open one cluster with its members. Ignores filters."
+            ),
         ] = None,
         wording: Annotated[
             str | None,
@@ -60,32 +64,44 @@ def register(mcp: FastMCP) -> None:
             int | None, Field(ge=1, description="Fewest matching reports to include.")
         ] = None,
         active_since: Annotated[
-            int | None, Field(description="Cited in this year or later.")
+            int | None,
+            Field(
+                ge=1990, le=2100, description="Cited in this year or later, e.g. 2023."
+            ),
         ] = None,
         report_type: Annotated[
             str | None,
             Field(
+                max_length=100,
                 description=(
                     "Member report type. Use healthcare-facility-inspection for "
                     "findings under the current program."
-                )
+                ),
             ),
         ] = None,
         domain: Annotated[
             str | None,
             Field(
+                max_length=100,
                 description=(
                     "Member domain. Usually empty on newer Healthcare Facility "
                     "Inspection responses, so this misses most of them."
-                )
+                ),
             ),
         ] = None,
         published_from: Annotated[
             str | None,
             Field(pattern=r"^\d{4}-\d{2}-\d{2}$", description="Earliest member date."),
         ] = None,
-        limit: Annotated[int, Field(ge=1, le=100)] = 10,
-        offset: Annotated[int, Field(ge=0)] = 0,
+        limit: Annotated[
+            int,
+            Field(
+                ge=1, le=100, description="Clusters, or members, to return, 1 to 100."
+            ),
+        ] = 10,
+        offset: Annotated[
+            int, Field(ge=0, description="Items to skip; use next_offset to page.")
+        ] = 0,
     ) -> dict[str, Any]:
         """Find findings that recur across reports, and how common they are.
 
@@ -99,7 +115,7 @@ def register(mcp: FastMCP) -> None:
         Returns:
             With cluster_id: the cluster, status_counts, and paginated members.
             Otherwise: clusters with prevalence, closure benchmark, and
-            reports_in_scope. Both include a caveat to pass on, and provenance.
+            reports_in_scope. Both include notices to pass on, and provenance.
         """
         try:
             if cluster_id is not None:
@@ -108,7 +124,7 @@ def register(mcp: FastMCP) -> None:
                 return {
                     **cluster,
                     "members": paginate(members, limit, offset),
-                    "caveat": CLUSTER_CAVEAT,
+                    "notices": [CLUSTER_CAVEAT],
                     "provenance": build_provenance(
                         cluster.get("data_as_of"), report_urls(members)
                     ),
@@ -143,6 +159,6 @@ def register(mcp: FastMCP) -> None:
             "next_offset": result.get("next_offset"),
             "reports_in_scope": in_scope,
             "items": [_with_prevalence(i, in_scope) for i in result.get("items", [])],
-            "caveat": CLUSTER_CAVEAT,
+            "notices": [CLUSTER_CAVEAT],
             "provenance": build_provenance(result.get("data_as_of")),
         }

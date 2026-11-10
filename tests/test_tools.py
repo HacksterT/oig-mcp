@@ -289,13 +289,13 @@ async def test_year_analysis_states_both_readings(api: FakeApi) -> None:
     item = {"year": 2024, "median_days_to_closure": 200}
     api.routes["metrics/counts"] = {**AS_OF, **ENVELOPE, "items": [item]}
     result = await call("vaoig_analyze_recommendations", group_by="year")
-    assert "Present both" in " ".join(result["caveats"])
+    assert "Present both" in " ".join(result["notices"])
 
 
 async def test_topic_analysis_states_the_coverage_gap(api: FakeApi) -> None:
     api.routes["metrics/closure"] = {**AS_OF, **ENVELOPE, "items": []}
     result = await call("vaoig_analyze_recommendations", group_by="topic")
-    assert "quarter of reports" in " ".join(result["caveats"])
+    assert "quarter of reports" in " ".join(result["notices"])
 
 
 async def test_topic_filter_also_states_the_coverage_gap(api: FakeApi) -> None:
@@ -305,7 +305,7 @@ async def test_topic_filter_also_states_the_coverage_gap(api: FakeApi) -> None:
         group_by="office",
         filters={"topic": "Pharmacy"},
     )
-    assert "quarter of reports" in " ".join(result["caveats"])
+    assert "quarter of reports" in " ".join(result["notices"])
 
 
 async def test_missing_closure_dates_are_stated_not_hidden(api: FakeApi) -> None:
@@ -316,9 +316,9 @@ async def test_missing_closure_dates_are_stated_not_hidden(api: FakeApi) -> None
         "items": [{**item, "median_days": None}],
     }
     result = await call("vaoig_analyze_recommendations", group_by="office")
-    caveats = " ".join(result["caveats"])
-    assert "time to close cannot be stated" in caveats
-    assert "6 percent" not in caveats  # that figure would understate this gap
+    notices = " ".join(result["notices"])
+    assert "time to close cannot be stated" in notices
+    assert "6 percent" not in notices  # that figure would understate this gap
 
 
 async def test_partial_closure_dates_point_to_sample_size(api: FakeApi) -> None:
@@ -330,7 +330,7 @@ async def test_partial_closure_dates_point_to_sample_size(api: FakeApi) -> None:
     }
     api.routes["metrics/closure"] = {**AS_OF, **ENVELOPE, "items": [item]}
     result = await call("vaoig_analyze_recommendations", group_by="office")
-    assert "days_sample_size" in " ".join(result["caveats"])
+    assert "days_sample_size" in " ".join(result["notices"])
 
 
 async def test_target_date_counts_stay_out_of_the_analysis(api: FakeApi) -> None:
@@ -372,7 +372,7 @@ async def test_publication_day_closures_are_explained(api: FakeApi) -> None:
     item = {"group": "VHA", "median_days": 0, "closed_on_publication_day": 9}
     api.routes["metrics/closure"] = {**AS_OF, **ENVELOPE, "items": [item]}
     result = await call("vaoig_analyze_recommendations", group_by="office")
-    assert "closed the day the report came out" in " ".join(result["caveats"])
+    assert "closed the day the report came out" in " ".join(result["notices"])
 
 
 # ── Facility profile ─────────────────────────────────────────────────────────
@@ -496,7 +496,7 @@ async def test_year_median_of_zero_is_explained(api: FakeApi) -> None:
         "items": [{"year": 2026, "median_days_to_closure": 0}],
     }
     result = await call("vaoig_analyze_recommendations", group_by="year")
-    assert "not a typical time to close" in " ".join(result["caveats"])
+    assert "not a typical time to close" in " ".join(result["notices"])
 
 
 async def test_status_explains_oig_open_total(api: FakeApi) -> None:
@@ -508,7 +508,7 @@ async def test_status_explains_oig_open_total(api: FakeApi) -> None:
         },
     }
     result = await call("vaoig_get_dataset_status")
-    assert "19 blank rows" in result["reconciliation"]["note"]
+    assert "19 blank rows" in " ".join(result["notices"])
 
 
 async def test_past_estimate_is_not_called_overdue(api: FakeApi) -> None:
@@ -576,7 +576,7 @@ async def test_clusters_state_prevalence_against_reports_in_scope(api: FakeApi) 
     )
     assert result["items"][0]["prevalence"] == "40 of 200 reports in scope"
     assert result["items"][0]["median_days"] == 120
-    assert "does not prove a common cause" in result["caveat"]
+    assert "does not prove a common cause" in " ".join(result["notices"])
     assert api.last.url.params["report_type"] == "healthcare-facility-inspection"
     assert "min_reports" not in api.last.url.params
 
@@ -595,7 +595,7 @@ async def test_cluster_detail_paginates_members(api: FakeApi) -> None:
     assert result["status_counts"] == {"open": 1}
     assert result["members"]["total"] == 2
     assert len(result["members"]["items"]) == 1
-    assert "does not prove a common cause" in result["caveat"]
+    assert "does not prove a common cause" in " ".join(result["notices"])
 
 
 async def test_unknown_cluster_is_reported_as_not_found(api: FakeApi) -> None:
@@ -673,7 +673,7 @@ async def test_brief_marks_groups_this_facility_is_in(api: FakeApi) -> None:
 async def test_brief_passes_basis_text_and_labels_the_estimate(api: FakeApi) -> None:
     _brief_api(api)
     result = await call("vaoig_get_inspection_brief", facility="West Haven")
-    assert result["next_inspection"]["basis"] == WINDOW_BASIS
+    assert result["next_inspection"]["next_window_basis"] == WINDOW_BASIS
     assert result["next_inspection"]["is_estimate"] is True
     assert result["own_history"]["repeat_findings_basis"] == REPEAT_BASIS
 
@@ -831,7 +831,7 @@ async def test_report_without_node_id_returns_its_listing(api: FakeApi) -> None:
     api.routes["reports"] = {**AS_OF, **ENVELOPE, "items": [listing]}
     result = await call("vaoig_get_report", report_number="9")
     assert result["report_number"] == "9"
-    assert "no recommendations" in result["note"]
+    assert "no recommendations" in " ".join(result["notices"])
 
 
 @pytest.mark.parametrize(
@@ -849,3 +849,43 @@ async def test_unknown_report_is_reported_as_not_found(api: FakeApi) -> None:
     """Not found is an answer, not a failure, so it is not marked isError."""
     result = await call("vaoig_get_report", node_id=1)
     assert result["error"] == "No report has the node id 1."
+
+
+# ── Output schemas ───────────────────────────────────────────────────────────
+
+
+async def test_every_tool_declares_a_specific_output_schema() -> None:
+    for tool in await mcp.list_tools():
+        schema = tool.output_schema
+        assert schema and schema.get("type") == "object", tool.name
+        assert "properties" in schema or "anyOf" in schema, tool.name
+        assert not schema.get("x-fastmcp-wrap-result"), tool.name  # shape unchanged
+
+
+async def test_client_rejects_a_result_that_breaks_the_schema(api: FakeApi) -> None:
+    """The MCP client checks results against the schema, so drift fails tests."""
+    api.routes["search"] = {
+        **AS_OF,
+        **ENVELOPE,
+        "search_mode": "hybrid",
+        "items": [{"rec_id": "1-1", "text": 5}],
+    }
+    with pytest.raises(RuntimeError, match="Invalid structured content"):
+        await call("vaoig_search_findings", question="carts")
+
+
+async def test_calls_share_one_client_that_closes_at_shutdown(
+    api: FakeApi, monkeypatch
+) -> None:
+    api.routes["search"] = {**AS_OF, **ENVELOPE, "search_mode": "hybrid", "items": []}
+    made: list[httpx.AsyncClient] = []
+    factory = utils.httpx.AsyncClient
+    monkeypatch.setattr(
+        utils.httpx, "AsyncClient", lambda **kw: made.append(factory(**kw)) or made[-1]
+    )
+    async with Client(mcp) as client:
+        for _ in range(3):
+            await client.call_tool("vaoig_search_findings", {"question": "carts"})
+    assert len(made) == 1
+    assert made[0].is_closed
+    assert utils._shared_client is None

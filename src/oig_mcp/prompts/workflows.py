@@ -10,7 +10,8 @@ from fastmcp import FastMCP
 
 _RULES = (
     "Cite the report number and link for every finding, state the data date, and "
-    "pass on any caveat, notice, or basis text a tool returns. Do not rate or rank "
+    "pass on every entry in notices and each *_basis field a tool returns. Do not "
+    "rate or rank "
     "facilities or individuals."
 )
 

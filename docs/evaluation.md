@@ -5,7 +5,7 @@
 
 ## Results
 
-These are the final runs, on the server as built today and the data snapshot the live API serves. Results for watsonx Orchestrate and its models are not included, because the server has not yet been deployed there.
+These are the final runs, on the server as built today and the data snapshot the live API serves. On 2026-11-10, after typed results, one `notices` field, and a tool selection guide in the instructions, Claude Opus 5.5 was run again ([`eval/results/2026-11-10-opus-5-5/`](../eval/results/2026-11-10-opus-5-5/)). Every measure matched its earlier run, including tool selection (20 of 20) and caveats (14 of 14), with the same one failure. Results for watsonx Orchestrate and its models are not included, because the server has not yet been deployed there.
 
 | Measure | Claude Opus 5.5 | Claude Sonnet 5.5 | Scored by |
 |---|---|---|---|
@@ -89,6 +89,14 @@ The first run found problems, the Hermes test found more, and checking those ans
 | The same report listed twice, and aliases shared between stations | **A backend review.** 5 of 15 report pairs were one report listed twice, and 7 of 10 aliases were errors | Duplicates flagged, and wrong links corrected |
 
 Because these changes followed earlier results, the final run is not a blind test of those points. The gold set was written by the same person who built the system, knowing its strengths. The question about a miss rate, in particular, was passed after a fix made for that question.
+
+## Response design
+
+**Structured JSON only.** The MCP builder guidance suggests a `response_format` parameter offering JSON or Markdown. The tools return structured JSON only, by decision. Each result carries fields a model must keep separate from prose: provenance and how to cite it, notices to pass on, pagination, and which fields quote report text. The DeepSeek finding above shows the risk of relying on anything outside the result: that host dropped the server's instructions, and citations came back only once each result carried its own. Markdown would double the response surface of seven tools and invite a model to paraphrase notices away. If a client needs Markdown, one renderer over the typed results below could add it.
+
+**Typed results.** Each tool declares an output schema built from Pydantic models in `models.py`, and MCP clients check every successful result against it. Fields the server writes are typed exactly. Records passed through from the data API allow extra fields and nulls, so the API can add a field without breaking a client. A check of 76 live calls across all seven tools found no result outside its schema.
+
+**One field for pass-on text.** Text the server adds for the user is always in `notices`, a list present on every data result (a "not found" or "several match" answer has a hint instead). Text the data API writes about its own data stays beside that data in a field ending `_basis`, such as `next_window_basis`. The server instructions, tool descriptions, and prompts all name those two.
 
 ## Known limits
 

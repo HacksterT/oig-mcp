@@ -13,7 +13,7 @@ from typing import Annotated, Any
 from fastmcp import FastMCP
 from pydantic import Field
 
-from oig_mcp.models import AnalysisGroup, RecommendationFilters
+from oig_mcp.models import Analysis, AnalysisGroup, RecommendationFilters, output_schema
 from oig_mcp.utils import (
     CITE_TOTALS,
     READ_ONLY_TOOL,
@@ -73,7 +73,7 @@ _PUBLICATION_DAY = (
 )
 
 
-def _closure_caveats(items: list[dict[str, Any]], median_field: str) -> list[str]:
+def _closure_notices(items: list[dict[str, Any]], median_field: str) -> list[str]:
     """Describe the closure dates behind this result, from the result itself."""
     if not any(item.get(median_field) is not None for item in items):
         return [_NO_CLOSURE_DATES] if items else []
@@ -83,26 +83,26 @@ def _closure_caveats(items: list[dict[str, Any]], median_field: str) -> list[str
     return [_PARTIAL_CLOSURE_DATES] if short else []
 
 
-def _caveats(
+def _notices(
     group_by: AnalysisGroup,
     filters: RecommendationFilters | None,
     items: list[dict[str, Any]],
 ) -> list[str]:
     """Return the data limits that apply to this particular result."""
-    caveats: list[str] = []
+    notices: list[str] = []
     if group_by is AnalysisGroup.YEAR:
-        caveats += [_YEAR_READINGS, _YEAR_REPORT_COUNT]
-        caveats += _closure_caveats(items, "median_days_to_closure")
+        notices += [_YEAR_READINGS, _YEAR_REPORT_COUNT]
+        notices += _closure_notices(items, "median_days_to_closure")
         if any(item.get("median_days_to_closure") == 0 for item in items):
-            caveats.append(_YEAR_MEDIAN_ZERO)
+            notices.append(_YEAR_MEDIAN_ZERO)
     else:
-        caveats.append(_GROUP_OVERLAP)
-        caveats += _closure_caveats(items, "median_days")
+        notices.append(_GROUP_OVERLAP)
+        notices += _closure_notices(items, "median_days")
         if any(item.get("closed_on_publication_day") for item in items):
-            caveats.append(_PUBLICATION_DAY)
+            notices.append(_PUBLICATION_DAY)
     if group_by is AnalysisGroup.TOPIC or (filters and filters.topic):
-        caveats.append(_TOPIC_COVERAGE)
-    return caveats
+        notices.append(_TOPIC_COVERAGE)
+    return notices
 
 
 def register(mcp: FastMCP) -> None:
@@ -110,10 +110,19 @@ def register(mcp: FastMCP) -> None:
 
     @mcp.tool(
         name="vaoig_analyze_recommendations",
+        output_schema=output_schema(Analysis),
         annotations={"title": "Analyze OIG recommendations", **READ_ONLY_TOOL},
     )
     async def vaoig_analyze_recommendations(
-        group_by: AnalysisGroup,
+        group_by: Annotated[
+            AnalysisGroup,
+            Field(
+                description=(
+                    "year for counts over time. office, topic, or report_type for "
+                    "time to close, not-implemented rate, and open-item aging."
+                )
+            ),
+        ],
         keywords: Annotated[
             str | None,
             Field(
@@ -124,7 +133,10 @@ def register(mcp: FastMCP) -> None:
                 ),
             ),
         ] = None,
-        filters: RecommendationFilters | None = None,
+        filters: Annotated[
+            RecommendationFilters | None,
+            Field(description="Limit the set before grouping, for example by status."),
+        ] = None,
     ) -> dict[str, Any]:
         """Count and measure a filtered set of recommendations by a chosen grouping.
 
@@ -134,10 +146,12 @@ def register(mcp: FastMCP) -> None:
         target_basis. Group by year for a trend. Group by office, topic, or report_type
         for closure and aging measures. Facilities cannot be a grouping.
 
-        Always pass on the caveats in the result.
+        Always pass on every entry in notices, and target_basis when discussing
+        target dates.
 
         Returns:
-            items (one per group), total_groups, caveats, and provenance. By year:
+            items (one per group), total_groups, notices, target_basis, and
+            provenance. By year:
             report, recommendation, open, and closed counts and median days to
             closure. Otherwise: those counts with median and quartile days to
             closure, not-implemented rate, and open-item aging.
@@ -164,7 +178,7 @@ def register(mcp: FastMCP) -> None:
             "group_by": group_by.value,
             "total_groups": result.get("total"),
             "items": items,
-            "caveats": _caveats(group_by, filters, items),
+            "notices": _notices(group_by, filters, items),
             "target_basis": result.get("target_basis"),
             "provenance": build_provenance(
                 result.get("data_as_of"),

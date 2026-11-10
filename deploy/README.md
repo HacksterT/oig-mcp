@@ -13,12 +13,14 @@ oig-mcp              -- HTTPS, Cloudflare Access service token      -->  OIG dat
 | Port | `8080`. Code Engine sets `PORT`, which switches the server to HTTP |
 | MCP endpoint | `/mcp`. Streamable HTTP, stateless, plain JSON responses. No SSE |
 | Health and version | `/health` and `/version`. Open, and they return no data. There is no `/ping` |
+| Rate limits | 2 requests a second per token, burst 30, counting every MCP request. Kept in memory per instance, so N instances allow up to N times that |
 
 | Setting | Secret | Value |
 |---|---|---|
 | `MCP_AUTH_TOKEN` | Yes | New for IBM: `openssl rand -hex 32`. The server refuses to start without it |
 | `CF_ACCESS_CLIENT_ID` | Yes | Troy provides it |
 | `CF_ACCESS_CLIENT_SECRET` | Yes | Troy provides it |
+| `OIG_DATA_API_KEY` | Yes | Troy provides it. The data API's own key behind Access; never print it |
 | `OIG_DATA_API_BASE_URL` | No, but keep it out of the repository | Troy provides it |
 | `STALE_AFTER_DAYS` | No | `30` |
 

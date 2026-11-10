@@ -76,7 +76,7 @@ Without the data API running, `vaoig://about` still works and `vaoig_get_dataset
 | `MCP_USAGE_LOG` | empty | File for the usage log, which also goes to stderr. Records client, tool, outcome, and duration, never arguments |
 | `MCP_TRACE_DIR`, `MCP_TRACE_MAX_MB` | empty, `400` | Full tool-call traces for closed testing, including arguments and results. Read them with `deploy/traces.py`. Keep off for public use |
 | `STALE_AFTER_DAYS` | `30` | Age at which responses flag data as stale |
-| `MCP_TRANSPORT`, `MCP_HOST`, `MCP_PORT` | `stdio`, `127.0.0.1`, `8000` | Transport (`stdio` or `streamable-http`; anything else stops startup) and the local HTTP address. A platform-injected `PORT` switches to HTTP on all interfaces |
+| `MCP_TRANSPORT`, `MCP_HOST`, `MCP_PORT` | `stdio`, `127.0.0.1`, `8000` | Transport: `stdio`, or `streamable-http` for Streamable HTTP, the MCP specification's HTTP transport (FastMCP calls it `http`). Anything else stops startup. and the local HTTP address. A platform-injected `PORT` switches to HTTP on all interfaces |
 
 ## Development
 
@@ -90,7 +90,7 @@ Each tool lives in its own file under `src/oig_mcp/tools/` with a `register(mcp)
 
 ## Deployment
 
-The target is IBM watsonx Orchestrate on IBM Cloud, deployed from an IBM-provided VM with IBM Bob. See [deploy/README.md](deploy/README.md) and [docs/project-overview.md](docs/project-overview.md). The `Dockerfile` serves stateless streamable HTTP on port 8080 with `/mcp`, `/health`, and `/version`.
+The target is IBM watsonx Orchestrate on IBM Cloud, deployed from an IBM-provided VM with IBM Bob. See [deploy/README.md](deploy/README.md) and [docs/project-overview.md](docs/project-overview.md). The `Dockerfile` serves stateless Streamable HTTP (the MCP specification's HTTP transport) on port 8080 with `/mcp`, `/health`, and `/version`.
 
 ## Evaluation
 
