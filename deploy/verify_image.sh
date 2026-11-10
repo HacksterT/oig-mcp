@@ -4,7 +4,8 @@
 #   deploy/verify_image.sh
 #
 # Needs docker or podman, and MCP_AUTH_TOKEN, OIG_DATA_API_BASE_URL,
-# CF_ACCESS_CLIENT_ID, and CF_ACCESS_CLIENT_SECRET in the environment or `.env`.
+# CF_ACCESS_CLIENT_ID, and CF_ACCESS_CLIENT_SECRET in the environment or `.env`,
+# plus OIG_DATA_API_KEY when the data API requires its own key (it does now).
 # Secrets reach the containers through a private env file, never through argv,
 # and are never printed. Exit code 0 means every check passed.
 
@@ -30,6 +31,7 @@ TOKEN="$(read_setting MCP_AUTH_TOKEN)"
 API_URL="$(read_setting OIG_DATA_API_BASE_URL)"
 CF_ID="$(read_setting CF_ACCESS_CLIENT_ID)"
 CF_SECRET="$(read_setting CF_ACCESS_CLIENT_SECRET)"
+API_KEY="$(read_setting OIG_DATA_API_KEY)"
 
 for setting in TOKEN API_URL CF_ID CF_SECRET; do
   if [ -z "${!setting}" ]; then
@@ -53,8 +55,8 @@ env_file() { # name, then KEY=VALUE lines
 }
 
 no_secrets_in() { # file
-  for secret in "$TOKEN" "$CF_ID" "$CF_SECRET"; do
-    if grep -qF -- "$secret" "$1"; then return 1; fi
+  for secret in "$TOKEN" "$CF_ID" "$CF_SECRET" "$API_KEY"; do
+    if [ -n "$secret" ] && grep -qF -- "$secret" "$1"; then return 1; fi
   done
   return 0
 }
@@ -155,11 +157,12 @@ done
 echo
 echo "Good credentials"
 start_server "$(env_file good "MCP_AUTH_TOKEN=$TOKEN" "OIG_DATA_API_BASE_URL=$API_URL" \
-  "CF_ACCESS_CLIENT_ID=$CF_ID" "CF_ACCESS_CLIENT_SECRET=$CF_SECRET")"
+  "CF_ACCESS_CLIENT_ID=$CF_ID" "CF_ACCESS_CLIENT_SECRET=$CF_SECRET" \
+  "OIG_DATA_API_KEY=$API_KEY")"
 report "server starts" $?
 MCP_AUTH_TOKEN="$TOKEN" OIG_DATA_API_BASE_URL="$API_URL" \
   CF_ACCESS_CLIENT_ID="$CF_ID" CF_ACCESS_CLIENT_SECRET="$CF_SECRET" \
-  uv run python deploy/verify_deployment.py --url "http://127.0.0.1:$PORT"
+  OIG_DATA_API_KEY="$API_KEY" uv run python deploy/verify_deployment.py --url "http://127.0.0.1:$PORT"
 report "verify_deployment.py against this container" $?
 
 "$ENGINE" logs oig-mcp-verify > "$WORK/server.log" 2>&1

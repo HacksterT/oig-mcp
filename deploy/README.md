@@ -30,7 +30,7 @@ oig-mcp              -- HTTPS, Cloudflare Access service token      -->  OIG dat
 deploy/verify_image.sh
 ```
 
-This builds the image with docker or podman, then checks it: no secrets in the image, it refuses to start unsafely, a missing or wrong Cloudflare token gives a clean refusal, and with good credentials everything in the next command passes. It needs all four settings above in the environment or `.env`.
+This builds the image with docker or podman, then checks it: no secrets in the image, it refuses to start unsafely, a missing or wrong Cloudflare token gives a clean refusal, and with good credentials everything in the next command passes. It needs the settings above in the environment or `.env`, including `OIG_DATA_API_KEY` now that the data API requires it.
 
 ## Check a running server
 

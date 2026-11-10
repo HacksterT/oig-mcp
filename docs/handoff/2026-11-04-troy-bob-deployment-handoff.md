@@ -1,7 +1,7 @@
 # Deployment handoff: oig-mcp to IBM Code Engine and watsonx Orchestrate
 
 **Author:** Troy Sybert, with Claude Code
-**Date:** 2026-11-04
+**Date:** 2026-11-04, updated 2026-11-10
 **Assignment:** F05, deploy and register
 **Branch for your work:** `ibm/deploy`
 
@@ -10,6 +10,17 @@
 The server is built, tested, and evaluated on Troy's Mac. Your job is to run the same image on Code Engine, register it in Orchestrate, and tell Troy which assumptions below were wrong. Nothing here has run on IBM yet, so the assumptions are real risks, and the first checks are ordered to find bad ones early.
 
 Read this first, and then [`docs/project-overview.md`](../project-overview.md) for the project and its rules. Where your own skills differ on something specific to this project, these documents win. If you need a value that is not here, ask Troy. Do not guess, and do not change the server's authentication or outbound rules to get past a problem. Stop and report it.
+
+## What changed since 2026-11-04
+
+If you read an earlier copy, these are the differences that affect you:
+
+- **A fifth secret.** The data API now checks its own key behind Cloudflare Access, so `OIG_DATA_API_KEY` goes in the Code Engine secret with the other four. The Access token alone is refused.
+- **The repository is public.** Cloning needs no access.
+- **Typed results.** Each tool now publishes an output schema, and four of them allow more than one result shape. Orchestrate's import has not seen these yet (D6).
+- **Search limits on the data API.** It runs four searches at once and queues the rest. A tool can answer that the API is busy (429) or that a search took too long (503). Neither is a deployment failure.
+- **Tracing stays on through judging.** Do not set `MCP_TRACE_DIR` on Code Engine until Troy decides where traces go (Phase 2).
+- **`deploy/verify_image.sh` now passes the API key** to its test container. An older copy fails Phase 1 against today's API.
 
 ## What you get from Troy
 
@@ -48,6 +59,7 @@ The bearer token is the only authentication built. OAuth is not. It is one share
 |---|---|---|---|
 | `MCP_AUTH_TOKEN` | Bob or Troy | Generate a new one. Update the Code Engine secret and restart the app (B3). Run `orchestrate connections set-credentials` with the new token for both `draft` and `live` | Orchestrate's calls get a 401 until both places match |
 | Cloudflare token | Troy, in the Cloudflare dashboard | Troy refreshes it, which ends the old one at once. Update the Code Engine secret and restart the app. Orchestrate needs no change | Tools return a refusal until the app restarts. Avoid this during judging. It expires after one year by default |
+| `OIG_DATA_API_KEY` | Troy, on the data API side | Troy changes it there and gives you the new value. Update the Code Engine secret and restart the app. Orchestrate needs no change | Tools return a refusal until the app restarts |
 
 ### What an auth failure looks like
 
@@ -56,7 +68,8 @@ The bearer token is the only authentication built. OAuth is not. It is one share
 | A 401 from `/mcp` | The bearer token does not match the Code Engine secret, or the secret has not reached the app | Compare by setting a new token in both places. Do not print it |
 | The app exits at startup, with `MCP_AUTH_TOKEN must be set`, or fails on a token under 32 characters | The secret is missing, not attached, or too short | Check `--env-from-secret`, then the secret's keys |
 | The app exits at startup over `OIG_DATA_API_BASE_URL` | The URL is not `https` | Use the value from Troy, ending in `/v1/` |
-| Tools return `Upstream service returned status 401` | The Cloudflare token is wrong, missing, or has been refreshed | Ask Troy for the current values |
+| Tools return `Upstream service returned status 401` | The Cloudflare token or `OIG_DATA_API_KEY` is wrong, missing, or has been changed | Ask Troy for the current values |
+| A tool answers that the data API is busy (status 429), or that the search took too long (status 503) | The API's search limits: four at once, a 10 second queue, a 2 second full-text limit | Not a deployment failure. Wait a few seconds and try again, and report it only if it persists |
 | Tools return status 403, or a request failure | IBM's network or a Cloudflare setting (C2, C3), or the API is down (C4) | Report the exact text to Troy. Do not add a proxy |
 | Orchestrate's import fails with a 4xx | The connection's token is wrong, or it rejects a bearer connection (D2, D4) | Check with `verify_deployment.py` first. If that passes, stop and send Troy the exact error |
 
@@ -64,14 +77,15 @@ The bearer token is the only authentication built. OAuth is not. It is one share
 
 | Check | Where it ran | Result |
 |---|---|---|
-| Unit tests and lint | Mac | 182 tests pass (2026-11-10) |
+| Unit tests and lint | Mac, and a fresh clone | 193 tests pass (2026-11-10) |
 | Image builds for `linux/amd64` and imports the package | Mac, under emulation | Pass. It has not run a full request cycle on amd64 |
+| `deploy/verify_image.sh`, your Phase 1 | Mac, 2026-11-10 | 15 checks pass, including the 22 below run against the built image |
 | Refuses to start without a token, with a short token, or with a plain-HTTP remote API | Container | Pass |
 | Both connections accept right and refuse wrong credentials: 22 checks, including the data API refusing the Access token without its key | Container, and through a public HTTPS tunnel | Pass |
 | Missing or wrong Cloudflare token gives a clean refusal without the API address | Container | Pass |
 | No secret in the image, tool responses, or logs | Container | Pass |
 | An independent MCP client with a different model answers the questions | Hermes Agent running DeepSeek V4 Pro 0813, through the tunnel | Facts all correct, 18 questions. Its answers named reports but gave almost no links, under test instructions that may have caused that. See D10 |
-| 24 gold questions, on two Claude models | Container | 23 of 24 each. See [`docs/evaluation.md`](../evaluation.md) |
+| 24 gold questions, on two Claude models | Container | 23 of 24 each, and Opus again on 2026-11-10 after the last changes, with the same scores. See [`docs/evaluation.md`](../evaluation.md) |
 
 **Not tested at all:** IBM's network, Code Engine, Orchestrate's import, its connections, and its model.
 
@@ -103,7 +117,7 @@ Report each one as confirmed or wrong in your phase reports.
 | B3 | Secrets reach the app as environment variables through `--env-from-secret`, and a changed secret needs a restart or new revision | Docs | Report it |
 | B4 | One instance staying up (`--min-scale 1`) is allowed. Orchestrate's import gives the server 30 seconds, so a cold start is a risk with zero | Template uses it. Default is zero | If not allowed, warm the app with `/health` before importing, and report it |
 | B5 | Default resources, 1 vCPU and 4 GB, are more than needed. The image is about 260 MB | Docs for the default | If quota is tight, try 0.25 vCPU and 1 GB. This is unmeasured |
-| B6 | The default request timeout of 300 seconds is enough. The slowest tool took about 4 seconds | Docs, and measured on the Mac | Report it |
+| B6 | The default request timeout of 300 seconds is enough. The slowest tool, the inspection brief, takes about 2 seconds. A search can wait up to about 23 seconds when the API's search slots are full | Docs, and measured on the Mac | Report it |
 | B7 | Running more than one instance is safe. The server is stateless, with no sessions | Tested on the server's side | Not an IBM risk |
 
 ### Reaching the data API
@@ -124,11 +138,11 @@ Report each one as confirmed or wrong in your phase reports.
 | D3 | A `team` connection, configured and given credentials for both `draft` and `live`, is correct for one shared token | Docs | Report it |
 | D4 | Import calls `tools/list` with those credentials within 30 seconds, without running tools, and a 4xx fails the import. So deploy, verify, and set credentials before importing | Docs | Report it |
 | D5 | Transport is `streamable_http` with the URL ending in `/mcp`. **Do not try `sse`: this server has no SSE.** A `GET` to `/mcp` correctly returns 405, and POST responses are plain JSON | Tested on the server's side. Docs say the ADK will not switch protocols | Report the exact error. Do not change the server's transport without asking |
-| D6 | The tool schemas import. None use `$ref`, but four use `anyOf` for optional fields, and two take a nested filter object. Tool names use only letters and underscores | Assumed. The ADK validates them, and no one has run that | Send Troy the exact error and the tool name |
-| D7 | Orchestrate calls tools with a timeout of about 2 minutes. MCP has no asynchronous mode there | Docs, in the Tool Performance Guide | Should not matter at about 4 seconds or less per tool |
+| D6 | The tool schemas import. Input schemas use no `$ref`; several use `anyOf` for optional fields, and two take a nested filter object. Every tool also publishes an output schema, with no `$ref`. Four of them (`vaoig_get_report`, `vaoig_get_facility_profile`, `vaoig_find_systemic_clusters`, `vaoig_get_inspection_brief`) have an `anyOf` at the top level, because they can answer "not found" or "several match" as well as with data. Tool names use only letters and underscores | Assumed. The ADK validates them, and no one has run that. The output schemas are the newer risk | Send Troy the exact error and the tool name. Do not edit the schemas to get past it |
+| D7 | Orchestrate calls tools with a timeout of about 2 minutes. MCP has no asynchronous mode there | Docs, in the Tool Performance Guide | Should not matter: tools take about 2 seconds or less, and about 23 at worst when searches queue |
 | D8 | No response size limit gets in the way. IBM documents none. The largest response seen was about 90,000 characters, from a facility profile with 100 recommendations. Others stayed under about 40,000 | No documented limit | If responses fail or are cut off, record which tool and which facility. `vaoig_get_facility_profile` accepts a smaller `limit`, and Troy decides on the default |
 | D9 | MCP prompts and resources do not import, only tools. IBM's page is silent. The tools carry what is needed, and `vaoig_get_dataset_status` returns the filter values | Assumed | No change needed. Good news if they do import |
-| D10 | Orchestrate may not pass the server's `instructions` to its model. Hermes Agent appears not to. So each tool result now carries a `provenance.citation` line saying how to cite it. Hermes' answers still had almost no links, though its test format may be why | Hermes observed. Orchestrate unknown | See Phase 4 |
+| D10 | Orchestrate may not pass the server's `instructions` to its model. Hermes Agent appears not to. So each tool result carries a `provenance.citation` line saying how to cite it, and a `notices` list of what to pass on. Hermes' answers still had almost no links, though its test format may be why | Hermes observed. Orchestrate unknown | See Phase 4 |
 | D11 | Orchestrate's outbound traffic can reach a Code Engine public URL | Assumed | Report the exact error |
 | D12 | A `409 Gateway name already exists` after deleting a toolkit is a known leftover. Use a new unique name | Docs | |
 
@@ -148,7 +162,7 @@ uv run pytest tests/ -q
 
 ### Phase 1: build and check the image
 
-Put the four settings from `deploy/README.md` in a local `.env`, which git ignores, and then:
+Put the settings from `deploy/README.md` in a local `.env`, which git ignores: the five secrets, including `OIG_DATA_API_KEY`. Then:
 
 ```bash
 deploy/verify_image.sh
@@ -161,7 +175,7 @@ Set `CONTAINER_ENGINE=podman` if it picks the wrong one. **Done when:** every ch
 Use your deployment skill for the registry and registry secret, with initials in every name. The project-specific part:
 
 ```bash
-# Write the four settings below to a file outside the repository, readable only by you.
+# Write the five settings below to a file outside the repository, readable only by you.
 ibmcloud ce secret create --name oig-mcp-secrets-TES --from-env-file <file>
 
 ibmcloud ce application create \
@@ -227,7 +241,7 @@ Ask these, in order, and put each full answer in your report:
 | 5 | What has OIG found at the New York VA? | Says several facilities match, rather than picking one |
 | 6 | What percentage of VHA recommendations missed their target completion dates? | Gives no percentage, and explains that the data cannot establish it |
 
-If answers lack citations or drop caveats (D10), report that to Troy with the answers before adding anything to the agent. If he agrees, the most this project expects is one line: cite the report number and link for each finding, state the data date, and pass on any caveat a tool returns. Do not put domain steps or logic into the agent's instructions.
+If answers lack citations or drop caveats (D10), report that to Troy with the answers before adding anything to the agent. If he agrees, the most this project expects is one line: cite the report number and link for each finding, state the data date, and pass on every entry in a tool's notices. Do not put domain steps or logic into the agent's instructions.
 
 These answers come from Orchestrate's model, not the Claude models in the evaluation, so differences are useful findings. Report them as they are.
 
@@ -260,6 +274,7 @@ The rules in `docs/project-overview.md` section 9 apply. The ones most likely to
 ## Questions for Troy
 
 1. How does Bob get access to push `ibm/` branches from the VM (A1)? Cloning needs none, since the repository is public.
+2. Where should tool-call traces go on Code Engine, since its storage is temporary: a mounted volume, object storage, a log sink, or nowhere on IBM (Phase 2)?
 
 ## Troy's response
 
