@@ -167,6 +167,9 @@ def register(mcp: FastMCP) -> None:
             "caveats": _caveats(group_by, filters, items),
             "target_basis": result.get("target_basis"),
             "provenance": build_provenance(
-                result.get("data_as_of"), _SOURCE_URLS, citation=CITE_TOTALS
+                result.get("data_as_of"),
+                _SOURCE_URLS,
+                citation=CITE_TOTALS,
+                quoted=False,
             ),
         }

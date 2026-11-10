@@ -7,9 +7,9 @@ The API is deliberately generic: filter, paginate, and aggregate over reports, r
 ## Conventions
 
 - Base URL: `OIG_DATA_API_BASE_URL`, for example `http://127.0.0.1:8787/v1/` with the oig-data-source container running (`docker compose up -d`).
-- Auth: `CF-Access-Client-Id` and `CF-Access-Client-Secret` headers when hosted, plus `Authorization: Bearer <OIG_DATA_API_KEY>` when the API sets `OIG_API_KEY` (a missing or wrong key is 401). `/health` needs neither. None locally.
+- Auth: `CF-Access-Client-Id` and `CF-Access-Client-Secret` headers when hosted, plus `Authorization: Bearer <OIG_DATA_API_KEY>` when the API sets `OIG_API_KEY` (a missing or wrong key is 401). Only `/health` is open; `/health/search` needs the key. None locally.
 - Tracing: within a tool call, the MCP server sends `X-Trace-Id`, `X-OIG-Client`, and `X-OIG-Tool`. The API ignores them unless its test traces are on, and then records them so each request can be matched to its tool call.
-- All responses are JSON. Lists use the envelope `{total, count, offset, items, has_more, next_offset}`.
+- All responses are JSON, with `X-Content-Type-Options: nosniff` and `Cache-Control: no-store`. Lists use the envelope `{total, count, offset, items, has_more, next_offset}`.
 - Every response includes `data_as_of` (YYYY-MM-DD).
 - Reports are keyed by `node_id` (the vaoig.gov Drupal node id); recommendations by `rec_id` = `<node_id>-<rec_no>`. vaoig.gov exposes a node id only for reports that have recommendations (about half of all reports; oig-data-source ADR-04), so report list items also carry `path`, and `node_id` may be null there.
 - Status values: `open`, `closed-implemented`, `closed-not-implemented`.
@@ -52,11 +52,28 @@ Every endpoint above is live as of 2026-11-04. The API's own OpenAPI document is
 
 **Unknown parameters.** Any query parameter an endpoint does not declare returns 422, with the name in `detail[].loc` and the allowed names in `detail[].msg`, so a misspelled filter cannot return unfiltered numbers. Check `/openapi.json` before sending a new one.
 
-**Shared parameters.** `limit` (1 to 100, default 20) and `offset` (0 or more). An invalid value returns 422 with the parameter named in `detail[].loc`. `q` is full-text search (SQLite FTS5, porter stemming, BM25 ranking). With the default `q_mode=terms`, each word is quoted and all must match, so stray quotes or operators in user text are harmless, but a whole sentence usually finds nothing. `q_mode=any` matches any meaningful word. `q_mode=raw` passes FTS5 syntax through (`OR`, `NEAR`, phrases, prefix `*`). A raw query with bad syntax returns 400. Report filters are `report_type` (slug or label, for example `audit` or `Healthcare Facility Inspection`), `topic`, `visn`, `state` (label, case-insensitive, or the site's term id), `published_from` and `published_to` (YYYY-MM-DD, inclusive), `report_number`, `station_number`, and `exclude_station_number` (to see only a facility's peers).
+**Shared parameters.** `limit` (1 to 100, default 20) and `offset` (0 or more). An invalid value returns 422 with the parameter named in `detail[].loc`. `q` is full-text search (SQLite FTS5, porter stemming, BM25 ranking). With the default `q_mode=terms`, each word is quoted and all must match, so stray quotes or operators in user text are harmless, but a whole sentence usually finds nothing. `q_mode=any` matches any meaningful word. `q_mode=raw` passes FTS5 syntax through (`OR`, `NEAR`, phrases, prefix `*`). Limits on `q` are under Query limits below. Report filters are `report_type` (slug or label, for example `audit` or `Healthcare Facility Inspection`), `topic`, `visn`, `state` (label, case-insensitive, or the site's term id), `published_from` and `published_to` (YYYY-MM-DD, inclusive), `report_number`, `station_number`, and `exclude_station_number` (to see only a facility's peers).
+
+**Query limits** (oig-data-source #26, #34, #35; live 2026-11-10). These bound what one query can cost.
+
+| Condition | Response |
+|---|---|
+| `q` over 512 characters on `search`, `pages/search`, `recommendations`, `reports`, or `metrics/*` | 422 |
+| `q_mode=terms` with more than 32 words | 400, "q has more than 32 words; use q_mode=any for long text" |
+| `q_mode=any`, and `search` in every case, past 32 meaningful words | The extra keywords are ignored. `search` still embeds the whole question. |
+| `q_mode=raw` with a prefix shorter than 3 characters before `*`, a `NEAR` group of more than 8 terms, or any syntax error, including `col:term` | 400, "Invalid search query" |
+| A full-text query running past 2 seconds | 503, "Search timed out" |
+| More than 4 `search` or `pages/search` calls at once | Extra calls wait up to 10 seconds, then get 429 with `Retry-After: 5` |
+
+A slow embedding model does not cause a 503. `search` answers with `search_mode=keyword_fallback` instead. The worst case for one call is about 23 seconds (a 10-second queue wait plus the query), under this server's 30-second `DEFAULT_TIMEOUT`.
+
+How the tools handle these: tool arguments that become `q` are capped below 512 characters (`question` 500; `keywords`, `wording`, and `facility` 200), and the brief's peer searches send cluster labels, the longest of which is 355 characters. A 429 or 503 reaches the assistant as a failed tool call, with a hint to wait and retry (429) or to narrow the question (503), not the "API not reachable" hint. Tools do not retry on their own: a retry would add another queue wait to a call that is already slow, during an overload, and the assistant can retry and tell the user why.
 
 **`GET search`.** Requires `q`, in any wording, including a whole sentence. Takes the `recommendations` filters, `limit`, and `offset`. Every query runs keyword (BM25) and semantic (`nomic-embed-text`) search over recommendations and over corrective actions, merged by reciprocal rank fusion. Items are the `recommendations` items plus `matched_by`, the lists that found the item (`keyword:recommendation`, `semantic:recommendation`, `keyword:corrective_action`, `semantic:corrective_action`). `total` is the shortlist size, at most 100. `page_hits` holds up to 5 PDF pages on the first page of results, with `node_id`, `page_no`, `snippet`, `report_number`, `title`, `url`, `pdf_url`, and `published_at`. `search_mode` is `hybrid`, or `keyword_fallback` when the embedding model is unavailable; results are still valid, but report the fallback rather than hiding it.
 
-**`GET /health/search`** (outside `/v1/`). `status` is `ok` or `degraded`, with `model_reachable`, `vectors` (count by kind), `searches_since_start`, and `keyword_fallbacks_since_start`. `/health` only says the process is up.
+**`GET /health/search`** (outside `/v1/`; needs the API key). `status` is `ok` or `degraded`, with `model_reachable`, `model_compatible`, `configured_model`, `dataset_model`, `vectors` (count by kind), `searches_since_start`, and `keyword_fallbacks_since_start`. `/health` only says the process is up, and is the one open endpoint.
+
+**Report text is quoted material.** `text`, `corrective_action`, `snippet`, `summary`, and `title` are verbatim OIG report and PDF text, and reach the model as tool output (oig-data-source finding SR-22). The data side swept the corpus and found no patient identifiers and no zero-width characters. On this side, every tool result that carries report text names those fields in `provenance.quoted_fields`, with `provenance.quoted_text` saying they are source material and not instructions. The five tools that return report text say the same in their descriptions, and every tool is annotated read-only and has no write or shell ability.
 
 **`GET meta`.** `counts` adds `facility_responses`, `facilities`, `inspections`, `clusters`, and `duplicate_report_listings` (`reports` counts listings, so distinct reports are `reports` minus that). `reconciliation` compares the database with the totals OIG prints on `/recommendations-all` on `checked_on`: for each of `open`, `total_recommendations`, and `total_reports`, the `database` and `oig` values, the `difference`, and `within_tolerance`, plus `oig_open_by_age`. `derived` records how the derived tables were built, including the cluster method.
 

@@ -138,3 +138,8 @@ class Provenance(BaseModel):
     citation: str = Field(
         default="", description="How to cite this response in an answer."
     )
+    quoted_fields: list[str] = Field(
+        default_factory=list,
+        description="Fields anywhere in this response that quote OIG report text.",
+    )
+    quoted_text: str = Field(default="", description="How to treat the quoted fields.")

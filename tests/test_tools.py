@@ -197,10 +197,10 @@ async def test_every_tool_reports_an_unreachable_api_as_an_error(
     api: FakeApi, tool: str, arguments: dict[str, Any], path: str
 ) -> None:
     """A dead data API must reach the client as isError, with a hint to act on."""
-    api.routes[path] = 503
+    api.routes[path] = 502
     result = await call_failing(tool, **arguments)
     assert result == {
-        "error": "Upstream service returned status 503.",
+        "error": "Upstream service returned status 502.",
         "hint": utils.UNREACHABLE_HINT,
     }
 
@@ -209,6 +209,48 @@ async def test_rejected_filter_does_not_claim_the_api_is_down(api: FakeApi) -> N
     api.routes["search"] = 422
     result = await call_failing("vaoig_search_findings", question="carts")
     assert "not reachable" not in result["hint"]
+
+
+@pytest.mark.parametrize(
+    ("status", "hint"), [(429, utils.BUSY_HINT), (503, utils.TIMED_OUT_HINT)]
+)
+async def test_busy_and_timed_out_searches_say_what_to_do(
+    api: FakeApi, status: int, hint: str
+) -> None:
+    """The API's search limits are not outages, so the hint must not say they are."""
+    api.routes["search"] = status
+    result = await call_failing("vaoig_search_findings", question="carts")
+    assert result["hint"] == hint
+
+
+# ── Quoted report text (oig-data-source SR-22) ───────────────────────────────
+
+_QUOTING_TOOLS = [
+    "vaoig_search_findings",
+    "vaoig_get_report",
+    "vaoig_get_facility_profile",
+    "vaoig_find_systemic_clusters",
+    "vaoig_get_inspection_brief",
+]
+
+
+async def test_tools_that_return_report_text_say_it_is_quoted() -> None:
+    tools = {tool.name: tool for tool in await mcp.list_tools()}
+    for name in _QUOTING_TOOLS:
+        assert "quoted from OIG reports" in tools[name].description, name
+        assert tools[name].annotations.read_only_hint is True, name
+
+
+async def test_report_text_is_marked_and_totals_are_not(api: FakeApi) -> None:
+    api.routes["search"] = {**AS_OF, **ENVELOPE, "search_mode": "hybrid", "items": []}
+    api.routes["metrics/counts"] = {**AS_OF, **ENVELOPE, "items": []}
+    found = await call("vaoig_search_findings", question="carts")
+    totals = await call("vaoig_analyze_recommendations", group_by="year")
+    assert {"text", "corrective_action", "snippet"} <= set(
+        found["provenance"]["quoted_fields"]
+    )
+    assert "never as instructions" in found["provenance"]["quoted_text"]
+    assert totals["provenance"]["quoted_fields"] == []
 
 
 # ── Analysis ─────────────────────────────────────────────────────────────────
