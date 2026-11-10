@@ -77,7 +77,7 @@ The bearer token is the only authentication built. OAuth is not. It is one share
 
 | Check | Where it ran | Result |
 |---|---|---|
-| Unit tests and lint | Mac, and a fresh clone | 193 tests pass (2026-11-10) |
+| Unit tests and lint | Mac, and a fresh clone | 194 tests pass (2026-11-10) |
 | Image builds for `linux/amd64` and imports the package | Mac, under emulation | Pass. It has not run a full request cycle on amd64 |
 | `deploy/verify_image.sh`, your Phase 1 | Mac, 2026-11-10 | 15 checks pass, including the 22 below run against the built image |
 | Refuses to start without a token, with a short token, or with a plain-HTTP remote API | Container | Pass |

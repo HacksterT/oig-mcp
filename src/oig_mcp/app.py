@@ -61,7 +61,6 @@ vaoig_find_systemic_clusters.
 - One facility's record: vaoig_get_facility_profile. To prepare that facility \
 for an inspection, use vaoig_get_inspection_brief instead; it adds the most \
 common peer findings and what peers did.
-Prompts: inspection_readiness_checklist and open_recommendation_aging_brief.
 
 Rules for every answer: cite the report number and link for each finding; state \
 data_as_of and flag stale data; pass on every entry in notices and each *_basis \

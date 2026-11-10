@@ -96,7 +96,7 @@ uv run pytest tests/ -v
 uv run ruff check . && uv run ruff format --check .
 ```
 
-Each tool lives in its own file under `src/oig_mcp/tools/` with a `register(mcp)` function, wired up in `tools/__init__.py`. Resources and prompts follow the same pattern. Tool names use the `vaoig_` prefix and take Pydantic-typed inputs with a description and bounds on every parameter. Each tool declares an output schema built from the Pydantic models in `models.py`, so clients see its result shape and check every result against it. Results carry `notices` to pass on and a `provenance` block that says how to cite the result and which fields quote report text. Shared HTTP, formatting, and error handling live in `utils.py`. The server's `instructions` map each user goal to a tool.
+Each tool lives in its own file under `src/oig_mcp/tools/` with a `register(mcp)` function, wired up in `tools/__init__.py`. Resources and prompts follow the same pattern. Tool names use the `vaoig_` prefix and take Pydantic-typed inputs with a description and bounds on every parameter. Each tool declares an output schema built from the Pydantic models in `models.py`, so clients see its result shape and check every result against it. Results carry `notices` to pass on and a `provenance` block that says how to cite the result and which fields quote report text. Shared HTTP, formatting, and error handling live in `utils.py`. The server's `instructions` map each user goal to a tool. FastMCP sends a tool's docstring only up to its `Returns:` section, so anything the model needs to choose or chain tools goes above it.
 
 ## Deployment
 
