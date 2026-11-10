@@ -43,6 +43,18 @@ _TOPIC_COVERAGE = (
     "OIG tagged only about a quarter of reports with a topic, so topic results "
     "cover only those reports."
 )
+_NO_GEOGRAPHY = (
+    "A VISN or state filter leaves out recommendations that carry no VISN or state, "
+    "such as those from national reviews and from reports covering more than one "
+    "VISN. Results added up across every VISN or state can fall well short of the "
+    "total; run the same analysis without that filter to see the full count."
+)
+_TOPIC_CO_TAGS = (
+    "Grouping by topic with a topic filter also returns the other topics those "
+    "reports carry. The row for the filtered topic is its count. To count one topic, "
+    "group by year instead: each recommendation has one year, so recommendation_total "
+    "is exact."
+)
 _NO_CLOSURE_DATES = (
     "No closure dates are available for this set, so time to close cannot be "
     "stated from it."
@@ -102,6 +114,10 @@ def _notices(
             notices.append(_PUBLICATION_DAY)
     if group_by is AnalysisGroup.TOPIC or (filters and filters.topic):
         notices.append(_TOPIC_COVERAGE)
+    if group_by is AnalysisGroup.TOPIC and filters and filters.topic:
+        notices.append(_TOPIC_CO_TAGS)
+    if filters and (filters.visn or filters.state):
+        notices.append(_NO_GEOGRAPHY)
     return notices
 
 
@@ -118,8 +134,10 @@ def register(mcp: FastMCP) -> None:
             AnalysisGroup,
             Field(
                 description=(
-                    "year for counts over time. office, topic, or report_type for "
-                    "time to close, not-implemented rate, and open-item aging."
+                    "year for counts over time, and for an exact total of one set: "
+                    "each recommendation has one year. office, topic, or report_type "
+                    "for time to close, not-implemented rate, and open-item aging; "
+                    "their groups overlap, so do not add them up."
                 )
             ),
         ],
@@ -141,17 +159,21 @@ def register(mcp: FastMCP) -> None:
         """Count and measure a filtered set of recommendations by a chosen grouping.
 
         Use this for exact counts, trends over time, how long recommendations take
-        to close, not-implemented rates, and how old open items are. It does not measure
-        whether target dates were met, because the data cannot establish that; see
-        target_basis. Group by year for a trend. Group by office, topic, or report_type
-        for closure and aging measures. Facilities cannot be a grouping.
+        to close, not-implemented rates, and how old open items are. It does not
+        measure whether target dates were met, because the data cannot establish
+        that; see target_basis. Group by year for a trend, or to count one topic or
+        theme exactly. Group by office, topic, or report_type for closure and aging
+        measures. Facilities cannot be a grouping, because this server reports
+        records and does not rate or rank facilities. To compare places, filter by
+        one VISN or state at a time; the result names the filters it used.
 
         Always pass on every entry in notices, and target_basis when discussing
         target dates.
 
         Returns:
-            items (one per group), total_groups, notices, target_basis, and
-            provenance. By year:
+            group_by, keywords, and filters (echoed, so each result names what
+            produced it), items (one per group), total_groups, recommendation_total
+            (by year only), notices, target_basis, and provenance. By year:
             report, recommendation, open, and closed counts and median days to
             closure. Otherwise: those counts with median and quartile days to
             closure, not-implemented rate, and open-item aging.
@@ -176,7 +198,14 @@ def register(mcp: FastMCP) -> None:
         ]
         return {
             "group_by": group_by.value,
+            "keywords": keywords,
+            "filters": filters.to_params() if filters else {},
             "total_groups": result.get("total"),
+            "recommendation_total": (
+                sum(item.get("recommendation_count") or 0 for item in items)
+                if group_by is AnalysisGroup.YEAR
+                else None
+            ),
             "items": items,
             "notices": _notices(group_by, filters, items),
             "target_basis": result.get("target_basis"),
