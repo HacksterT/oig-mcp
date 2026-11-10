@@ -10,7 +10,7 @@ An entry in the [GSA MCP Server and AI Agent Government Hackathon](https://www.g
 
 ## Status
 
-The server is built, and it answers from the full data build of November 4, 2026, covering 4,410 reports and 15,649 recommendations. It has been evaluated on Claude models, and deployment to IBM watsonx Orchestrate is next. Results are in [docs/evaluation.md](docs/evaluation.md).
+The server is built, and it answers from the full data build of November 4, 2026, covering 4,410 reports and 15,649 recommendations. It has been evaluated on Claude models, most recently on November 10 after the last changes to its responses, and deployment to IBM watsonx Orchestrate is next. Results are in [docs/evaluation.md](docs/evaluation.md).
 
 | Capability | Kind |
 |---|---|
@@ -32,7 +32,7 @@ vaoig.gov ──> oig-data-source (crawler, SQLite, JSON API in a container behi
                                    ▼  OIG_DATA_API_BASE_URL + service token
                      oig-mcp (this repo: tools, resources, prompts, eval)
                                    │
-                                   ▼  stdio or streamable HTTP
+                                   ▼  stdio or Streamable HTTP
                      MCP client (Claude Desktop, Claude Code, watsonx Orchestrate, ...)
 ```
 
@@ -76,7 +76,7 @@ Without the data API running, `vaoig://about` still works and `vaoig_get_dataset
 | `MCP_USAGE_LOG` | empty | File for the usage log, which also goes to stderr. Records client, tool, outcome, and duration, never arguments |
 | `MCP_TRACE_DIR`, `MCP_TRACE_MAX_MB` | empty, `400` | Full tool-call traces, including arguments and results. On through the hackathon, including judging, and disclosed to users in `vaoig://about`. Read them with `deploy/traces.py` |
 | `STALE_AFTER_DAYS` | `30` | Age at which responses flag data as stale |
-| `MCP_TRANSPORT`, `MCP_HOST`, `MCP_PORT` | `stdio`, `127.0.0.1`, `8000` | Transport: `stdio`, or `streamable-http` for Streamable HTTP, the MCP specification's HTTP transport (FastMCP calls it `http`). Anything else stops startup. and the local HTTP address. A platform-injected `PORT` switches to HTTP on all interfaces |
+| `MCP_TRANSPORT`, `MCP_HOST`, `MCP_PORT` | `stdio`, `127.0.0.1`, `8000` | `stdio`, or `streamable-http` for Streamable HTTP, the MCP specification's HTTP transport (FastMCP calls it `http`); anything else stops startup. Host and port apply to local HTTP, which checks Host and Origin headers. A platform-injected `PORT` switches to HTTP on all interfaces |
 
 ## Development
 
@@ -86,7 +86,7 @@ uv run pytest tests/ -v
 uv run ruff check . && uv run ruff format --check .
 ```
 
-Each tool lives in its own file under `src/oig_mcp/tools/` with a `register(mcp)` function, wired up in `tools/__init__.py`. Resources and prompts follow the same pattern. Tool names use the `vaoig_` prefix, take Pydantic-typed inputs, and return structured data with a `provenance` block that says how to cite the result.
+Each tool lives in its own file under `src/oig_mcp/tools/` with a `register(mcp)` function, wired up in `tools/__init__.py`. Resources and prompts follow the same pattern. Tool names use the `vaoig_` prefix and take Pydantic-typed inputs with a description and bounds on every parameter. Each tool declares an output schema built from the Pydantic models in `models.py`, so clients see its result shape and check every result against it. Results carry `notices` to pass on and a `provenance` block that says how to cite the result and which fields quote report text. Shared HTTP, formatting, and error handling live in `utils.py`. The server's `instructions` map each user goal to a tool.
 
 ## Deployment
 
@@ -98,7 +98,7 @@ An assistant answers 24 questions using only these tools, scored against answers
 
 ## Security
 
-Callers authenticate to `/mcp` with a bearer token, and the server authenticates to the data API with a separate Cloudflare Access token. The outbound boundary is tested: one operator-configured origin, relative paths only, no redirects, no proxy environment, a response size cap, and sanitized upstream errors. See [SECURITY.md](SECURITY.md).
+Callers authenticate to `/mcp` with a bearer token, with a rate limit per token. The server authenticates to the data API with a separate Cloudflare Access token and the API's own key. The outbound boundary is tested: one operator-configured origin, relative paths only, no redirects, no proxy environment, a response size cap, and sanitized upstream errors. Every tool is read-only, and report text is marked as quoted source material, not instructions. Questions and answers are recorded during the hackathon, and users are told. See [SECURITY.md](SECURITY.md).
 
 ## Acknowledgements
 
