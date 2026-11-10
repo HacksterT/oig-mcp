@@ -65,6 +65,6 @@ Send Troy the question, the client and model you used, the answer, and what went
 ## What to expect
 
 - **Don't enter patient information or anything nonpublic.** Questions pass through your AI provider, Cloudflare, and Troy's computer. The server only holds public OIG material.
-- **What's recorded:** while testing, everything the server sees: your token's name, each tool call and its arguments, including your questions, every request it makes to the data API and what came back, and the answer each tool returned. Your conversation with your AI model isn't visible to the server, so it isn't recorded. Records stay on Troy's Mac, are capped at about 1 GB, and are used to see how the tool works and where it goes wrong.
+- **What's recorded:** throughout the hackathon, including judging, everything the server sees: your token's name, each tool call and its arguments, including your questions, every request it makes to the data API and what came back, and the answer each tool returned. Your conversation with your AI model isn't visible to the server, so it isn't recorded. Records stay on Troy's Mac, are capped at about 1 GB, and are used to see how the tool works and where it goes wrong.
 - **Downtime:** it runs on one computer, so it can go down, and it restarts for a few seconds when testers are added or removed. If a tool fails, try again in a minute. If it keeps failing, tell Troy.
 - **Limits:** each token can make about two requests a second, with bursts up to 30. A "rate limit exceeded" error clears within seconds.

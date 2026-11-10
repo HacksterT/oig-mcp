@@ -76,8 +76,9 @@ class Settings(BaseSettings):
     # client, tool, outcome, and duration of each call, never the arguments.
     mcp_usage_log: str = ""
 
-    # Full tool-call traces for closed testing (tracing.py): arguments, API calls,
-    # and results. Empty turns them off. Keep them off for public use.
+    # Full tool-call traces (tracing.py): arguments, API calls, and results. On
+    # through the hackathon, including judging, and disclosed in vaoig://about.
+    # Empty turns them off.
     mcp_trace_dir: str = ""
     mcp_trace_max_mb: int = 400
 

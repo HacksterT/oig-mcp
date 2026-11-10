@@ -90,7 +90,7 @@ Send Troy the question, the client and model you used, the answer, and what went
 ## What to expect
 
 - **Sensitive information:** don't enter patient information or anything nonpublic. Questions pass through your AI provider, Cloudflare, and Troy's Mac.
-- **What's recorded:** while testing, everything the server sees: your token's name, each tool call and its arguments, including your questions, every request it makes to the data API and what came back, and the answer each tool returned. Your conversation with your AI model isn't visible to the server, so it isn't recorded. Records stay on Troy's Mac, are capped at about 1 GB, and are used to see how the tool works and where it goes wrong.
+- **What's recorded:** throughout the hackathon, including judging, everything the server sees: your token's name, each tool call and its arguments, including your questions, every request it makes to the data API and what came back, and the answer each tool returned. Your conversation with your AI model isn't visible to the server, so it isn't recorded. Records stay on Troy's Mac, are capped at about 1 GB, and are used to see how the tool works and where it goes wrong.
 - **Downtime:** everything runs on one Mac. After a reboot, FileVault can keep it down until Troy unlocks the machine. If a tool fails, try again in a minute, and tell Troy if it keeps failing.
 - **Limits:** your token can make about two requests a second, with bursts up to 30. A "rate limit exceeded" error clears within seconds.
 - **Your token:** keep it out of repos and shared configs. If it's exposed, tell Troy and he'll replace it.

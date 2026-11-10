@@ -1,10 +1,10 @@
-"""Full tool-call traces for closed testing.
+"""Full tool-call traces, on through the hackathon including judging.
 
 Each tool call gets a trace ID, sent to the data API as X-Trace-Id with the client
 and tool names, so the API's own trace of each request can be matched to the call.
 When MCP_TRACE_DIR is set, the call is also written as one JSON file: who called,
 the arguments, every API request it made, and the result. That includes what
-people searched for, so turn it off before anyone outside the test group connects.
+people searched for, so anyone connected must be told: vaoig://about says so.
 """
 
 from __future__ import annotations
