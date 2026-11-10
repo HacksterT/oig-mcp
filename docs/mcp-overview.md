@@ -1,6 +1,6 @@
 # MCP Exec Summary: VA OIG Recommendations Assistant
 
-*For leaders and staff. Status and figures as of November 4, 2026.*
+*For leaders and staff. Status as of November 10, 2026. Figures from the data as of November 4, 2026.*
 
 ## In brief
 
