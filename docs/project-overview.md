@@ -45,7 +45,7 @@ The project is two repositories.
 | Repository | What it does | Where it runs | Visibility |
 |---|---|---|---|
 | `oig-data-source` | Crawls vaoig.gov, parses report pages and PDFs, builds a SQLite database, serves a JSON API over it | Troy's Mac mini, exposed to the internet through a Cloudflare Tunnel with Cloudflare Access service tokens | Private |
-| `oig-mcp` (this repo) | The MCP server: tools, resources, prompts, evaluation | Developed on Troy's Mac; deployed to IBM Cloud Code Engine from the IBM VM; registered in watsonx Orchestrate | Public (planned) |
+| `oig-mcp` (this repo) | The MCP server: tools, resources, prompts, evaluation | Developed on Troy's Mac; deployed to IBM Cloud Code Engine from the IBM VM; registered in watsonx Orchestrate | Public (since 2026-11-10) |
 
 ```
 vaoig.gov (public OIG pages and PDFs)
