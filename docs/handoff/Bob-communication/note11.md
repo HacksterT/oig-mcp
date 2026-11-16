@@ -24,4 +24,4 @@ date -u +%H:%M:%S
 3. If the run stops on a validation error, report the exact message and the test file it names, and stop.
 4. If it completes, run it twice more as `run-2` and `run-3`, recording the times of each. Answers vary between runs, so three runs separate a real failure from a bad draw.
 5. Copy the three results folders to `eval/results/<date>-orchestrate/` (`run-1`, `run-2`, `run-3`), where `<date>` is the UTC date of the first run (`date -u +%F`). Before committing, search them for anything private: the instance URL or ID, the agent ID, an email address, a token. Remove any you find, and say what you removed. Then commit and push to `ibm/deploy`.
-6. Report the start and end times of each run, the summary table the ADK prints for each, and anything that failed to run.
+6. Report as note 12 describes: a report file in the repository that Claude reads from GitHub. Read note 12 before you start the first run, so you capture what it asks for as you go.
