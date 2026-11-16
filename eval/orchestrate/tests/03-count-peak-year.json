@@ -1,0 +1,30 @@
+{
+  "dataset_name": "count-peak-year",
+  "agent": "gsa-oig-assist-TES",
+  "story": "You work in VA patient safety and quality and use an assistant connected to VA OIG data. You want a sourced answer to your question. If the assistant asks a clarifying question, answer briefly and stay on the original question.",
+  "starting_sentence": "In which publication year did OIG issue the most recommendations, and how many was that?",
+  "goals": {
+    "vaoig_analyze_recommendations-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "vaoig_analyze_recommendations-1",
+      "tool_name": "oig_mcp_TES:vaoig_analyze_recommendations",
+      "args": {
+        "IGNORE": null
+      }
+    },
+    {
+      "type": "text",
+      "name": "summarize",
+      "response": "2015, with 1914 recommendations.",
+      "keywords": [
+        "2015",
+        "1,914"
+      ]
+    }
+  ]
+}

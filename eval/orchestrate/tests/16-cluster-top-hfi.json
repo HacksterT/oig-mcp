@@ -1,0 +1,27 @@
+{
+  "dataset_name": "cluster-top-hfi",
+  "agent": "gsa-oig-assist-TES",
+  "story": "You work in VA patient safety and quality and use an assistant connected to VA OIG data. You want a sourced answer to your question. If the assistant asks a clarifying question, answer briefly and stay on the original question.",
+  "starting_sentence": "Under OIG's current Healthcare Facility Inspection program, what recurring finding shows up in the most reports, and how common is it? Is the VA El Paso Healthcare System among the facilities in that group?",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "type": "text",
+      "name": "summarize",
+      "response": "Workflows for communicating test results: 21 of 112 reports. El Paso is not in that group.",
+      "keywords": [
+        "21",
+        "112",
+        "test results"
+      ]
+    },
+    {
+      "type": "assert_llm",
+      "kind": "policy",
+      "check": "Treats a facility's absence from the group, or the group's count, with care: grouping is automated, so the theme may appear in other groups or the count may be a lower bound. Alternatively it passes on an equivalent caveat from the tool. If El Paso is reported as in the group, this criterion can pass on the count caveat alone.",
+      "scope": "response"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "dataset_name": "aging-oit",
+  "agent": "gsa-oig-assist-TES",
+  "story": "You work in VA patient safety and quality and use an assistant connected to VA OIG data. You want a sourced answer to your question. If the assistant asks a clarifying question, answer briefly and stay on the original question.",
+  "starting_sentence": "How many open recommendations does the Office of Information and Technology have, and how many of those have been open for more than a year?",
+  "goals": {
+    "vaoig_analyze_recommendations-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "vaoig_analyze_recommendations-1",
+      "tool_name": "oig_mcp_TES:vaoig_analyze_recommendations",
+      "args": {
+        "IGNORE": null
+      }
+    },
+    {
+      "type": "text",
+      "name": "summarize",
+      "response": "57 open, 13 open for over a year.",
+      "keywords": [
+        "57",
+        "13"
+      ]
+    }
+  ]
+}

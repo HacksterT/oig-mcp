@@ -1,0 +1,30 @@
+{
+  "dataset_name": "count-two-states",
+  "agent": "gsa-oig-assist-TES",
+  "story": "You work in VA patient safety and quality and use an assistant connected to VA OIG data. You want a sourced answer to your question. If the assistant asks a clarifying question, answer briefly and stay on the original question.",
+  "starting_sentence": "Which has more open recommendations, Texas or North Carolina, and how many does each have?",
+  "goals": {
+    "vaoig_analyze_recommendations-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "vaoig_analyze_recommendations-1",
+      "tool_name": "oig_mcp_TES:vaoig_analyze_recommendations",
+      "args": {
+        "IGNORE": null
+      }
+    },
+    {
+      "type": "text",
+      "name": "summarize",
+      "response": "Texas 24, North Carolina 6.",
+      "keywords": [
+        "24",
+        "6"
+      ]
+    }
+  ]
+}

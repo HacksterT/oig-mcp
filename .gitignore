@@ -59,3 +59,7 @@ eval/.phoenix/
 
 # Local Claude Code settings
 .claude/
+
+# Orchestrate evaluation: local config and results
+eval/orchestrate/config.yaml
+eval/orchestrate/results/

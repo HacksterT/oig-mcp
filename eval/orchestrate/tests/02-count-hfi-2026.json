@@ -1,0 +1,36 @@
+{
+  "dataset_name": "count-hfi-2026",
+  "agent": "gsa-oig-assist-TES",
+  "story": "You work in VA patient safety and quality and use an assistant connected to VA OIG data. You want a sourced answer to your question. If the assistant asks a clarifying question, answer briefly and stay on the original question.",
+  "starting_sentence": "How many recommendations did OIG make in Healthcare Facility Inspection reports published in 2026, and how many of those are still open?",
+  "goals": {
+    "vaoig_analyze_recommendations-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "vaoig_analyze_recommendations-1",
+      "tool_name": "oig_mcp_TES:vaoig_analyze_recommendations",
+      "args": {
+        "IGNORE": null
+      }
+    },
+    {
+      "type": "text",
+      "name": "summarize",
+      "response": "148 recommendations, 80 still open.",
+      "keywords": [
+        "148",
+        "80"
+      ]
+    },
+    {
+      "type": "assert_llm",
+      "kind": "policy",
+      "check": "States the date of the data, such as 'data as of' a date.",
+      "scope": "response"
+    }
+  ]
+}
