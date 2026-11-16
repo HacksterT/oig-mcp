@@ -58,7 +58,8 @@ vaoig_analyze_recommendations.
 - Findings that recur across reports, and how common one is: \
 vaoig_find_systemic_clusters.
 - One report in full, with facility responses: vaoig_get_report.
-- One facility's record: vaoig_get_facility_profile. To prepare that facility \
+- What OIG found at one named facility or VA location: \
+vaoig_get_facility_profile. To prepare that facility \
 for an inspection, use vaoig_get_inspection_brief instead; it adds the most \
 common peer findings and what peers did.
 

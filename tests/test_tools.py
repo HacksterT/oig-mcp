@@ -38,6 +38,8 @@ class FakeApi:
     def handle(self, request: httpx.Request) -> httpx.Response:
         self.requests.append(request)
         route = self.routes.get(request.url.path.removeprefix("/v1/"))
+        if callable(route):
+            route = route(request)
         if route is None:
             return httpx.Response(404, json={"detail": "not found"})
         if isinstance(route, int):
@@ -250,6 +252,7 @@ async def test_routing_hints_reach_the_client() -> None:
     assert "Returns:" not in "".join(tools.values())
     assert "filter value" in tools["vaoig_get_dataset_status"]
     assert "vaoig_analyze_recommendations" in tools["vaoig_search_findings"]
+    assert "vaoig_get_facility_profile" in tools["vaoig_search_findings"]
     assert "vaoig_get_inspection_brief" in tools["vaoig_get_facility_profile"]
     for name in ("vaoig_search_findings", "vaoig_get_facility_profile"):
         assert "vaoig_get_report has the full text" in tools[name], name
@@ -471,6 +474,30 @@ async def test_profile_omits_the_notice_when_every_response_exists(
     api.routes["facilities/528A6"] = profile
     result = await call("vaoig_get_facility_profile", facility="West Haven")
     assert result["notices"] == []
+
+
+async def test_facility_lookup_retries_without_generic_words(api: FakeApi) -> None:
+    # OIG names no facility "New York VA", so the exact text matches nothing.
+    two = _lookup(_facility("630"), _facility("632"))
+    api.routes["facilities"] = lambda r: (
+        _lookup() if r.url.params["q"] == "New York VA" else two
+    )
+    result = await call("vaoig_get_facility_profile", facility="New York VA")
+    assert [r.url.params["q"] for r in api.requests] == ["New York VA", "New York"]
+    assert [m["station_number"] for m in result["matches"]] == ["630", "632"]
+
+
+async def test_facility_lookup_does_not_retry_a_plain_name(api: FakeApi) -> None:
+    api.routes["facilities"] = _lookup()
+    result = await call("vaoig_get_facility_profile", facility="West Haven")
+    assert len(api.requests) == 1
+    assert "No facility matched" in result["error"]
+
+
+async def test_state_filter_accepts_a_postal_code(api: FakeApi) -> None:
+    api.routes["search"] = {**AS_OF, **ENVELOPE, "search_mode": "hybrid", "items": []}
+    await call("vaoig_search_findings", question="carts", filters={"state": "ny"})
+    assert api.last.url.params["state"] == "New York"
 
 
 async def test_search_shortens_only_long_corrective_actions(api: FakeApi) -> None:

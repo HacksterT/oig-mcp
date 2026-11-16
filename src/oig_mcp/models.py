@@ -10,7 +10,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Annotated, Any, Union
 
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, field_validator
 
 
 class RecommendationStatus(str, Enum):
@@ -31,6 +31,67 @@ class AnalysisGroup(str, Enum):
 
 
 _ISO_DATE = r"^\d{4}-\d{2}-\d{2}$"
+
+
+# Postal codes for the state filter. The API stores and matches full names.
+STATE_NAMES = {
+    "AL": "Alabama",
+    "AK": "Alaska",
+    "AZ": "Arizona",
+    "AR": "Arkansas",
+    "CA": "California",
+    "CO": "Colorado",
+    "CT": "Connecticut",
+    "DE": "Delaware",
+    "DC": "District of Columbia",
+    "FL": "Florida",
+    "GA": "Georgia",
+    "HI": "Hawaii",
+    "ID": "Idaho",
+    "IL": "Illinois",
+    "IN": "Indiana",
+    "IA": "Iowa",
+    "KS": "Kansas",
+    "KY": "Kentucky",
+    "LA": "Louisiana",
+    "ME": "Maine",
+    "MD": "Maryland",
+    "MA": "Massachusetts",
+    "MI": "Michigan",
+    "MN": "Minnesota",
+    "MS": "Mississippi",
+    "MO": "Missouri",
+    "MT": "Montana",
+    "NE": "Nebraska",
+    "NV": "Nevada",
+    "NH": "New Hampshire",
+    "NJ": "New Jersey",
+    "NM": "New Mexico",
+    "NY": "New York",
+    "NC": "North Carolina",
+    "ND": "North Dakota",
+    "OH": "Ohio",
+    "OK": "Oklahoma",
+    "OR": "Oregon",
+    "PA": "Pennsylvania",
+    "RI": "Rhode Island",
+    "SC": "South Carolina",
+    "SD": "South Dakota",
+    "TN": "Tennessee",
+    "TX": "Texas",
+    "UT": "Utah",
+    "VT": "Vermont",
+    "VA": "Virginia",
+    "WA": "Washington",
+    "WV": "West Virginia",
+    "WI": "Wisconsin",
+    "WY": "Wyoming",
+    "PR": "Puerto Rico",
+    "GU": "Guam",
+    "VI": "Virgin Islands",
+    "AS": "American Samoa",
+    "MP": "Northern Mariana Islands",
+}
 
 
 class RecommendationFilters(BaseModel):
@@ -73,7 +134,11 @@ class RecommendationFilters(BaseModel):
             "across the change."
         ),
     )
-    state: str | None = Field(default=None, max_length=50, description="State name.")
+    state: str | None = Field(
+        default=None,
+        max_length=50,
+        description="State or territory name, such as New York. Codes such as NY work.",
+    )
     published_from: str | None = Field(
         default=None, pattern=_ISO_DATE, description="Earliest date, YYYY-MM-DD."
     )
@@ -108,6 +173,14 @@ class RecommendationFilters(BaseModel):
         default=None,
         description="Keep only findings with, or without, a facility response.",
     )
+
+    @field_validator("state")
+    @classmethod
+    def _state_name(cls, value: str | None) -> str | None:
+        """The API matches full names only, so expand a postal code to one."""
+        if value is None:
+            return None
+        return STATE_NAMES.get(value.strip().upper(), value.strip())
 
     def to_params(self) -> dict[str, Any]:
         """Return the API query parameters for the filters that are set."""
