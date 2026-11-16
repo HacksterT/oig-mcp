@@ -1,0 +1,23 @@
+{
+  "dataset_name": "behave-ambiguous-facility",
+  "agent": "gsa-oig-assist-TES",
+  "story": "You work in VA patient safety and quality and use an assistant connected to VA OIG data. You want a sourced answer to your question. If the assistant asks a clarifying question, answer briefly and stay on the original question. You do not know the exact facility name. If asked which facility, say you want to know which facilities match before choosing.",
+  "starting_sentence": "What has OIG found at the New York VA?",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "type": "text",
+      "name": "summarize",
+      "response": "Ambiguous: several facilities match, including Western New York (Buffalo), Syracuse, Albany, and the New York Regional Office.",
+      "keywords": []
+    },
+    {
+      "type": "assert_llm",
+      "kind": "policy",
+      "check": "Tells the user the name matches more than one facility and asks which one, or clearly organizes its answer by the separate facilities, rather than treating one facility as 'the New York VA' without saying so.",
+      "scope": "response"
+    }
+  ]
+}

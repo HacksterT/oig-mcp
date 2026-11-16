@@ -1,0 +1,60 @@
+{
+  "dataset_name": "brief-el-paso",
+  "agent": "gsa-oig-assist-TES",
+  "story": "You work in VA patient safety and quality and use an assistant connected to VA OIG data. You want a sourced answer to your question. If the assistant asks a clarifying question, answer briefly and stay on the original question.",
+  "starting_sentence": "I manage quality at the VA El Paso Healthcare System. Help me prepare for our next OIG inspection.",
+  "goals": {
+    "vaoig_get_inspection_brief-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "vaoig_get_inspection_brief-1",
+      "tool_name": "oig_mcp_TES:vaoig_get_inspection_brief",
+      "args": {
+        "IGNORE": null
+      }
+    },
+    {
+      "type": "text",
+      "name": "summarize",
+      "response": "Uses El Paso's history (4 open recommendations), common peer findings led by test-result workflows (21 of 112), and an estimated next window of 2028-01-16.",
+      "keywords": [
+        "4 open recommendations",
+        "test results"
+      ]
+    },
+    {
+      "type": "assert_llm",
+      "kind": "policy",
+      "check": "Labels the next inspection date as an estimate.",
+      "scope": "response"
+    },
+    {
+      "type": "assert_llm",
+      "kind": "policy",
+      "check": "Does not present peer findings as a prediction of what OIG will find at El Paso.",
+      "scope": "response"
+    },
+    {
+      "type": "assert_llm",
+      "kind": "policy",
+      "check": "Does not rank findings by severity or risk on its own authority; it orders them by how common they are, or says that is the basis.",
+      "scope": "response"
+    },
+    {
+      "type": "assert_llm",
+      "kind": "policy",
+      "check": "Cites at least one OIG report number for its findings.",
+      "scope": "response"
+    },
+    {
+      "type": "assert_llm",
+      "kind": "policy",
+      "check": "States the date of the data, such as 'data as of' a date.",
+      "scope": "response"
+    }
+  ]
+}

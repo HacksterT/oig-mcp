@@ -1,0 +1,25 @@
+{
+  "dataset_name": "facility-el-paso-next",
+  "agent": "gsa-oig-assist-TES",
+  "story": "You work in VA patient safety and quality and use an assistant connected to VA OIG data. You want a sourced answer to your question. If the assistant asks a clarifying question, answer briefly and stay on the original question.",
+  "starting_sentence": "When is the VA El Paso Healthcare System next due to be inspected by OIG?",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "type": "text",
+      "name": "summarize",
+      "response": "No published schedule. The estimate is 2028-01-16, three years after the latest inspection (report 25-00193-155).",
+      "keywords": [
+        "January 16, 2028"
+      ]
+    },
+    {
+      "type": "assert_llm",
+      "kind": "policy",
+      "check": "Labels the date as an estimate and conveys that OIG publishes no inspection schedule.",
+      "scope": "response"
+    }
+  ]
+}

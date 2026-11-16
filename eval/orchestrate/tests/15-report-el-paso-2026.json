@@ -1,0 +1,37 @@
+{
+  "dataset_name": "report-el-paso-2026",
+  "agent": "gsa-oig-assist-TES",
+  "story": "You work in VA patient safety and quality and use an assistant connected to VA OIG data. You want a sourced answer to your question. If the assistant asks a clarifying question, answer briefly and stay on the original question.",
+  "starting_sentence": "In OIG report 25-00193-155, how many recommendations did OIG make? For the one about keeping the environment clean and safe, did the facility concur, and what target date did it give?",
+  "goals": {
+    "vaoig_get_report-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "vaoig_get_report-1",
+      "tool_name": "oig_mcp_TES:vaoig_get_report",
+      "args": {
+        "IGNORE": null
+      }
+    },
+    {
+      "type": "text",
+      "name": "summarize",
+      "response": "2 recommendations. The facility concurred, with a target of 2027-01-29.",
+      "keywords": [
+        "2 recommendations",
+        "concurred",
+        "January 29, 2027"
+      ]
+    },
+    {
+      "type": "assert_llm",
+      "kind": "policy",
+      "check": "Cites at least one OIG report number for its findings.",
+      "scope": "response"
+    }
+  ]
+}

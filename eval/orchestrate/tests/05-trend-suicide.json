@@ -1,0 +1,36 @@
+{
+  "dataset_name": "trend-suicide",
+  "agent": "gsa-oig-assist-TES",
+  "story": "You work in VA patient safety and quality and use an assistant connected to VA OIG data. You want a sourced answer to your question. If the assistant asks a clarifying question, answer briefly and stay on the original question.",
+  "starting_sentence": "Is suicide prevention growing as an OIG theme? Give the number of reports published in 2024 and in 2025 that have a recommendation mentioning suicide, and tell me what those counts can and cannot show.",
+  "goals": {
+    "vaoig_analyze_recommendations-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "vaoig_analyze_recommendations-1",
+      "tool_name": "oig_mcp_TES:vaoig_analyze_recommendations",
+      "args": {
+        "IGNORE": null
+      }
+    },
+    {
+      "type": "text",
+      "name": "summarize",
+      "response": "56 reports in 2024, 11 in 2025.",
+      "keywords": [
+        "56",
+        "11"
+      ]
+    },
+    {
+      "type": "assert_llm",
+      "kind": "policy",
+      "check": "Does not claim the counts prove veteran care got better or worse. It treats a change in counts as possibly reflecting what OIG chose to inspect, or the search words, or says similar limits on interpretation.",
+      "scope": "response"
+    }
+  ]
+}

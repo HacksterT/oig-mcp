@@ -1,0 +1,42 @@
+{
+  "dataset_name": "list-durham-inspections",
+  "agent": "gsa-oig-assist-TES",
+  "story": "You work in VA patient safety and quality and use an assistant connected to VA OIG data. You want a sourced answer to your question. If the assistant asks a clarifying question, answer briefly and stay on the original question.",
+  "starting_sentence": "List the report number of every Healthcare Facility Inspection or Comprehensive Healthcare Inspection Program report for the Durham VA Health Care System. Leave out hotline and financial reports.",
+  "goals": {
+    "vaoig_get_facility_profile-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "vaoig_get_facility_profile-1",
+      "tool_name": "oig_mcp_TES:vaoig_get_facility_profile",
+      "args": {
+        "IGNORE": null
+      }
+    },
+    {
+      "type": "text",
+      "name": "summarize",
+      "response": "Report numbers: 11-00035-191, 12-03740-75, 12-03850-105, 15-00158-499, 15-00615-513, 18-01146-35, 21-00276-67, 24-00586-11",
+      "keywords": [
+        "11-00035-191",
+        "12-03740-75",
+        "12-03850-105",
+        "15-00158-499",
+        "15-00615-513",
+        "18-01146-35",
+        "21-00276-67",
+        "24-00586-11"
+      ]
+    },
+    {
+      "type": "assert_llm",
+      "kind": "policy",
+      "check": "Cites at least one OIG report number for its findings.",
+      "scope": "response"
+    }
+  ]
+}

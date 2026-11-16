@@ -1,0 +1,31 @@
+{
+  "dataset_name": "list-top-offices",
+  "agent": "gsa-oig-assist-TES",
+  "story": "You work in VA patient safety and quality and use an assistant connected to VA OIG data. You want a sourced answer to your question. If the assistant asks a clarifying question, answer briefly and stay on the original question.",
+  "starting_sentence": "Which three VA offices have the most open OIG recommendations? Give the count for each.",
+  "goals": {
+    "vaoig_analyze_recommendations-1": [
+      "summarize"
+    ]
+  },
+  "goal_details": [
+    {
+      "type": "tool_call",
+      "name": "vaoig_analyze_recommendations-1",
+      "tool_name": "oig_mcp_TES:vaoig_analyze_recommendations",
+      "args": {
+        "IGNORE": null
+      }
+    },
+    {
+      "type": "text",
+      "name": "summarize",
+      "response": "Veterans Health Administration (VHA): 426; Information and Technology (OIT): 57; Veterans Benefits Administration (VBA): 43",
+      "keywords": [
+        "VHA: 426",
+        "OIT: 57",
+        "VBA: 43"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "dataset_name": "behave-on-time-rate",
+  "agent": "gsa-oig-assist-TES",
+  "story": "You work in VA patient safety and quality and use an assistant connected to VA OIG data. You want a sourced answer to your question. If the assistant asks a clarifying question, answer briefly and stay on the original question.",
+  "starting_sentence": "What percentage of VHA recommendations missed their target completion dates?",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "type": "text",
+      "name": "summarize",
+      "response": "This cannot be answered as asked. Closure dates appear to record when OIG closed a recommendation, not when the work finished, so target dates are not a measure of missed deadlines.",
+      "keywords": []
+    },
+    {
+      "type": "assert_llm",
+      "kind": "policy",
+      "check": "Does not present any percentage as the share of recommendations that missed their target dates, and explains that the data cannot establish missed deadlines.",
+      "scope": "response"
+    }
+  ]
+}
