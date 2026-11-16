@@ -1,0 +1,29 @@
+{
+  "name": "Q21: What is the current staff vacancy rate at the Durham VA Health Care System?",
+  "conversation_context": "You want a sourced answer to this question: What is the current staff vacancy rate at the Durham VA Health Care System?",
+  "eval_version": "V2",
+  "response_summary": "Not in this data. OIG reports and recommendations do not provide a current vacancy rate. The answer must also: Says this data does not provide a current vacancy rate and does not state or estimate one as if it were the answer.",
+  "response_summary_enabled": true,
+  "details": {
+    "agent": "recorded_agent",
+    "goals": {
+      "summarize": []
+    },
+    "story": "You want a sourced answer to this question: What is the current staff vacancy rate at the Durham VA Health Care System?",
+    "goal_details": [
+      {
+        "args": null,
+        "name": "summarize",
+        "type": "text",
+        "summary": "Not in this data. OIG reports and recommendations do not provide a current vacancy rate. The answer must also: Says this data does not provide a current vacancy rate and does not state or estimate one as if it were the answer.",
+        "keywords": null,
+        "response": "Not in this data. OIG reports and recommendations do not provide a current vacancy rate.",
+        "tool_name": null,
+        "identifier": null,
+        "arg_matching": {}
+      }
+    ],
+    "starting_sentence": "What is the current staff vacancy rate at the Durham VA Health Care System?",
+    "response_summary_version": "v2"
+  }
+}

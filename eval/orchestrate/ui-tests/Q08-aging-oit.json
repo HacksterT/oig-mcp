@@ -1,0 +1,55 @@
+{
+  "name": "Q08: How many open recommendations does the Office of Information and Technology have, and how many of those have been open for more than a year?",
+  "conversation_context": "You want a sourced answer to this question: How many open recommendations does the Office of Information and Technology have, and how many of those have been open for more than a year?",
+  "eval_version": "V2",
+  "response_summary": "57 open, 13 open for over a year.",
+  "response_summary_enabled": true,
+  "details": {
+    "agent": "recorded_agent",
+    "goals": {
+      "vaoig_analyze_recommendations-1": [
+        "summarize"
+      ]
+    },
+    "story": "You want a sourced answer to this question: How many open recommendations does the Office of Information and Technology have, and how many of those have been open for more than a year?",
+    "goal_details": [
+      {
+        "args": {
+          "filters": {
+            "action_office": "OIT",
+            "status": [
+              "open"
+            ]
+          }
+        },
+        "name": "vaoig_analyze_recommendations-1",
+        "type": "tool_call",
+        "summary": null,
+        "keywords": null,
+        "response": null,
+        "tool_name": "vaoig_analyze_recommendations",
+        "identifier": null,
+        "arg_matching": {
+          "filters.action_office": "fuzzy",
+          "filters.status": "strict"
+        }
+      },
+      {
+        "args": null,
+        "name": "summarize",
+        "type": "text",
+        "summary": "57 open, 13 open for over a year.",
+        "keywords": [
+          "57",
+          "13"
+        ],
+        "response": "57 open, 13 open for over a year.",
+        "tool_name": null,
+        "identifier": null,
+        "arg_matching": {}
+      }
+    ],
+    "starting_sentence": "How many open recommendations does the Office of Information and Technology have, and how many of those have been open for more than a year?",
+    "response_summary_version": "v2"
+  }
+}
