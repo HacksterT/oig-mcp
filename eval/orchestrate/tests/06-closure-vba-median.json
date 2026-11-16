@@ -12,15 +12,21 @@
     {
       "type": "tool_call",
       "name": "vaoig_analyze_recommendations-1",
-      "tool_name": "oig_mcp_TES:vaoig_analyze_recommendations",
+      "tool_name": "vaoig_analyze_recommendations",
       "args": {
-        "IGNORE": null
+        "filters": {
+          "action_office": "VBA"
+        }
+      },
+      "arg_matching": {
+        "filters.action_office": "fuzzy"
       }
     },
     {
       "type": "text",
       "name": "summarize",
       "response": "Median 179 days from publication to the closure date.",
+      "summary": "Median 179 days from publication to the closure date.",
       "keywords": [
         "179"
       ]

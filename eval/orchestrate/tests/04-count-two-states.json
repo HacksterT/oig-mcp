@@ -12,15 +12,23 @@
     {
       "type": "tool_call",
       "name": "vaoig_analyze_recommendations-1",
-      "tool_name": "oig_mcp_TES:vaoig_analyze_recommendations",
+      "tool_name": "vaoig_analyze_recommendations",
       "args": {
-        "IGNORE": null
+        "filters": {
+          "status": [
+            "open"
+          ]
+        }
+      },
+      "arg_matching": {
+        "filters.status": "strict"
       }
     },
     {
       "type": "text",
       "name": "summarize",
       "response": "Texas 24, North Carolina 6.",
+      "summary": "Texas 24, North Carolina 6.",
       "keywords": [
         "24",
         "6"

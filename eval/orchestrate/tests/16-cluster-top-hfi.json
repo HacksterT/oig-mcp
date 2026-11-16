@@ -11,6 +11,7 @@
       "type": "text",
       "name": "summarize",
       "response": "Workflows for communicating test results: 21 of 112 reports. El Paso is not in that group.",
+      "summary": "Workflows for communicating test results: 21 of 112 reports. El Paso is not in that group.",
       "keywords": [
         "21",
         "112",

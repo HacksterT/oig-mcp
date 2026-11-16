@@ -12,15 +12,19 @@
     {
       "type": "tool_call",
       "name": "vaoig_analyze_recommendations-1",
-      "tool_name": "oig_mcp_TES:vaoig_analyze_recommendations",
+      "tool_name": "vaoig_analyze_recommendations",
       "args": {
-        "IGNORE": null
+        "group_by": "year"
+      },
+      "arg_matching": {
+        "group_by": "strict"
       }
     },
     {
       "type": "text",
       "name": "summarize",
       "response": "2015, with 1914 recommendations.",
+      "summary": "2015, with 1914 recommendations.",
       "keywords": [
         "2015",
         "1,914"

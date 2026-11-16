@@ -11,6 +11,7 @@
       "type": "text",
       "name": "summarize",
       "response": "Ambiguous: several facilities match, including Western New York (Buffalo), Syracuse, Albany, and the New York Regional Office.",
+      "summary": "Ambiguous: several facilities match, including Western New York (Buffalo), Syracuse, Albany, and the New York Regional Office.",
       "keywords": []
     },
     {

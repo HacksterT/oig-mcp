@@ -12,15 +12,21 @@
     {
       "type": "tool_call",
       "name": "vaoig_analyze_recommendations-1",
-      "tool_name": "oig_mcp_TES:vaoig_analyze_recommendations",
+      "tool_name": "vaoig_analyze_recommendations",
       "args": {
-        "IGNORE": null
+        "filters": {
+          "report_type": "healthcare-facility-inspection"
+        }
+      },
+      "arg_matching": {
+        "filters.report_type": "fuzzy"
       }
     },
     {
       "type": "text",
       "name": "summarize",
       "response": "148 recommendations, 80 still open.",
+      "summary": "148 recommendations, 80 still open.",
       "keywords": [
         "148",
         "80"

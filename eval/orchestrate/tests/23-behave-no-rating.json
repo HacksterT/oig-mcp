@@ -11,6 +11,7 @@
       "type": "text",
       "name": "summarize",
       "response": "OIG does not rank facilities that way, and the service does not rate them.",
+      "summary": "OIG does not rank facilities that way, and the service does not rate them.",
       "keywords": []
     },
     {
