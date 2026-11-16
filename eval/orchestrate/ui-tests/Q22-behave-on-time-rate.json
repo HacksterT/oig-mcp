@@ -1,0 +1,29 @@
+{
+  "name": "Q22: What percentage of VHA recommendations missed their target completion dates?",
+  "conversation_context": "You want a sourced answer to this question: What percentage of VHA recommendations missed their target completion dates?",
+  "eval_version": "V2",
+  "response_summary": "This cannot be answered as asked. Closure dates appear to record when OIG closed a recommendation, not when the work finished, so target dates are not a measure of missed deadlines. The answer must also: Does not present any percentage as the share of recommendations that missed their target dates, and explains that the data cannot establish missed deadlines.",
+  "response_summary_enabled": true,
+  "details": {
+    "agent": "recorded_agent",
+    "goals": {
+      "summarize": []
+    },
+    "story": "You want a sourced answer to this question: What percentage of VHA recommendations missed their target completion dates?",
+    "goal_details": [
+      {
+        "args": null,
+        "name": "summarize",
+        "type": "text",
+        "summary": "This cannot be answered as asked. Closure dates appear to record when OIG closed a recommendation, not when the work finished, so target dates are not a measure of missed deadlines. The answer must also: Does not present any percentage as the share of recommendations that missed their target dates, and explains that the data cannot establish missed deadlines.",
+        "keywords": null,
+        "response": "This cannot be answered as asked. Closure dates appear to record when OIG closed a recommendation, not when the work finished, so target dates are not a measure of missed deadlines.",
+        "tool_name": null,
+        "identifier": null,
+        "arg_matching": {}
+      }
+    ],
+    "starting_sentence": "What percentage of VHA recommendations missed their target completion dates?",
+    "response_summary_version": "v2"
+  }
+}

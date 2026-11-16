@@ -149,6 +149,8 @@ UI_SUMMARY = {
     ),
 }
 
+STORY_CONTEXT = "You want a sourced answer to this question: {q}"
+
 UI_CONTEXT = {
     "behave-ambiguous-facility": (
         "You want to know what OIG has found at a New York VA facility but do not "
@@ -319,6 +321,77 @@ def ui_keywords(question: dict) -> list[str]:
     return found
 
 
+def ui_test(number: int, question: dict) -> dict:
+    """A test in the JSON format the Orchestrate UI shows under Modify JSON.
+
+    Modeled on a saved UI test exported from the instance (q01-test.json). The
+    UI's custom LLM-as-a-Judge metrics replace the assert_llm checks here.
+    """
+    summary = UI_SUMMARY.get(question["id"], question["reference"])
+    checks = [] if question["id"] in UI_SUMMARY else policy_checks(question)
+    if checks:
+        summary += " The answer must also: " + " ".join(checks)
+    context = UI_CONTEXT.get(
+        question["id"], STORY_CONTEXT.format(q=question["question"])
+    )
+    steps = question["required_tools"]
+    details, goals, previous = [], {}, None
+    if steps and all(len(group) == 1 for group in steps):
+        for index, (tool,) in enumerate(steps, start=1):
+            name = f"{tool}-{index}"
+            args, matching = expected_args(question["id"])
+            if args == {"IGNORE": None}:
+                args, matching = None, {}
+            details.append(
+                {
+                    "args": args,
+                    "name": name,
+                    "type": "tool_call",
+                    "summary": None,
+                    "keywords": None,
+                    "response": None,
+                    "tool_name": tool,
+                    "identifier": None,
+                    "arg_matching": matching,
+                }
+            )
+            if previous:
+                goals[previous] = [name]
+            previous = name
+    details.append(
+        {
+            "args": None,
+            "name": "summarize",
+            "type": "text",
+            "summary": summary,
+            "keywords": ui_keywords(question) or None,
+            "response": question["reference"],
+            "tool_name": None,
+            "identifier": None,
+            "arg_matching": {},
+        }
+    )
+    if previous:
+        goals[previous] = ["summarize"]
+    else:
+        goals["summarize"] = []
+    return {
+        "name": f"Q{number:02d}: {question['question']}",
+        "conversation_context": context,
+        "eval_version": "V2",
+        "response_summary": summary,
+        "response_summary_enabled": True,
+        "details": {
+            "agent": "recorded_agent",
+            "goals": goals,
+            "story": context,
+            "goal_details": details,
+            "starting_sentence": question["question"],
+            "response_summary_version": "v2",
+        },
+    }
+
+
 def bank_markdown(questions: list[dict]) -> str:
     """The test bank as a page to work from in the Orchestrate UI."""
     lines = [
@@ -426,10 +499,18 @@ def main() -> None:
         case = test_case(question, args.agent, not args.no_assert)
         path = OUT / f"{number:02d}-{question['id']}.json"
         path.write_text(json.dumps(case, indent=2) + "\n")
+    ui_dir = OUT.parent / "ui-tests"
+    ui_dir.mkdir(exist_ok=True)
+    for old in ui_dir.glob("*.json"):
+        old.unlink()
+    for number, question in enumerate(questions, start=1):
+        path = ui_dir / f"Q{number:02d}-{question['id']}.json"
+        path.write_text(json.dumps(ui_test(number, question), indent=2) + "\n")
     bank = OUT.parent / "test-bank.md"
     bank.write_text(bank_markdown(questions))
     print(f"Wrote {len(questions)} test cases to {OUT.relative_to(ROOT)}")
     print(f"Wrote the UI test bank to {bank.relative_to(ROOT)}")
+    print(f"Wrote {len(questions)} UI-format tests to {ui_dir.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

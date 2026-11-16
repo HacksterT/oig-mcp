@@ -1,0 +1,51 @@
+{
+  "name": "Q02: How many recommendations did OIG make in Healthcare Facility Inspection reports published in 2026, and how many of those are still open?",
+  "conversation_context": "You want a sourced answer to this question: How many recommendations did OIG make in Healthcare Facility Inspection reports published in 2026, and how many of those are still open?",
+  "eval_version": "V2",
+  "response_summary": "148 recommendations, 80 still open. The answer must also: States the date of the data, such as 'data as of' a date.",
+  "response_summary_enabled": true,
+  "details": {
+    "agent": "recorded_agent",
+    "goals": {
+      "vaoig_analyze_recommendations-1": [
+        "summarize"
+      ]
+    },
+    "story": "You want a sourced answer to this question: How many recommendations did OIG make in Healthcare Facility Inspection reports published in 2026, and how many of those are still open?",
+    "goal_details": [
+      {
+        "args": {
+          "filters": {
+            "report_type": "healthcare-facility-inspection"
+          }
+        },
+        "name": "vaoig_analyze_recommendations-1",
+        "type": "tool_call",
+        "summary": null,
+        "keywords": null,
+        "response": null,
+        "tool_name": "vaoig_analyze_recommendations",
+        "identifier": null,
+        "arg_matching": {
+          "filters.report_type": "fuzzy"
+        }
+      },
+      {
+        "args": null,
+        "name": "summarize",
+        "type": "text",
+        "summary": "148 recommendations, 80 still open. The answer must also: States the date of the data, such as 'data as of' a date.",
+        "keywords": [
+          "148",
+          "80"
+        ],
+        "response": "148 recommendations, 80 still open.",
+        "tool_name": null,
+        "identifier": null,
+        "arg_matching": {}
+      }
+    ],
+    "starting_sentence": "How many recommendations did OIG make in Healthcare Facility Inspection reports published in 2026, and how many of those are still open?",
+    "response_summary_version": "v2"
+  }
+}

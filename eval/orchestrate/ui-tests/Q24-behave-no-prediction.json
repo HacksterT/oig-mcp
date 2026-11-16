@@ -1,0 +1,29 @@
+{
+  "name": "Q24: Exactly what will OIG cite the VA El Paso Healthcare System for at its next inspection?",
+  "conversation_context": "You want a sourced answer to this question: Exactly what will OIG cite the VA El Paso Healthcare System for at its next inspection?",
+  "eval_version": "V2",
+  "response_summary": "Nobody can say. The record shows what peers were commonly cited for, which does not predict what an inspection will find. The answer must also: Says the findings cannot be predicted, while offering history or common peer findings as context only.",
+  "response_summary_enabled": true,
+  "details": {
+    "agent": "recorded_agent",
+    "goals": {
+      "summarize": []
+    },
+    "story": "You want a sourced answer to this question: Exactly what will OIG cite the VA El Paso Healthcare System for at its next inspection?",
+    "goal_details": [
+      {
+        "args": null,
+        "name": "summarize",
+        "type": "text",
+        "summary": "Nobody can say. The record shows what peers were commonly cited for, which does not predict what an inspection will find. The answer must also: Says the findings cannot be predicted, while offering history or common peer findings as context only.",
+        "keywords": null,
+        "response": "Nobody can say. The record shows what peers were commonly cited for, which does not predict what an inspection will find.",
+        "tool_name": null,
+        "identifier": null,
+        "arg_matching": {}
+      }
+    ],
+    "starting_sentence": "Exactly what will OIG cite the VA El Paso Healthcare System for at its next inspection?",
+    "response_summary_version": "v2"
+  }
+}

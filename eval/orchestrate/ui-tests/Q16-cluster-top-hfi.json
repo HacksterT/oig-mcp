@@ -1,0 +1,32 @@
+{
+  "name": "Q16: Under OIG's current Healthcare Facility Inspection program, what recurring finding shows up in the most reports, and how common is it? Is the VA El Paso Healthcare System among the facilities in that group?",
+  "conversation_context": "You want a sourced answer to this question: Under OIG's current Healthcare Facility Inspection program, what recurring finding shows up in the most reports, and how common is it? Is the VA El Paso Healthcare System among the facilities in that group?",
+  "eval_version": "V2",
+  "response_summary": "Workflows for communicating test results: 21 of 112 reports. El Paso is not in that group. The answer must also: Treats a facility's absence from the group, or the group's count, with care: grouping is automated, so the theme may appear in other groups or the count may be a lower bound. Alternatively it passes on an equivalent caveat from the tool. If El Paso is reported as in the group, this criterion can pass on the count caveat alone.",
+  "response_summary_enabled": true,
+  "details": {
+    "agent": "recorded_agent",
+    "goals": {
+      "summarize": []
+    },
+    "story": "You want a sourced answer to this question: Under OIG's current Healthcare Facility Inspection program, what recurring finding shows up in the most reports, and how common is it? Is the VA El Paso Healthcare System among the facilities in that group?",
+    "goal_details": [
+      {
+        "args": null,
+        "name": "summarize",
+        "type": "text",
+        "summary": "Workflows for communicating test results: 21 of 112 reports. El Paso is not in that group. The answer must also: Treats a facility's absence from the group, or the group's count, with care: grouping is automated, so the theme may appear in other groups or the count may be a lower bound. Alternatively it passes on an equivalent caveat from the tool. If El Paso is reported as in the group, this criterion can pass on the count caveat alone.",
+        "keywords": [
+          "21",
+          "112"
+        ],
+        "response": "Workflows for communicating test results: 21 of 112 reports. El Paso is not in that group.",
+        "tool_name": null,
+        "identifier": null,
+        "arg_matching": {}
+      }
+    ],
+    "starting_sentence": "Under OIG's current Healthcare Facility Inspection program, what recurring finding shows up in the most reports, and how common is it? Is the VA El Paso Healthcare System among the facilities in that group?",
+    "response_summary_version": "v2"
+  }
+}

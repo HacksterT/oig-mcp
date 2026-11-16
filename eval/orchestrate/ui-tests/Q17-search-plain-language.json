@@ -1,0 +1,46 @@
+{
+  "name": "Q17: On rounds I saw staff leave medication carts unlocked in a hallway. Has OIG cited this kind of thing? Point me to the reports.",
+  "conversation_context": "You want a sourced answer to this question: On rounds I saw staff leave medication carts unlocked in a hallway. Has OIG cited this kind of thing? Point me to the reports.",
+  "eval_version": "V2",
+  "response_summary": "Yes. Reports with recommendations to secure medication carts include: 13-00279-156, 13-03653-91, 14-02069-268, 14-02396-212, 15-00071-158, 15-00606-495, 15-00607-483, 16-00101-300, 16-00106-211, 16-00549-302 The answer must also: Cites at least one OIG report number for its findings. States the date of the data, such as 'data as of' a date.",
+  "response_summary_enabled": true,
+  "details": {
+    "agent": "recorded_agent",
+    "goals": {
+      "vaoig_search_findings-1": [
+        "summarize"
+      ]
+    },
+    "story": "You want a sourced answer to this question: On rounds I saw staff leave medication carts unlocked in a hallway. Has OIG cited this kind of thing? Point me to the reports.",
+    "goal_details": [
+      {
+        "args": {
+          "question": "medication carts left unlocked in a hallway"
+        },
+        "name": "vaoig_search_findings-1",
+        "type": "tool_call",
+        "summary": null,
+        "keywords": null,
+        "response": null,
+        "tool_name": "vaoig_search_findings",
+        "identifier": null,
+        "arg_matching": {
+          "question": "fuzzy"
+        }
+      },
+      {
+        "args": null,
+        "name": "summarize",
+        "type": "text",
+        "summary": "Yes. Reports with recommendations to secure medication carts include: 13-00279-156, 13-03653-91, 14-02069-268, 14-02396-212, 15-00071-158, 15-00606-495, 15-00607-483, 16-00101-300, 16-00106-211, 16-00549-302 The answer must also: Cites at least one OIG report number for its findings. States the date of the data, such as 'data as of' a date.",
+        "keywords": null,
+        "response": "Yes. Reports with recommendations to secure medication carts include: 13-00279-156, 13-03653-91, 14-02069-268, 14-02396-212, 15-00071-158, 15-00606-495, 15-00607-483, 16-00101-300, 16-00106-211, 16-00549-302",
+        "tool_name": null,
+        "identifier": null,
+        "arg_matching": {}
+      }
+    ],
+    "starting_sentence": "On rounds I saw staff leave medication carts unlocked in a hallway. Has OIG cited this kind of thing? Point me to the reports.",
+    "response_summary_version": "v2"
+  }
+}

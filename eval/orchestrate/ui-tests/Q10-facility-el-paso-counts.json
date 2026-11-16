@@ -1,0 +1,31 @@
+{
+  "name": "Q10: How many OIG recommendations are tied to the VA El Paso Healthcare System, and how many are still open? Cite the reports behind the open ones.",
+  "conversation_context": "You want a sourced answer to this question: How many OIG recommendations are tied to the VA El Paso Healthcare System, and how many are still open? Cite the reports behind the open ones.",
+  "eval_version": "V2",
+  "response_summary": "66 recommendations, 4 open. The answer must also: Cites at least one OIG report number for its findings. States the date of the data, such as 'data as of' a date.",
+  "response_summary_enabled": true,
+  "details": {
+    "agent": "recorded_agent",
+    "goals": {
+      "summarize": []
+    },
+    "story": "You want a sourced answer to this question: How many OIG recommendations are tied to the VA El Paso Healthcare System, and how many are still open? Cite the reports behind the open ones.",
+    "goal_details": [
+      {
+        "args": null,
+        "name": "summarize",
+        "type": "text",
+        "summary": "66 recommendations, 4 open. The answer must also: Cites at least one OIG report number for its findings. States the date of the data, such as 'data as of' a date.",
+        "keywords": [
+          "66"
+        ],
+        "response": "66 recommendations, 4 open.",
+        "tool_name": null,
+        "identifier": null,
+        "arg_matching": {}
+      }
+    ],
+    "starting_sentence": "How many OIG recommendations are tied to the VA El Paso Healthcare System, and how many are still open? Cite the reports behind the open ones.",
+    "response_summary_version": "v2"
+  }
+}

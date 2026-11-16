@@ -1,0 +1,46 @@
+{
+  "name": "Q03: In which publication year did OIG issue the most recommendations, and how many was that?",
+  "conversation_context": "You want a sourced answer to this question: In which publication year did OIG issue the most recommendations, and how many was that?",
+  "eval_version": "V2",
+  "response_summary": "2015, with 1914 recommendations.",
+  "response_summary_enabled": true,
+  "details": {
+    "agent": "recorded_agent",
+    "goals": {
+      "vaoig_analyze_recommendations-1": [
+        "summarize"
+      ]
+    },
+    "story": "You want a sourced answer to this question: In which publication year did OIG issue the most recommendations, and how many was that?",
+    "goal_details": [
+      {
+        "args": {
+          "group_by": "year"
+        },
+        "name": "vaoig_analyze_recommendations-1",
+        "type": "tool_call",
+        "summary": null,
+        "keywords": null,
+        "response": null,
+        "tool_name": "vaoig_analyze_recommendations",
+        "identifier": null,
+        "arg_matching": {
+          "group_by": "strict"
+        }
+      },
+      {
+        "args": null,
+        "name": "summarize",
+        "type": "text",
+        "summary": "2015, with 1914 recommendations.",
+        "keywords": null,
+        "response": "2015, with 1914 recommendations.",
+        "tool_name": null,
+        "identifier": null,
+        "arg_matching": {}
+      }
+    ],
+    "starting_sentence": "In which publication year did OIG issue the most recommendations, and how many was that?",
+    "response_summary_version": "v2"
+  }
+}

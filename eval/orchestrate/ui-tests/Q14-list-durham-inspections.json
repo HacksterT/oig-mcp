@@ -1,0 +1,55 @@
+{
+  "name": "Q14: List the report number of every Healthcare Facility Inspection or Comprehensive Healthcare Inspection Program report for the Durham VA Health Care System. Leave out hotline and financial reports.",
+  "conversation_context": "You want a sourced answer to this question: List the report number of every Healthcare Facility Inspection or Comprehensive Healthcare Inspection Program report for the Durham VA Health Care System. Leave out hotline and financial reports.",
+  "eval_version": "V2",
+  "response_summary": "Report numbers: 11-00035-191, 12-03740-75, 12-03850-105, 15-00158-499, 15-00615-513, 18-01146-35, 21-00276-67, 24-00586-11 The answer must also: Cites at least one OIG report number for its findings.",
+  "response_summary_enabled": true,
+  "details": {
+    "agent": "recorded_agent",
+    "goals": {
+      "vaoig_get_facility_profile-1": [
+        "summarize"
+      ]
+    },
+    "story": "You want a sourced answer to this question: List the report number of every Healthcare Facility Inspection or Comprehensive Healthcare Inspection Program report for the Durham VA Health Care System. Leave out hotline and financial reports.",
+    "goal_details": [
+      {
+        "args": {
+          "facility": "Durham"
+        },
+        "name": "vaoig_get_facility_profile-1",
+        "type": "tool_call",
+        "summary": null,
+        "keywords": null,
+        "response": null,
+        "tool_name": "vaoig_get_facility_profile",
+        "identifier": null,
+        "arg_matching": {
+          "facility": "fuzzy"
+        }
+      },
+      {
+        "args": null,
+        "name": "summarize",
+        "type": "text",
+        "summary": "Report numbers: 11-00035-191, 12-03740-75, 12-03850-105, 15-00158-499, 15-00615-513, 18-01146-35, 21-00276-67, 24-00586-11 The answer must also: Cites at least one OIG report number for its findings.",
+        "keywords": [
+          "11-00035-191",
+          "12-03740-75",
+          "12-03850-105",
+          "15-00158-499",
+          "15-00615-513",
+          "18-01146-35",
+          "21-00276-67",
+          "24-00586-11"
+        ],
+        "response": "Report numbers: 11-00035-191, 12-03740-75, 12-03850-105, 15-00158-499, 15-00615-513, 18-01146-35, 21-00276-67, 24-00586-11",
+        "tool_name": null,
+        "identifier": null,
+        "arg_matching": {}
+      }
+    ],
+    "starting_sentence": "List the report number of every Healthcare Facility Inspection or Comprehensive Healthcare Inspection Program report for the Durham VA Health Care System. Leave out hotline and financial reports.",
+    "response_summary_version": "v2"
+  }
+}
