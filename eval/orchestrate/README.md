@@ -1,6 +1,6 @@
 # Evaluating the Orchestrate agent
 
-**In the Orchestrate UI:** work from [`test-bank.md`](test-bank.md). It has judge instructions to paste in, and for each question what to ask, the expected answer, and the criteria. When you save a chat as a test, replace the saved answer with the expected answer from the page, so the evaluation checks correctness rather than agreement with the agent's first try.
+**In the Orchestrate UI:** work from [`test-bank.md`](test-bank.md). It has five single-criterion judges to create as LLM-as-a-judge metrics, and for each question what to ask, the expected answer, and the criteria. When you save a chat as a test, replace the saved answer with the expected answer from the page, so the evaluation checks correctness rather than agreement with the agent's first try.
 
 **From the command line:** the same 24 gold questions the Claude evaluation uses ([`../gold/questions.json`](../gold/questions.json)), written as watsonx Orchestrate test cases in [`tests/`](tests/). Running them scores Orchestrate's own agent and model on the same questions, so the two results can be compared directly.
 
