@@ -18,13 +18,13 @@
     },
     {
       "type": "assert_llm",
-      "kind": "policy",
+      "kind": "observed",
       "check": "Labels the date as an estimate and conveys that OIG publishes no inspection schedule.",
       "scope": "response"
     },
     {
       "type": "assert_llm",
-      "kind": "policy",
+      "kind": "observed",
       "check": "Cites at least one OIG report number for its findings.",
       "scope": "response"
     }

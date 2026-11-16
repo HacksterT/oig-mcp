@@ -45,6 +45,23 @@ KEYWORDS = {
     "cluster-top-hfi": ["21", "112", "test results"],
 }
 
+# Summaries for the UI where the gold reference names examples that a correct
+# answer may not repeat, which text match would count against it.
+UI_SUMMARY = {
+    "behave-ambiguous-facility": (
+        "Several VA facilities match 'New York VA'. The answer says so, lists "
+        "matching facilities, and asks which one is meant, rather than choosing one."
+    ),
+}
+
+UI_CONTEXT = {
+    "behave-ambiguous-facility": (
+        "You want to know what OIG has found at a New York VA facility but do not "
+        "know its exact name. If asked which facility, say you want to know which "
+        "facilities match before choosing."
+    ),
+}
+
 
 def literal(pattern: str) -> str | None:
     """A gold check pattern as plain text, or None if it is not a simple literal."""
@@ -112,7 +129,7 @@ def test_case(question: dict, agent: str, toolkit: str, assertions: bool) -> dic
         details += [
             {
                 "type": "assert_llm",
-                "kind": "policy",
+                "kind": "observed",
                 "check": check,
                 "scope": "response",
             }
@@ -139,46 +156,74 @@ AGENT_INSTRUCTIONS = (
     "information outside the tool results."
 )
 
-# Single-criterion judges for Orchestrate's LLM-as-a-judge. Each returns 1 when
-# the problem is present, matching IBM's verbosity example, so 0 is good.
+# Single-criterion judges for Orchestrate's custom LLM-as-a-Judge metrics. IBM
+# scores them 1 for pass and 0 for fail, and each reads the agent's response.
 JUDGES = {
-    "Uncited finding (response only)": """\
+    "Cites its findings": """\
 You are judging a response from an assistant that answers questions with VA Office
 of Inspector General (OIG) data tools. Judge only whether findings are cited.
-Return 1 if the response describes any OIG finding, recommendation, or report
-without giving its OIG report number (for example 25-00193-155).
-Return 0 if every finding it describes has a report number, or if it describes no
-specific findings (for example, it gives only counts or explains why a question
-cannot be answered).""",
-    "Missing data date (response only)": """\
+Return 1 if every OIG finding, recommendation, or report the response describes
+has its OIG report number (for example 25-00193-155), or if the response describes
+no specific findings (for example, it gives only counts or explains why a question
+cannot be answered).
+Return 0 if it describes any finding, recommendation, or report without its report
+number.""",
+    "States the data date": """\
 You are judging a response from an assistant that answers questions with VA OIG
 data tools. Judge only whether the data date is stated.
-Return 1 if the response gives counts, totals, percentages, or statuses from the
-data without stating the date of the data (for example "as of November 4, 2026").
-Return 0 if it states the data date, or if it gives no counts, totals,
-percentages, or statuses.""",
-    "Overreach (response only)": """\
+Return 1 if the response states the date of the data (for example "as of
+November 4, 2026"), or if it gives no counts, totals, percentages, or statuses.
+Return 0 if it gives counts, totals, percentages, or statuses without the data
+date.""",
+    "Stays within the data": """\
 You are judging a response from an assistant that answers questions with VA OIG
 data tools. Judge only whether it claims more than the data supports.
-Return 1 if any of the following are true:
+Return 0 if any of the following are true:
 - It rates, ranks, or labels a facility or person as better or worse than others.
 - It presents target dates as missed deadlines, or gives an on-time rate or a
   share of recommendations that missed their targets.
 - It predicts what OIG will find or cite.
 - It gives a next inspection date without calling it an estimate.
-Return 0 otherwise.""",
-    "Verbosity, informational (response only)": """\
+Return 1 otherwise.""",
+    "Concise (informational)": """\
 You are an AI assistant trained to judge if a response is longer than it needs to
 be and uses excess verbiage. Evaluate the response based on the efficiency of
 communications, not correctness, helpfulness, or writing quality.
 Caveats, notices, the data date, report numbers, links, and statements of what
 the data cannot show are required content and never count as excess.
-Return 1 if any of the following are true:
+Return 0 if any of the following are true:
 - The response repeats the same idea multiple times.
 - The response contains unnecessary explanations that do not add meaningful
   content.
-Return 0 otherwise.""",
+Return 1 otherwise.""",
 }
+
+
+REPORT_NUMBER = re.compile(r"\d{2}-\d{5}-\d+")
+DATE = re.compile(
+    r"\d{4}-\d{2}-\d{2}|\b(?:January|February|March|April|May|June|July|August|"
+    r"September|October|November|December)\b"
+)
+
+
+def ui_keywords(question: dict) -> list[str]:
+    """Keywords for the UI, where every one must appear in the answer.
+
+    Only values the agent cannot word differently: report numbers and whole
+    numbers from 10 to 999. Dates, percentages, thousands, and words vary
+    ("January 29, 2027" or "2027-01-29"), so the response summary covers them.
+    """
+    found = []
+    for word in keywords(question):
+        if DATE.search(word):
+            continue
+        for token in re.findall(r"\d{2}-\d{5}-\d+|\b\d+(?:[.,]\d+)*\b", word):
+            if REPORT_NUMBER.fullmatch(token) or (
+                token.isdigit() and 10 <= int(token) <= 999
+            ):
+                if token not in found:
+                    found.append(token)
+    return found
 
 
 def bank_markdown(questions: list[dict]) -> str:
@@ -187,17 +232,25 @@ def bank_markdown(questions: list[dict]) -> str:
         "# Test bank for the Orchestrate UI",
         "",
         "Generated by `build_tests.py` from `eval/gold/questions.json`. Data as of",
-        "2026-11-04.",
+        '2026-11-04. Field names follow IBM\'s "Managing test cases and evaluations".',
         "",
-        "A UI test is a saved chat. Orchestrate scores later runs against the saved",
-        "run's tool path (journey success, tool call precision and recall) and does",
-        "not compare answer text, so text match shows as not applicable. So:",
+        "## For each question",
         "",
-        "1. Ask each question in a new chat.",
-        "2. Check the answer against the expected answer below. Save it as a test",
-        "   only if it is right: the saved run becomes the standard.",
-        "3. Correctness against these expected answers is scored on the Mac, with",
-        "   the project's own judge and the data API's traces.",
+        "1. Ask it in the preview chat, exactly as written, and click **Save as test**.",
+        "2. **Response summary:** replace the generated text with the block below and",
+        "   turn on its evaluation toggle. Text match compares the answer with it;",
+        "   with the toggle off, text match shows as not applicable.",
+        "3. **Tool calls:** set every parameter's match type to **Ignored**. The",
+        "   agent's wording of an argument varies; the tool chosen is still checked.",
+        "4. **Advanced options, keywords:** enter the keywords listed, if any. Every",
+        "   keyword must appear in the answer for the test to pass, so only values",
+        "   the agent cannot word differently are listed.",
+        "5. **Conversation context** guides the simulated user if the agent asks a",
+        "   follow-up. The generated text is fine unless a different one is given.",
+        "",
+        "Save a test only from a run whose answer matches the summary: the saved",
+        "tool path becomes the standard. Correctness is also scored on the Mac with",
+        "the project's own judge and the data API's traces.",
         "",
         "## Agent under test",
         "",
@@ -208,40 +261,42 @@ def bank_markdown(questions: list[dict]) -> str:
         AGENT_INSTRUCTIONS,
         "```",
         "",
-        "## Judges",
+        "## Custom LLM-as-a-Judge metrics",
         "",
-        "Create one LLM-as-a-judge metric per block. Each returns 1 when the problem",
-        "is present, so 0 is good, and each judges the response alone. Treat",
-        "verbosity as information, not pass or fail: this server is meant to pass",
-        "on caveats.",
+        "Evaluate tab, Manage metrics, Custom LLM-as-a-Judge, Create: one metric per",
+        "block. IBM scores 1 for pass and 0 for fail. Treat Concise as information:",
+        "this server is meant to pass on caveats.",
         "",
     ]
     for title, prompt in JUDGES.items():
         lines += [f"### {title}", "", "```text", prompt, "```", ""]
     for number, question in enumerate(questions, start=1):
-        expected = question["reference"]
-        checks = policy_checks(question)
+        summary = UI_SUMMARY.get(question["id"], question["reference"])
+        checks = [] if question["id"] in UI_SUMMARY else policy_checks(question)
         if checks:
-            expected += "\nThe answer must also:\n" + "\n".join(
-                f"- {c}" for c in checks
-            )
+            summary += " The answer must also: " + " ".join(checks)
         tools = " then ".join(
             " or ".join(group) for group in question["required_tools"]
         )
+        words = ui_keywords(question)
         lines += [
             f"## {number}. {question['id']}",
             "",
             f"**Ask:** {question['question']}",
             "",
-            "**Expected answer (check before saving):**",
+            "**Response summary:**",
             "",
             "```text",
-            expected,
+            summary,
             "```",
             "",
-            f"**Tool expected:** {tools or 'none needed'}",
+            f"**Keywords:** {', '.join(f'`{w}`' for w in words) if words else 'none'}",
             "",
         ]
+        context = UI_CONTEXT.get(question["id"])
+        if context:
+            lines += [f"**Conversation context:** {context}", ""]
+        lines += [f"**Tool expected:** {tools or 'none needed'}", ""]
     return "\n".join(lines)
 
 

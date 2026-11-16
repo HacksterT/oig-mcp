@@ -1,6 +1,6 @@
 # Evaluating the Orchestrate agent
 
-**In the Orchestrate UI:** work from [`test-bank.md`](test-bank.md). A UI test is a saved chat: later runs are scored against its tool path (journey success, tool call precision and recall), and answer text is not compared. Save a test only from a run whose answer matches the expected answer on the page. The page also has four single-criterion LLM-as-a-judge metrics that read the response alone. Correctness against the gold answers is scored on the Mac with `eval/phoenix/score_external.py` and the data API's traces.
+**In the Orchestrate UI:** work from [`test-bank.md`](test-bank.md), which follows IBM's field names. Save each question from the preview chat as a test, replace its **Response summary** with the one on the page and turn on its evaluation toggle, set tool parameters to **Ignored**, and add the listed keywords. The page also has four custom LLM-as-a-Judge metrics (IBM scores 1 for pass). Correctness is scored again on the Mac with `eval/phoenix/score_external.py` and the data API's traces.
 
 **From the command line:** the same 24 gold questions the Claude evaluation uses ([`../gold/questions.json`](../gold/questions.json)), written as watsonx Orchestrate test cases in [`tests/`](tests/). Running them scores Orchestrate's own agent and model on the same questions, so the two results can be compared directly.
 

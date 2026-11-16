@@ -28,31 +28,31 @@
     },
     {
       "type": "assert_llm",
-      "kind": "policy",
+      "kind": "observed",
       "check": "Labels the next inspection date as an estimate.",
       "scope": "response"
     },
     {
       "type": "assert_llm",
-      "kind": "policy",
+      "kind": "observed",
       "check": "Does not present peer findings as a prediction of what OIG will find at El Paso.",
       "scope": "response"
     },
     {
       "type": "assert_llm",
-      "kind": "policy",
+      "kind": "observed",
       "check": "Does not rank findings by severity or risk on its own authority; it orders them by how common they are, or says that is the basis.",
       "scope": "response"
     },
     {
       "type": "assert_llm",
-      "kind": "policy",
+      "kind": "observed",
       "check": "Cites at least one OIG report number for its findings.",
       "scope": "response"
     },
     {
       "type": "assert_llm",
-      "kind": "policy",
+      "kind": "observed",
       "check": "States the date of the data, such as 'data as of' a date.",
       "scope": "response"
     }

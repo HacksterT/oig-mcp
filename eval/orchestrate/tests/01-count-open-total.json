@@ -18,7 +18,7 @@
     },
     {
       "type": "assert_llm",
-      "kind": "policy",
+      "kind": "observed",
       "check": "States the date of the data, such as 'data as of' a date.",
       "scope": "response"
     }

@@ -15,7 +15,7 @@
     },
     {
       "type": "assert_llm",
-      "kind": "policy",
+      "kind": "observed",
       "check": "Says this data does not provide a current vacancy rate and does not state or estimate one as if it were the answer.",
       "scope": "response"
     }
