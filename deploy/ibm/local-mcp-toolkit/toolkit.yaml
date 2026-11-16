@@ -1,0 +1,14 @@
+# Reference copy of the local toolkit spec. Do not import it directly:
+# register-toolkit.sh writes the real one into a staging folder, with the
+# connection and package_root filled in. It reads the description from here.
+spec_version: v1
+kind: mcp
+name: oig_mcp_TES
+description: "VA OIG reports and recommendations: search, facility history, closure measures, recurring findings, and inspection preparation, cited to vaoig.gov."
+command: python server.py
+env: []
+tools:
+  - "*"
+connections:
+  - oig_mcp_data_TES
+package_root: .
