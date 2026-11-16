@@ -11,6 +11,8 @@ Read these two files before doing anything else, in this order:
 
 Where your own skills differ from these documents on something specific to this project, these documents win.
 
+Troy also leaves numbered notes in [`Bob-communication/`](Bob-communication/). When he says "read note N", run `git pull origin main`, then read and follow it. A newer note wins over the handoff where they differ.
+
 Work through Phases 0 to 4 in the handoff, one at a time. Stop at the end of each phase and write a report using [`TEMPLATE.md`](TEMPLATE.md), including which assumptions held and which were wrong, with exact error text. Work on an `ibm/` branch. Never push to `main`.
 
 Use the initials `TES` in every IBM resource name.
