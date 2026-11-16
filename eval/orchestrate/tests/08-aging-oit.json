@@ -12,15 +12,25 @@
     {
       "type": "tool_call",
       "name": "vaoig_analyze_recommendations-1",
-      "tool_name": "oig_mcp_TES:vaoig_analyze_recommendations",
+      "tool_name": "vaoig_analyze_recommendations",
       "args": {
-        "IGNORE": null
+        "filters": {
+          "action_office": "OIT",
+          "status": [
+            "open"
+          ]
+        }
+      },
+      "arg_matching": {
+        "filters.action_office": "fuzzy",
+        "filters.status": "strict"
       }
     },
     {
       "type": "text",
       "name": "summarize",
       "response": "57 open, 13 open for over a year.",
+      "summary": "57 open, 13 open for over a year.",
       "keywords": [
         "57",
         "13"

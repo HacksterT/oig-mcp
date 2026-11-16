@@ -11,6 +11,7 @@
       "type": "text",
       "name": "summarize",
       "response": "66 recommendations, 4 open.",
+      "summary": "66 recommendations, 4 open.",
       "keywords": [
         "66",
         "4"

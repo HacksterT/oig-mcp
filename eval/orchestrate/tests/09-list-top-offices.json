@@ -12,15 +12,25 @@
     {
       "type": "tool_call",
       "name": "vaoig_analyze_recommendations-1",
-      "tool_name": "oig_mcp_TES:vaoig_analyze_recommendations",
+      "tool_name": "vaoig_analyze_recommendations",
       "args": {
-        "IGNORE": null
+        "group_by": "office",
+        "filters": {
+          "status": [
+            "open"
+          ]
+        }
+      },
+      "arg_matching": {
+        "group_by": "strict",
+        "filters.status": "strict"
       }
     },
     {
       "type": "text",
       "name": "summarize",
       "response": "Veterans Health Administration (VHA): 426; Information and Technology (OIT): 57; Veterans Benefits Administration (VBA): 43",
+      "summary": "Veterans Health Administration (VHA): 426; Information and Technology (OIT): 57; Veterans Benefits Administration (VBA): 43",
       "keywords": [
         "VHA: 426",
         "OIT: 57",

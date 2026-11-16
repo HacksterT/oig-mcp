@@ -1,7 +1,0 @@
-# Copy to config.yaml (git ignores it) and fill in the instance URL.
-auth_config:
-  url: https://<your Orchestrate instance URL>   # the same value as IBM_URL in .env
-  tenant_name: gsa-hackathon                     # the ADK environment name
-test_paths:
-  - eval/orchestrate/tests
-output_dir: eval/orchestrate/results

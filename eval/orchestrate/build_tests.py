@@ -7,10 +7,11 @@ Each test case asks the gold question as written and expects:
 - an answer that contains the gold keywords and matches the gold reference.
 - each gold criterion, and the citation and data-date rules, as an assert_llm
   check judged against the final answer.
-Tool arguments are not compared ({"IGNORE": null}): the agent's wording of an
-argument varies between runs, and the answer is what is scored.
+Tool calls use the bare tool name, as Orchestrate records it. The argument on
+the question's critical path is compared (strict for identifiers and fixed
+values, fuzzy for names and free text); other arguments are not.
 
-    python eval/orchestrate/build_tests.py [--agent NAME] [--toolkit NAME]
+    python eval/orchestrate/build_tests.py [--agent NAME]
 """
 
 from __future__ import annotations
@@ -94,6 +95,51 @@ CRITICAL_ARGS = {
     ],
 }
 
+# Concrete expected values for the ADK test files: (path, value, strategy).
+# Extra arguments the agent adds are always allowed.
+JSON_ARGS = {
+    "count-hfi-2026": [
+        ("filters.report_type", "healthcare-facility-inspection", "fuzzy")
+    ],
+    "count-peak-year": [("group_by", "year", "strict")],
+    "count-two-states": [("filters.status", ["open"], "strict")],
+    "trend-suicide": [("keywords", "suicide", "fuzzy"), ("group_by", "year", "strict")],
+    "closure-vba-median": [("filters.action_office", "VBA", "fuzzy")],
+    "closure-vha-rate": [("filters.action_office", "VHA", "fuzzy")],
+    "aging-oit": [
+        ("filters.action_office", "OIT", "fuzzy"),
+        ("filters.status", ["open"], "strict"),
+    ],
+    "list-top-offices": [
+        ("group_by", "office", "strict"),
+        ("filters.status", ["open"], "strict"),
+    ],
+    "list-durham-inspections": [("facility", "Durham", "fuzzy")],
+    "report-el-paso-2026": [("report_number", "25-00193-155", "strict")],
+    "search-plain-language": [
+        ("question", "medication carts left unlocked in a hallway", "fuzzy")
+    ],
+    "brief-el-paso": [("facility", "VA El Paso Healthcare System", "fuzzy")],
+}
+
+
+def expected_args(question_id: str) -> tuple[dict, dict]:
+    """Expected arguments and their matching, or IGNORE when none is critical."""
+    pairs = JSON_ARGS.get(question_id)
+    if not pairs:
+        return {"IGNORE": None}, {}
+    args: dict = {}
+    matching: dict = {}
+    for path, value, strategy in pairs:
+        node = args
+        *parents, leaf = path.split(".")
+        for part in parents:
+            node = node.setdefault(part, {})
+        node[leaf] = value
+        matching[path] = strategy
+    return args, matching
+
+
 # Summaries for the UI where the gold reference names examples that a correct
 # answer may not repeat, which text match would count against it.
 UI_SUMMARY = {
@@ -148,21 +194,18 @@ def policy_checks(question: dict) -> list[str]:
     return checks
 
 
-def test_case(question: dict, agent: str, toolkit: str, assertions: bool) -> dict:
+def test_case(question: dict, agent: str, assertions: bool) -> dict:
     steps = question["required_tools"]
     single = steps and all(len(group) == 1 for group in steps)
     details, goals, previous = [], {}, None
     if single:
         for index, (tool,) in enumerate(steps, start=1):
             name = f"{tool}-{index}"
-            details.append(
-                {
-                    "type": "tool_call",
-                    "name": name,
-                    "tool_name": f"{toolkit}:{tool}",
-                    "args": {"IGNORE": None},
-                }
-            )
+            args, matching = expected_args(question["id"])
+            call = {"type": "tool_call", "name": name, "tool_name": tool, "args": args}
+            if matching:
+                call["arg_matching"] = matching
+            details.append(call)
             if previous:
                 goals[previous] = [name]
             previous = name
@@ -171,6 +214,7 @@ def test_case(question: dict, agent: str, toolkit: str, assertions: bool) -> dic
             "type": "text",
             "name": "summarize",
             "response": question["reference"],
+            "summary": question["reference"],
             "keywords": keywords(question),
         }
     )
@@ -367,7 +411,6 @@ def bank_markdown(questions: list[dict]) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--agent", default="gsa-oig-assist-TES")
-    parser.add_argument("--toolkit", default="oig_mcp_TES")
     parser.add_argument(
         "--no-assert",
         action="store_true",
@@ -380,7 +423,7 @@ def main() -> None:
     for old in OUT.glob("*.json"):
         old.unlink()
     for number, question in enumerate(questions, start=1):
-        case = test_case(question, args.agent, args.toolkit, not args.no_assert)
+        case = test_case(question, args.agent, not args.no_assert)
         path = OUT / f"{number:02d}-{question['id']}.json"
         path.write_text(json.dumps(case, indent=2) + "\n")
     bank = OUT.parent / "test-bank.md"

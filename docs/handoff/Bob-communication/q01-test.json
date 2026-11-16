@@ -1,0 +1,54 @@
+{
+  "name": "Q01: How many VA OIG recommendations are open right now, and how current is that figure?",
+  "conversation_context": "You want to know how many VA OIG recommendations are open right now and how current that figure is.",
+  "eval_version": "V2",
+  "response_summary": "567 open, with data as of 2026-11-04. The answer must also: States the date of the data, such as 'data as of' a date.",
+  "response_summary_enabled": false,
+  "details": {
+    "agent": "recorded_agent",
+    "goals": {
+      "vaoig_analyze_recommendations-1": [
+        "summarize"
+      ]
+    },
+    "story": "You want to know how many VA OIG recommendations are open right now and how current that figure is.",
+    "goal_details": [
+      {
+        "args": {
+          "filters": {
+            "status": [
+              "open"
+            ]
+          },
+          "group_by": "year"
+        },
+        "name": "vaoig_analyze_recommendations-1",
+        "type": "tool_call",
+        "summary": null,
+        "keywords": null,
+        "response": null,
+        "tool_name": "vaoig_analyze_recommendations",
+        "identifier": null,
+        "arg_matching": {
+          "filters": "strict",
+          "group_by": "strict"
+        }
+      },
+      {
+        "args": null,
+        "name": "summarize",
+        "type": "text",
+        "summary": "567 open, with data as of 2026-11-04. The answer must also: States the date of the data, such as 'data as of' a date.",
+        "keywords": [
+          "567"
+        ],
+        "response": "**Open VA OIG recommendations (as of the latest data): 567**\n\n- This count comes from the OIG's recommendation database and reflects all recommendations that are still marked **open** (neither 'closed-implemented' nor 'closed-not-implemented').  \n- The dataset underlying this figure is dated **2026-11-04** (12 days old at the time of this response).  \n\n**How current is the figure?**  \nThe OIG's public dashboard lists 586 open recommendations, which is 19 more than the database count. The discrepancy is explained by 19 blank rows on the OIG web pages; the database's count of 567 is therefore considered the accurate, reconciled total. The data reconciliation notes that this figure is **within tolerance** and the source is the VA Office of Inspector General public pages (https://www.vaoig.gov/reports/data-dashboard).",
+        "tool_name": null,
+        "identifier": null,
+        "arg_matching": {}
+      }
+    ],
+    "starting_sentence": "How many VA OIG recommendations are open right now, and how current is that figure?",
+    "response_summary_version": "v2"
+  }
+}

@@ -12,15 +12,21 @@
     {
       "type": "tool_call",
       "name": "vaoig_analyze_recommendations-1",
-      "tool_name": "oig_mcp_TES:vaoig_analyze_recommendations",
+      "tool_name": "vaoig_analyze_recommendations",
       "args": {
-        "IGNORE": null
+        "keywords": "suicide",
+        "group_by": "year"
+      },
+      "arg_matching": {
+        "keywords": "fuzzy",
+        "group_by": "strict"
       }
     },
     {
       "type": "text",
       "name": "summarize",
       "response": "56 reports in 2024, 11 in 2025.",
+      "summary": "56 reports in 2024, 11 in 2025.",
       "keywords": [
         "56",
         "11"

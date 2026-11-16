@@ -1,8 +1,11 @@
 # Evaluating the Orchestrate agent
 
-**In the Orchestrate UI:** work from [`test-bank.md`](test-bank.md), which follows IBM's field names. Save each question from the preview chat as a test, replace its **Response summary** with the one on the page and turn on its evaluation toggle, set tool parameter matching (Exact for identifiers given in the question, Fuzzy for names and free text, Ignored for paging), and add the listed keywords. The page also has four custom LLM-as-a-Judge metrics (IBM scores 1 for pass). Correctness is scored again on the Mac with `eval/phoenix/score_external.py` and the data API's traces.
+The same 24 gold questions the Claude evaluation uses ([`../gold/questions.json`](../gold/questions.json)), run against watsonx Orchestrate's own agent and model, so the two results compare directly. Two ways to run them:
 
-**From the command line:** the same 24 gold questions the Claude evaluation uses ([`../gold/questions.json`](../gold/questions.json)), written as watsonx Orchestrate test cases in [`tests/`](tests/). Running them scores Orchestrate's own agent and model on the same questions, so the two results can be compared directly.
+- **ADK command (preferred):** [`tests/`](tests/) holds all 24 as test cases. One command runs them all against the live agent, with Orchestrate's own simulated user and judge. Repeatable, and nothing is set up by hand.
+- **Orchestrate UI:** [`test-bank.md`](test-bank.md) gives each question's Response summary, keywords, and parameter matching, for tests saved from the preview chat one at a time, and four custom LLM-as-a-Judge metrics.
+
+Either way, correctness is scored again on the Mac with `eval/phoenix/score_external.py` and the data API's traces.
 
 ## Agent under test
 
@@ -16,35 +19,37 @@ It grounds answers in the tools without adding domain logic, which stays in the 
 
 | Goal in the test | Comes from | Judged by |
 |---|---|---|
-| A call to `oig_mcp_TES:<tool>` | The gold question's required tool, when it names exactly one per step | Journey success, tool call precision and recall |
+| A call to the tool, with its critical argument compared | The gold question's required tool, when it names exactly one per step | Journey success, tool call precision and recall, parameter F1 |
 | Final answer text and keywords | The gold reference answer, and the facts our checks look for (counts, dates, report numbers) | Text match, by an AI judge |
 | `assert_llm` checks | The gold criteria (no percentage for missed targets, no ratings, flag an ambiguous facility, label estimates), and citation and data-date rules | An AI judge on the final answer |
 
 Choices to know when reading results:
 
-- **Arguments are not compared** (`{"IGNORE": null}`), because the agent's wording of an argument varies between runs. What the tool returned is judged through the answer.
+- **Tool names are bare** (`vaoig_get_report`), as Orchestrate records them in a saved test.
+- **Only the critical argument is compared:** strict for identifiers and fixed values (a report number, `group_by`, open status), fuzzy for names and free text. Other arguments are ignored, since their wording varies between runs.
 - **Twelve questions check only the answer.** Their gold questions accept either of two tools (for example the facility profile or the inspection brief), and a test case cannot express "either", or the right answer needs no tool. A missing tool goal there is deliberate.
-- **Answers vary between runs.** Run each test more than once before calling a question failed.
+- **Answers vary between runs.** Run three times before calling a question failed.
 
 ## Run
 
-With the ADK installed and the agent's environment active (`orchestrate env activate <name>`), copy the config, fill in the instance URL, and run:
+From the repository root on a machine with the ADK, with the agent's environment active (`orchestrate env activate gsa-hackathon`). No config file is needed: the ADK takes the instance URL and login from the active environment, and a config file with its own `auth_config` would replace that login.
 
 ```bash
-cp eval/orchestrate/config.example.yaml eval/orchestrate/config.yaml
-orchestrate evaluations evaluate --config eval/orchestrate/config.yaml
+orchestrate evaluations evaluate \
+  --test-paths eval/orchestrate/tests \
+  --output-dir eval/orchestrate/results/run-1
 ```
 
-Results go to `eval/orchestrate/results/`, which git ignores: a `*.metrics.json` and an annotated `*.messages.analyze.json` per test. Evaluations run against the agent's draft version.
+Repeat as `run-2` and `run-3`. Each run writes a `*.metrics.json` and an annotated `*.messages.analyze.json` per test. Evaluations run against the agent's draft version.
 
-The judge model defaults to `gpt-oss-120b`; set `EVAL_MODEL` to change it.
+The simulated user and the judge use `gpt-oss-120b` through Orchestrate's own model gateway, with no extra key. Set `EVAL_MODEL` to change it; with `WATSONX_SPACE_ID` and `WATSONX_APIKEY` set, the ADK uses watsonx.ai instead. The ADK on the VM (2.20.0) bundles evaluation framework 1.6.7, which accepts these files.
 
 ## Regenerate
 
-After changing the gold questions, or to target a different agent or toolkit name:
+After changing the gold questions, or to target a different agent:
 
 ```bash
-uv run python eval/orchestrate/build_tests.py --agent gsa-oig-assist-TES --toolkit oig_mcp_TES
+uv run python eval/orchestrate/build_tests.py --agent gsa-oig-assist-TES
 ```
 
 If the ADK reports that it does not recognize `assert_llm`, its evaluation framework is older: add `--no-assert`.
