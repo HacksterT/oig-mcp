@@ -15,4 +15,6 @@ Phases 0 and 1 are accepted. Phase 1 also confirmed C2 and the VM's side of C3: 
 
 ## Phase 2
 
-Wait for Troy. He will start Phase 2 tomorrow with his IBM account details. Then follow the handoff's Phase 2, with initials `TES` in every name, and stop after `verify_deployment.py` against the Code Engine URL with the report.
+Start now. Troy wants the deployment finished today. Ask him for what the handoff's Phase 2 needs: his student number or `itz-saas-` account name (for the helper script) and the IBM Cloud login. Follow the handoff's Phase 2 with initials `TES` in every name. Stop after `verify_deployment.py` passes against the Code Engine URL, write the report, push it, and tell Troy.
+
+Install the Container Registry and Code Engine plugins as you need them. Install the Orchestrate ADK during Phase 2 if it saves time, but do not run any `orchestrate` command until Troy says to start Phase 3.
