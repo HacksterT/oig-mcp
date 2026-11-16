@@ -1,5 +1,5 @@
-# Run the same image IBM Code Engine will run, on this machine, for testing with
-# any MCP client:
+# Run the hosted container image on this machine, for testing with any MCP
+# client:
 #
 #   docker compose up -d --build
 #

@@ -1,5 +1,7 @@
 # Deployment handoff: oig-mcp to IBM Code Engine and watsonx Orchestrate
 
+> **Superseded on 2026-11-16.** This was the plan to deploy on IBM Code Engine and register a remote toolkit. Code Engine was not used: the hackathon account had no resource group, registry namespace, or Code Engine project. The server instead runs in watsonx Orchestrate as a local (stdio) toolkit; see [`deploy/ibm/local-mcp-toolkit/README.md`](../../deploy/ibm/local-mcp-toolkit/README.md) and Bob's reports in this folder (Phase 0, Phase 1, and Phases 2 to 4, dated 2026-11-16). The document is kept unchanged below as a record of the plan and its assumptions.
+
 **Author:** Troy Sybert, with Claude Code
 **Date:** 2026-11-04, updated 2026-11-10
 **Assignment:** F05, deploy and register

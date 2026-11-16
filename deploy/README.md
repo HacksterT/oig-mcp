@@ -1,23 +1,32 @@
 # Deployment
 
-The target is IBM Code Engine, registered as a remote MCP toolkit in watsonx Orchestrate. Start with [the handoff to Bob](../docs/handoff/2026-11-04-troy-bob-deployment-handoff.md), which lists what is tested and what is assumed.
+The server runs two ways:
+
+| Where | Transport | How |
+|---|---|---|
+| IBM watsonx Orchestrate, the hackathon deployment | stdio, inside Orchestrate's runtime | A local toolkit. Orchestrate runs the server and passes it the data API's settings from a key_value connection. See [`ibm/local-mcp-toolkit/README.md`](ibm/local-mcp-toolkit/README.md) |
+| A hosted HTTP endpoint, for testers, judges, and any MCP client | Streamable HTTP behind Cloudflare and bearer tokens | The container image, described below |
+
+IBM Code Engine was planned as the Orchestrate route and not used: the hackathon account had no resource group or registry namespace for it. The image would run there unchanged.
+
+## The hosted HTTP server
 
 ```
-watsonx Orchestrate  -- HTTPS, Authorization: Bearer MCP_AUTH_TOKEN -->  oig-mcp on Code Engine
-oig-mcp              -- HTTPS, Cloudflare Access service token      -->  OIG data API
+MCP client  -- HTTPS, Authorization: Bearer <token>             -->  oig-mcp container
+oig-mcp     -- HTTPS, Cloudflare Access service token + API key -->  OIG data API
 ```
 
 | Item | Value |
 |---|---|
 | Image | Root `Dockerfile`. Dependencies are installed from `uv.lock`, and it runs as non-root |
-| Port | `8080`. Code Engine sets `PORT`, which switches the server to HTTP |
+| Port | `8080`. The image sets `PORT`, as container platforms do, which switches the server to HTTP |
 | MCP endpoint | `/mcp`. Streamable HTTP, stateless, plain JSON responses. No SSE |
 | Health and version | `/health` and `/version`. Open, and they return no data. There is no `/ping` |
 | Rate limits | 2 requests a second per token, burst 30, counting every MCP request. Kept in memory per instance, so N instances allow up to N times that |
 
 | Setting | Secret | Value |
 |---|---|---|
-| `MCP_AUTH_TOKEN` | Yes | New for IBM: `openssl rand -hex 32`. The server refuses to start without it |
+| `MCP_AUTH_TOKEN` | Yes | New for each deployment: `openssl rand -hex 32`. The server refuses to start without it |
 | `CF_ACCESS_CLIENT_ID` | Yes | Troy provides it |
 | `CF_ACCESS_CLIENT_SECRET` | Yes | Troy provides it |
 | `OIG_DATA_API_KEY` | Yes | Troy provides it. The data API's own key behind Access; never print it |

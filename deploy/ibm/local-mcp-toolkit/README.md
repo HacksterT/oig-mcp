@@ -26,6 +26,6 @@ The script reads the Orchestrate instance URL and API key from `WXO_INSTANCE_URL
 
 The server is running but has no address: the connection is missing or not attached. Rerun the script. A refusal (status 401) instead means a wrong Cloudflare token or API key. A status 403 or a request failure means Cloudflare is not admitting Orchestrate's network; tell Troy.
 
-## Trade-offs against Code Engine
+## Trade-offs against the hosted HTTP server
 
-Each call starts a new process, which adds about a second. Rate limits and the shared HTTP client reset per call, which does not matter at hackathon volume. There are no traces on IBM; the data API on Troy's Mac records every request it receives.
+Each call starts a new process, which adds one to two seconds. Rate limits and the shared HTTP client reset per call, which does not matter at hackathon volume. There are no traces on IBM; the data API on Troy's Mac records every request it receives.

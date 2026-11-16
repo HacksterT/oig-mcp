@@ -1,10 +1,10 @@
-# Project Overview and Deployment Plan
+# Project Overview and Deployment
 
 **Audience:** IBM Bob, working in the IBM-provided VM on a clone of this repository, and Troy Sybert, the project owner.
-**Status as of:** 2026-11-10.
+**Status as of:** 2026-11-16.
 **Purpose:** Explain what this project is, how its parts fit together, what already exists, and what Bob should and should not do on the IBM side.
 
-Bob: start with [the deployment handoff](handoff/2026-11-04-troy-bob-deployment-handoff.md), which has the steps, what is tested, and every assumption about IBM. This document holds the background and the rules.
+Bob: the deployment is done, as a local toolkit in watsonx Orchestrate. Bob's working instructions now come as numbered notes from Troy. This document holds the background and the rules.
 
 Read this whole document before taking any action. Bob's own skills handle general mechanics such as deployment. Where a skill and this document disagree about something specific to this project (ports, health check path, configuration, naming, rules), this document wins. Where a step needs a value this document does not give (initials, account names, URLs, keys), ask Troy. Do not guess.
 
@@ -77,7 +77,7 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 | Evaluation (Arize Phoenix) | Run on two Claude models and an independent agent; watsonx Orchestrate's agent is being run on the same questions. See [`testing-architecture.md`](testing-architecture.md) and [`testing-results.md`](testing-results.md) |
 | `oig-data-source` crawler, database, and API | Live behind Cloudflare Access and its own API key, with search limits, and the full data build of 2026-11-04 |
 | Hosted test endpoint | The same image runs on Troy's Mac for testers and judges, through a Cloudflare Tunnel, with tool-call traces on through judging |
-| IBM Cloud deployment | Not started. This is Bob's area (F05) |
+| watsonx Orchestrate deployment | Done 2026-11-16 by Bob (F05): registered from the IBM VM as a local (stdio) toolkit, used by the agent `gsa-oig-assist-TES` with the seven tools and one instruction to answer only from what the tools return. IBM Code Engine was not used; the account had none set up. See [`deploy/ibm/local-mcp-toolkit/README.md`](../deploy/ibm/local-mcp-toolkit/README.md) |
 
 ## 5. Repository tour
 
@@ -99,11 +99,11 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 | `docs/testing-architecture.md`, `docs/testing-results.md` | How the server is tested, and what the testing found (`docs/evaluation.md` links both) |
 | `docs/data-api.md` | The API contract this server expects from `oig-data-source` |
 | `docs/project-overview.md` | This document |
-| `deploy/` | Deployment settings, and scripts that check an image and a running server |
+| `deploy/` | Hosted HTTP settings, and scripts that check an image and a running server |
+| `deploy/ibm/local-mcp-toolkit/` | The watsonx Orchestrate local toolkit: the stdio entry point and the script that registers it with its data API connection |
 | `compose.yaml` | Runs the image locally for testing with any MCP client |
 | `Dockerfile` | Python 3.11 slim image; serves Streamable HTTP on port 8080 |
-| `.agents/skills/` | Agent skills carried from the GSA template. The handoff lists where they differ from this server |
-| `docs/handoff/` | Handoff reports between Bob and Troy, and `TEMPLATE.md` for writing them |
+| `.agents/skills/` | Agent skills carried from the GSA template |
 
 ## 6. Conventions to follow
 
@@ -120,7 +120,7 @@ If Bob changes code, these rules apply. Troy does most development on his Mac, s
 
 ## 7. Bob's role
 
-Bob's job is **F05: deploy `oig-mcp` to IBM Cloud and register it in watsonx Orchestrate.** Bob's own deployment skill handles the mechanics. The [deployment handoff](handoff/2026-11-04-troy-bob-deployment-handoff.md) gives the phases, the assumptions to confirm, and how to tell each phase worked. [`deploy/README.md`](../deploy/README.md) lists the settings.
+Bob's job was **F05: deploy `oig-mcp` on IBM and register it in watsonx Orchestrate.** It is done: Code Engine was unavailable, so Bob registered the server as a local toolkit instead ([`deploy/ibm/local-mcp-toolkit/README.md`](../deploy/ibm/local-mcp-toolkit/README.md)). Bob now carries out numbered notes from Troy, such as running the Orchestrate evaluation.
 
 ## 8. Handoff and communication
 
@@ -134,13 +134,13 @@ Troy develops on his Mac. Bob works in the IBM VM. GitHub is the only channel be
 | Initials for resource names | Known | `TES` |
 | IBM Cloud account to use | Before Phase 2 | Troy tells Bob directly |
 | watsonx Orchestrate instance URL and API key | Before Phase 3 | Entered by Troy in the VM only; never written to the repository |
-| Data API URL, Cloudflare Access service token, and data API key | Before Phase 1 | Entered as platform secrets only; never written to the repository |
+| Data API URL, Cloudflare Access service token, and data API key | Before Phase 1 | Entered in the VM's `.env` and the Orchestrate connection only; never written to the repository |
 
 When Bob receives a secret, confirm receipt without repeating its value anywhere.
 
 ### How Bob reports back
 
-- Write each report as a Markdown file in `docs/handoff/`, named `YYYY-MM-DD-bob-<topic>.md` (for example `2026-11-05-bob-code-engine.md`). Copy the structure from `docs/handoff/TEMPLATE.md`.
+- Write each report as a Markdown file in `docs/handoff/`, named `YYYY-MM-DD-bob-<topic>.md` (for example `2026-11-16-bob-phase1.md`). Copy the structure from `docs/handoff/TEMPLATE.md`.
 - One report per assignment or phase. Keep it factual: what was done, what was observed, exact error text, names and URLs created. No secrets, keys, or tokens.
 - Put questions for Troy in the report's "Questions for Troy" section. If a question blocks all progress, also ask Troy directly in the session.
 - Troy answers in the report's "Troy's response" section, or in a new file named `YYYY-MM-DD-troy-<topic>.md`.
@@ -149,7 +149,7 @@ When Bob receives a secret, confirm receipt without repeating its value anywhere
 
 - At the start of every session, pull the latest `main`.
 - Do all work on a branch named `ibm/<short-topic>` (for example `ibm/deploy`). Commit the handoff report on that branch along with any change.
-- Push the branch and tell Troy it is ready. Troy reviews and merges into `main`.
+- Push the branch and tell Troy it is ready. Changes to repository files go onto `main` from Troy's Mac: report the problem with the exact error and a proposed fix, and stop. Bob's own reports are the exception.
 - Never push to `main` directly. Never force-push. Never rewrite history.
 - Before committing code changes, run lint and tests (section 6). Handoff reports alone do not need them.
 - Planning documents are Troy's and are not in this repository. Bob may propose changes in a handoff report.
@@ -161,23 +161,24 @@ When Bob receives a secret, confirm receipt without repeating its value anywhere
 - **Do not point the server at vaoig.gov** or any other origin. The data API is the only source.
 - **Do not delete or rename shared IBM resources** that do not carry Troy's initials.
 - **Do not change the `oig-data-source` side** or its hosting. That is Troy's work on his Mac.
-- **Ask before** creating paid resources, changing account settings, or anything not in the phases above.
+- **Ask before** creating paid resources, changing account settings, or anything a note does not ask for.
 - **Keep code changes small** and limited to deployment needs. Run lint and tests before any commit, and tell Troy what changed.
 - **Do not edit or delete `.agents/skills/`.**
 - **Work on `ibm/` branches only.** Never push to `main` (section 8).
 
 ## 10. Open questions
 
-These are unresolved. Do not decide them; flag anything that depends on them. The handoff lists every assumption about IBM.
+This is unresolved. Do not decide it; flag anything that depends on it.
 
-1. **Availability.** Troy hosts the data API on his own machine, so the live demo depends on it and the tunnel being up. If needed, the fallback is the same API on a small cloud host behind the same Access policy, which needs no change to this server.
-2. **Bearer connections in Orchestrate.** IBM's documentation conflicts on whether a remote toolkit accepts one. Phase 3 tests this first.
+1. **Availability.** Troy hosts the data API on his own machine, so Orchestrate's agent and the hosted endpoint both depend on it and the tunnel being up. If needed, the fallback is the same API on a small cloud host behind the same Access policy, which needs no change to this server.
+
+Resolved on 2026-11-16: whether a remote toolkit accepts a bearer connection no longer matters, because the deployment uses a local toolkit, which takes a key_value connection. Tool-call traces are not kept on IBM; the data API on Troy's Mac records every request the server makes.
 
 ## 11. Reference
 
 **Server endpoints over HTTP:** `/mcp` (MCP over Streamable HTTP, one of the two standard transports in the MCP specification along with stdio; stateless, JSON responses, no SSE), `/health`, `/version`.
 
-**Transport selection:** if the platform sets `PORT` (Code Engine and the Dockerfile do), the server runs HTTP on that port. Otherwise `MCP_TRANSPORT=streamable-http` runs HTTP on `MCP_HOST:MCP_PORT`, loopback by default, with Host and Origin checks. Otherwise it runs over stdio. Any other `MCP_TRANSPORT` value stops startup. Stateless HTTP matches the specification's direction: the 2026-07-28 revision dropped the connection-scoped session, so every request carries its own metadata.
+**Transport selection:** if the platform sets `PORT` (the Dockerfile does, as container platforms do), the server runs HTTP on that port. Otherwise `MCP_TRANSPORT=streamable-http` runs HTTP on `MCP_HOST:MCP_PORT`, loopback by default, with Host and Origin checks. Otherwise it runs over stdio, which is how watsonx Orchestrate's local toolkit runs it, through `deploy/ibm/local-mcp-toolkit/server.py`. Any other `MCP_TRANSPORT` value stops startup. Stateless HTTP matches the specification's direction: the 2026-07-28 revision dropped the connection-scoped session, so every request carries its own metadata.
 
 **Current capabilities:**
 

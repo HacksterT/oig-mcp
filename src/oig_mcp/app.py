@@ -103,12 +103,12 @@ def main() -> None:
     """Start the server, choosing a transport based on the environment.
 
     Precedence:
-      1. A platform-injected `PORT` (IBM Code Engine and the Dockerfile set it)
+      1. A platform-injected `PORT` (the Dockerfile and container platforms set it)
          → HTTP on all interfaces, on that port.
       2. `MCP_TRANSPORT=streamable-http` → local HTTP on `MCP_HOST`:`MCP_PORT`,
          loopback by default (see config.py / .env).
       3. Otherwise → stdio, which is how local clients (Claude Desktop, Claude
-         Code, Zed) launch the server as a subprocess.
+         Code, Zed) and watsonx Orchestrate's local toolkit launch the server.
 
     Both HTTP paths require MCP_AUTH_TOKEN. Stdio does not use it.
 
