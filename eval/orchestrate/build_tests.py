@@ -45,6 +45,55 @@ KEYWORDS = {
     "cluster-top-hfi": ["21", "112", "test results"],
 }
 
+# The argument on each question's critical path: a wrong value means a wrong
+# answer. Everything else is set to Ignored. Fuzzy where the server accepts more
+# than one form (labels or slugs, names or cities, codes or state names).
+CRITICAL_ARGS = {
+    "count-open-total": [
+        ("filters.status", "Exact", '["open"], if the agent used the analysis tool'),
+    ],
+    "count-hfi-2026": [
+        ("filters.report_type", "Fuzzy", "healthcare-facility-inspection")
+    ],
+    "count-peak-year": [("group_by", "Exact", "year")],
+    "count-two-states": [
+        ("filters.state", "Fuzzy", "Texas, then North Carolina"),
+        ("filters.status", "Exact", '["open"]'),
+    ],
+    "trend-suicide": [("keywords", "Fuzzy", "suicide"), ("group_by", "Exact", "year")],
+    "closure-vba-median": [
+        ("filters.action_office", "Fuzzy", "VBA or Veterans Benefits Administration")
+    ],
+    "closure-vha-rate": [
+        ("filters.action_office", "Fuzzy", "VHA or Veterans Health Administration")
+    ],
+    "aging-oit": [
+        ("filters.action_office", "Fuzzy", "OIT or Information and Technology"),
+        ("filters.status", "Exact", '["open"]'),
+    ],
+    "list-top-offices": [
+        ("group_by", "Exact", "office"),
+        ("filters.status", "Exact", '["open"]'),
+    ],
+    "facility-el-paso-counts": [("facility", "Fuzzy", "El Paso")],
+    "facility-el-paso-oldest": [("facility", "Fuzzy", "El Paso")],
+    "facility-el-paso-next": [("facility", "Fuzzy", "El Paso")],
+    "facility-clean-inspection": [("facility", "Fuzzy", "North Texas")],
+    "list-durham-inspections": [("facility", "Fuzzy", "Durham")],
+    "report-el-paso-2026": [("report_number", "Exact", "25-00193-155")],
+    "cluster-top-hfi": [
+        ("report_type", "Fuzzy", "healthcare-facility-inspection, on the clusters tool")
+    ],
+    "search-plain-language": [("question", "Fuzzy", "medication carts left unlocked")],
+    "search-peer-actions": [("question", "Fuzzy", "securing medication carts")],
+    "brief-el-paso": [("facility", "Fuzzy", "El Paso")],
+    "behave-ambiguous-facility": [("facility", "Fuzzy", "New York")],
+    "behave-unanswerable": [("facility", "Fuzzy", "Durham, if the agent looked it up")],
+    "behave-no-prediction": [
+        ("facility", "Fuzzy", "El Paso, if the agent looked it up")
+    ],
+}
+
 # Summaries for the UI where the gold reference names examples that a correct
 # answer may not repeat, which text match would count against it.
 UI_SUMMARY = {
@@ -240,10 +289,11 @@ def bank_markdown(questions: list[dict]) -> str:
         "2. **Response summary:** replace the generated text with the block below and",
         "   turn on its evaluation toggle. Text match compares the answer with it;",
         "   with the toggle off, text match shows as not applicable.",
-        "3. **Tool calls:** the tool chosen is always checked. For each parameter's",
-        "   match type: **Exact** for an identifier given word for word in the",
-        "   question (report_number, station_number); **Fuzzy** for a name or free",
-        "   text (facility, question, keywords); **Ignored** for limit and offset.",
+        "3. **Tool calls:** the tool chosen is always checked. Set the parameter",
+        "   on the question's critical path as shown under Tool parameters, and",
+        "   everything else to **Ignored**. If the agent used a different valid",
+        "   tool than the one listed, set its matching argument the same way.",
+        "   There is no bulk upload: each test is set up on its own.",
         "4. **Advanced options, keywords:** enter the keywords listed, if any. Every",
         "   keyword must appear in the answer for the test to pass, so only values",
         "   the agent cannot word differently are listed.",
@@ -295,6 +345,15 @@ def bank_markdown(questions: list[dict]) -> str:
             f"**Keywords:** {', '.join(f'`{w}`' for w in words) if words else 'none'}",
             "",
         ]
+        critical = CRITICAL_ARGS.get(question["id"], [])
+        if critical:
+            settings = "; ".join(
+                f"`{name}` **{match}** (saved call should show {value})"
+                for name, match, value in critical
+            )
+            lines += [f"**Tool parameters:** {settings}; everything else Ignored.", ""]
+        else:
+            lines += ["**Tool parameters:** none critical; set any to Ignored.", ""]
         context = UI_CONTEXT.get(question["id"])
         if context:
             lines += [f"**Conversation context:** {context}", ""]
