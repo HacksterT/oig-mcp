@@ -4,6 +4,14 @@
 
 **From the command line:** the same 24 gold questions the Claude evaluation uses ([`../gold/questions.json`](../gold/questions.json)), written as watsonx Orchestrate test cases in [`tests/`](tests/). Running them scores Orchestrate's own agent and model on the same questions, so the two results can be compared directly.
 
+## Agent under test
+
+`gsa-oig-assist-TES` with the `oig_mcp_TES` toolkit and one instruction, no guidelines:
+
+> Answer only from what the OIG tools return. Do not use general knowledge or information outside the tool results.
+
+It grounds answers in the tools without adding domain logic, which stays in the server. Keep the agent unchanged across runs, and record any change with the results.
+
 ## What each test checks
 
 | Goal in the test | Comes from | Judged by |
