@@ -98,6 +98,7 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 | `tests/` | Security, authentication, tool, and server tests |
 | `eval/` | The evaluation harness and gold questions |
 | `docs/evaluation.md` | Evaluation results and method |
+| `docs/testing-architecture.md`, `docs/testing-results.md` | How the server is tested across platforms, and what the testing found |
 | `docs/data-api.md` | The API contract this server expects from `oig-data-source` |
 | `docs/project-overview.md` | This document |
 | `deploy/` | Deployment settings, and scripts that check an image and a running server |

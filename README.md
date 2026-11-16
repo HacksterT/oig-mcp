@@ -104,7 +104,7 @@ The target is IBM watsonx Orchestrate on IBM Cloud, deployed from an IBM-provide
 
 ## Evaluation
 
-An assistant answers 24 questions using only these tools, scored against answers computed by SQL from a pinned snapshot, with traces in Arize Phoenix. See [docs/evaluation.md](docs/evaluation.md) for results and [eval/README.md](eval/README.md) to run it.
+An assistant answers 24 questions using only these tools, scored against answers computed by SQL from a pinned snapshot, with traces in Arize Phoenix. See [docs/evaluation.md](docs/evaluation.md) for results and [eval/README.md](eval/README.md) to run it. How all the testing fits together, across Claude, an independent agent, and watsonx Orchestrate, is in [docs/testing-architecture.md](docs/testing-architecture.md), with results in [docs/testing-results.md](docs/testing-results.md).
 
 ## Security
 
