@@ -139,25 +139,57 @@ AGENT_INSTRUCTIONS = (
     "information outside the tool results."
 )
 
-JUDGE = """\
-You are grading answers from an assistant that answers questions with VA Office of
-Inspector General (OIG) data tools. For each test you get the question, the
-expected answer, and sometimes extra criteria.
-
-Pass the answer only if all of these hold:
-1. Every number, date, and report number in the expected answer appears in the
-   answer. Formatting may differ (2026-11-04 and November 4, 2026 are the same).
-   When the expected answer lists report numbers, the answer may list a subset
-   only if the question asks for examples. Facility names after "including" are
-   examples; other matching facilities are fine.
-2. It meets every requirement listed under "The answer must also".
-3. It cites an OIG report number for any finding it describes, and states the
-   data date when it gives counts.
-4. It does not rate or rank facilities, present target dates as missed
-   deadlines, or predict what OIG will find.
-
-Extra correct detail is fine. A wrong number is a fail even if the rest is good.
-Reply with PASS or FAIL and one sentence naming the deciding reason."""
+# Single-criterion judges for Orchestrate's LLM-as-a-judge. Each returns 1 when
+# the problem is present, matching IBM's verbosity example, so 0 is good.
+JUDGES = {
+    "Uncited finding (response only)": """\
+You are judging a response from an assistant that answers questions with VA Office
+of Inspector General (OIG) data tools. Judge only whether findings are cited.
+Return 1 if the response describes any OIG finding, recommendation, or report
+without giving its OIG report number (for example 25-00193-155).
+Return 0 if every finding it describes has a report number, or if it describes no
+specific findings (for example, it gives only counts or explains why a question
+cannot be answered).""",
+    "Missing data date (response only)": """\
+You are judging a response from an assistant that answers questions with VA OIG
+data tools. Judge only whether the data date is stated.
+Return 1 if the response gives counts, totals, percentages, or statuses from the
+data without stating the date of the data (for example "as of November 4, 2026").
+Return 0 if it states the data date, or if it gives no counts, totals,
+percentages, or statuses.""",
+    "Overreach (response only)": """\
+You are judging a response from an assistant that answers questions with VA OIG
+data tools. Judge only whether it claims more than the data supports.
+Return 1 if any of the following are true:
+- It rates, ranks, or labels a facility or person as better or worse than others.
+- It presents target dates as missed deadlines, or gives an on-time rate or a
+  share of recommendations that missed their targets.
+- It predicts what OIG will find or cite.
+- It gives a next inspection date without calling it an estimate.
+Return 0 otherwise.""",
+    "Verbosity, informational (response only)": """\
+You are an AI assistant trained to judge if a response is longer than it needs to
+be and uses excess verbiage. Evaluate the response based on the efficiency of
+communications, not correctness, helpfulness, or writing quality.
+Caveats, notices, the data date, report numbers, links, and statements of what
+the data cannot show are required content and never count as excess.
+Return 1 if any of the following are true:
+- The response repeats the same idea multiple times.
+- The response contains unnecessary explanations that do not add meaningful
+  content.
+Return 0 otherwise.""",
+    "Incorrect (needs the expected answer)": """\
+You are judging a response from an assistant that answers questions with VA OIG
+data tools, against an expected answer. Judge only correctness.
+Return 1 if any of the following are true:
+- A number, date, or report number in the expected answer is missing from the
+  response or contradicted by it. Formatting may differ (2026-11-04 and
+  November 4, 2026 are the same). Facility names after "including" are examples.
+  A response may give a subset of listed report numbers only if the question asks
+  for examples.
+- The response fails a requirement listed under "The answer must also".
+Return 0 otherwise. Extra correct detail is fine.""",
+}
 
 
 def bank_markdown(questions: list[dict]) -> str:
@@ -178,15 +210,16 @@ def bank_markdown(questions: list[dict]) -> str:
         AGENT_INSTRUCTIONS,
         "```",
         "",
-        "## Judge instructions",
+        "## Judges",
         "",
-        "Paste into the LLM judge. Keep verbosity low: a verdict and one reason.",
-        "",
-        "```text",
-        JUDGE,
-        "```",
+        "Create one LLM-as-a-judge metric per block. Each returns 1 when the problem",
+        "is present, so 0 is good. The first four judge the response alone. Use the",
+        "last only if the judge can see each test's expected answer. Treat verbosity",
+        "as information, not pass or fail: this server is meant to pass on caveats.",
         "",
     ]
+    for title, prompt in JUDGES.items():
+        lines += [f"### {title}", "", "```text", prompt, "```", ""]
     for number, question in enumerate(questions, start=1):
         expected = question["reference"]
         checks = policy_checks(question)
