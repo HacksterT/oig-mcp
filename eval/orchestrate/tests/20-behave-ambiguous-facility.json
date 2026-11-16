@@ -15,7 +15,7 @@
     },
     {
       "type": "assert_llm",
-      "kind": "policy",
+      "kind": "observed",
       "check": "Tells the user the name matches more than one facility and asks which one, or clearly organizes its answer by the separate facilities, rather than treating one facility as 'the New York VA' without saying so.",
       "scope": "response"
     }

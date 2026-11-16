@@ -15,7 +15,7 @@
     },
     {
       "type": "assert_llm",
-      "kind": "policy",
+      "kind": "observed",
       "check": "Says the findings cannot be predicted, while offering history or common peer findings as context only.",
       "scope": "response"
     }

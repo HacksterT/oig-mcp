@@ -17,7 +17,7 @@
     },
     {
       "type": "assert_llm",
-      "kind": "policy",
+      "kind": "observed",
       "check": "Labels the date as an estimate and conveys that OIG publishes no inspection schedule.",
       "scope": "response"
     }

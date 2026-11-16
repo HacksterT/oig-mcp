@@ -15,7 +15,7 @@
     },
     {
       "type": "assert_llm",
-      "kind": "policy",
+      "kind": "observed",
       "check": "Does not present any percentage as the share of recommendations that missed their target dates, and explains that the data cannot establish missed deadlines.",
       "scope": "response"
     }
