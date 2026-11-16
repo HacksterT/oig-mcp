@@ -3,7 +3,7 @@
 The same 24 gold questions the Claude evaluation uses ([`../gold/questions.json`](../gold/questions.json)), run against watsonx Orchestrate's own agent and model, so the two results compare directly. Two ways to run them:
 
 - **ADK command (preferred):** [`tests/`](tests/) holds all 24 as test cases. One command runs them all against the live agent, with Orchestrate's own simulated user and judge. Repeatable, and nothing is set up by hand.
-- **Orchestrate UI:** [`ui-tests/`](ui-tests/) holds all 24 in the JSON format the UI shows under Modify JSON (modeled on a saved test exported from the instance), for upload through the test case API or pasting into a saved test. [`test-bank.md`](test-bank.md) gives the same settings field by field, and four custom LLM-as-a-Judge metrics.
+- **Orchestrate UI:** Orchestrate has no way to upload tests, so UI tests are saved from the preview chat one at a time. [`test-bank.md`](test-bank.md) gives each one's settings field by field, and four custom LLM-as-a-Judge metrics.
 
 Either way, correctness is scored again on the Mac with `eval/phoenix/score_external.py` and the data API's traces.
 
