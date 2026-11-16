@@ -45,7 +45,7 @@ The project is two repositories.
 | Repository | What it does | Where it runs | Visibility |
 |---|---|---|---|
 | `oig-data-source` | Crawls vaoig.gov, parses report pages and PDFs, builds a SQLite database, serves a JSON API over it | Troy's Mac mini, exposed to the internet through a Cloudflare Tunnel with Cloudflare Access service tokens | Private |
-| `oig-mcp` (this repo) | The MCP server: tools, resources, prompts, evaluation | Developed on Troy's Mac; deployed to IBM Cloud Code Engine from the IBM VM; registered in watsonx Orchestrate | Public (since 2026-11-10) |
+| `oig-mcp` (this repo) | The MCP server: tools, resources, prompts, evaluation | Developed on Troy's Mac; registered in watsonx Orchestrate as a local (stdio) toolkit from the IBM VM | Public (since 2026-11-10) |
 
 ```
 vaoig.gov (public OIG pages and PDFs)
@@ -56,11 +56,10 @@ oig-data-source on Troy's Mac
                                                                          │
                          HTTPS + service token headers + API key         │
                                                                          ▼
-oig-mcp on IBM Code Engine  (container from this repo's Dockerfile)
-  /mcp  /health  /version
-      │  Streamable HTTP, Authorization: Bearer MCP_AUTH_TOKEN
-      ▼
-watsonx Orchestrate  (remote MCP toolkit + an agent that uses it)
+watsonx Orchestrate
+  oig-mcp as a local toolkit: Orchestrate runs it over stdio, and its
+  data API settings come from a key_value connection
+  an agent that uses its seven tools
       │
       ▼
 User
@@ -75,7 +74,7 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 | Seven tools, three resources, two prompts | Built and tested |
 | Bearer authentication on `/mcp` | Built and tested on both connections. See `deploy/verify_deployment.py` |
 | Container image | Built from `uv.lock`, runs as non-root, stateless HTTP with JSON responses |
-| Evaluation (Arize Phoenix) | Run on two Claude models, and on Opus again on 2026-11-10 after the last response changes. Results are in [`evaluation.md`](evaluation.md) |
+| Evaluation (Arize Phoenix) | Run on two Claude models and an independent agent; watsonx Orchestrate's agent is being run on the same questions. See [`testing-architecture.md`](testing-architecture.md) and [`testing-results.md`](testing-results.md) |
 | `oig-data-source` crawler, database, and API | Live behind Cloudflare Access and its own API key, with search limits, and the full data build of 2026-11-04 |
 | Hosted test endpoint | The same image runs on Troy's Mac for testers and judges, through a Cloudflare Tunnel, with tool-call traces on through judging |
 | IBM Cloud deployment | Not started. This is Bob's area (F05) |
@@ -97,7 +96,7 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 | `src/oig_mcp/routes.py` | `/health` and `/version` HTTP routes |
 | `tests/` | Security, authentication, tool, and server tests |
 | `eval/` | The evaluation harness and gold questions |
-| `docs/evaluation.md` | Evaluation results and method |
+| `docs/testing-architecture.md`, `docs/testing-results.md` | How the server is tested, and what the testing found (`docs/evaluation.md` links both) |
 | `docs/data-api.md` | The API contract this server expects from `oig-data-source` |
 | `docs/project-overview.md` | This document |
 | `deploy/` | Deployment settings, and scripts that check an image and a running server |
@@ -133,7 +132,7 @@ Troy develops on his Mac. Bob works in the IBM VM. GitHub is the only channel be
 |---|---|---|
 | Access to this repository | Before the first session | GitHub |
 | Initials for resource names | Known | `TES` |
-| IBM Cloud account, resource group, and Code Engine project to use | Before Phase 2 | Troy tells Bob directly |
+| IBM Cloud account to use | Before Phase 2 | Troy tells Bob directly |
 | watsonx Orchestrate instance URL and API key | Before Phase 3 | Entered by Troy in the VM only; never written to the repository |
 | Data API URL, Cloudflare Access service token, and data API key | Before Phase 1 | Entered as platform secrets only; never written to the repository |
 
@@ -157,7 +156,7 @@ When Bob receives a secret, confirm receipt without repeating its value anywhere
 
 ## 9. Rules for the IBM side
 
-- **Never commit secrets.** No API keys, Access tokens, or Orchestrate keys in files, commits, or logs. Use Code Engine secrets and local `.env` (git-ignored).
+- **Never commit secrets.** No API keys, Access tokens, or Orchestrate keys in files, commits, or logs. Use the Orchestrate connection and local `.env` (git-ignored).
 - **Do not change the security boundary** in `utils.py` or `config.py` to make a deployment work. If the server cannot reach the data API, report it; do not add proxies, alternate clients, or URL arguments.
 - **Do not point the server at vaoig.gov** or any other origin. The data API is the only source.
 - **Do not delete or rename shared IBM resources** that do not carry Troy's initials.

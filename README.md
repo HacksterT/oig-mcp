@@ -10,7 +10,7 @@ An entry in the [GSA MCP Server and AI Agent Government Hackathon](https://www.g
 
 ## Status
 
-The server is built, and it answers from the full data build of November 4, 2026, covering 4,410 reports and 15,649 recommendations. It has been evaluated on Claude models, most recently on November 10 after the last changes to its responses, and deployment to IBM watsonx Orchestrate is next. Results are in [docs/evaluation.md](docs/evaluation.md).
+The server is built, and it answers from the full data build of November 4, 2026, covering 4,410 reports and 15,649 recommendations. It is deployed in IBM watsonx Orchestrate as a local toolkit. It has been evaluated on two Claude models and an independent agent, and Orchestrate's own agent is being evaluated on the same questions. Testing is described in [docs/evaluation.md](docs/evaluation.md).
 
 | Capability | Kind |
 |---|---|
@@ -100,11 +100,11 @@ Each tool lives in its own file under `src/oig_mcp/tools/` with a `register(mcp)
 
 ## Deployment
 
-The target is IBM watsonx Orchestrate on IBM Cloud, deployed from an IBM-provided VM with IBM Bob. See [deploy/README.md](deploy/README.md) and [docs/project-overview.md](docs/project-overview.md). The `Dockerfile` serves stateless Streamable HTTP (the MCP specification's HTTP transport) on port 8080 with `/mcp`, `/health`, and `/version`.
+The server runs in IBM watsonx Orchestrate as a local toolkit, registered from an IBM-provided VM with IBM Bob: Orchestrate runs it over stdio and passes it the data API's settings from a connection. See [deploy/ibm/local-mcp-toolkit/README.md](deploy/ibm/local-mcp-toolkit/README.md). For hosted use, the `Dockerfile` serves stateless Streamable HTTP (the MCP specification's HTTP transport) on port 8080 with `/mcp`, `/health`, and `/version`.
 
 ## Evaluation
 
-An assistant answers 24 questions using only these tools, scored against answers computed by SQL from a pinned snapshot, with traces in Arize Phoenix. See [docs/evaluation.md](docs/evaluation.md) for results and [eval/README.md](eval/README.md) to run it.
+An agent answers 24 questions using only these tools, scored against answers computed by SQL from a pinned snapshot, with traces in Arize Phoenix, on Claude, an independent agent, and watsonx Orchestrate. How the testing works is in [docs/testing-architecture.md](docs/testing-architecture.md), and what it found is in [docs/testing-results.md](docs/testing-results.md). To run it, see [eval/README.md](eval/README.md).
 
 ## Security
 
