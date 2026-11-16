@@ -14,7 +14,7 @@
 | Automated tests | 197 pass, on every change | |
 | Image and deployment checks | 15 of 15 and 22 of 22, on the Mac and on IBM's virtual machine | Not a load test |
 
-No Claude run cited a report number that does not exist. The only one found so far is in a logged answer from the Hermes agent, described below. The Orchestrate answers are checked for this in the three-run scoring.
+No Claude run cited a report number that does not exist. The only one found so far is in a logged answer from the Hermes agent, described below. All eight report numbers in Orchestrate's first answers exist in the snapshot, and the three-run answers will be checked the same way.
 
 ## Claude
 
