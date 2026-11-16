@@ -1,6 +1,6 @@
 # Evaluating the Orchestrate agent
 
-**In the Orchestrate UI:** work from [`test-bank.md`](test-bank.md), which follows IBM's field names. Save each question from the preview chat as a test, replace its **Response summary** with the one on the page and turn on its evaluation toggle, set tool parameters to **Ignored**, and add the listed keywords. The page also has four custom LLM-as-a-Judge metrics (IBM scores 1 for pass). Correctness is scored again on the Mac with `eval/phoenix/score_external.py` and the data API's traces.
+**In the Orchestrate UI:** work from [`test-bank.md`](test-bank.md), which follows IBM's field names. Save each question from the preview chat as a test, replace its **Response summary** with the one on the page and turn on its evaluation toggle, set tool parameter matching (Exact for identifiers given in the question, Fuzzy for names and free text, Ignored for paging), and add the listed keywords. The page also has four custom LLM-as-a-Judge metrics (IBM scores 1 for pass). Correctness is scored again on the Mac with `eval/phoenix/score_external.py` and the data API's traces.
 
 **From the command line:** the same 24 gold questions the Claude evaluation uses ([`../gold/questions.json`](../gold/questions.json)), written as watsonx Orchestrate test cases in [`tests/`](tests/). Running them scores Orchestrate's own agent and model on the same questions, so the two results can be compared directly.
 
