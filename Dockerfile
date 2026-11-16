@@ -20,7 +20,10 @@ RUN pip install --no-cache-dir --quiet uv==0.10.12
 # Install exactly what uv.lock records: no dev or eval dependencies.
 COPY pyproject.toml uv.lock README.md ./
 COPY src ./src
-RUN uv sync --frozen --no-dev --no-cache
+# Make the copied files readable by the unprivileged user below, whatever the
+# build machine's permissions were (some hosts default to owner and group only).
+RUN chmod -R a+rX pyproject.toml uv.lock README.md src \
+    && uv sync --frozen --no-dev --no-cache
 
 # Run as an unprivileged user.
 RUN useradd --system --uid 10001 --no-create-home oig
