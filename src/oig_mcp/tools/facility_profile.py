@@ -6,6 +6,7 @@ The API's basis text travels with them because it states what they do not show.
 
 from __future__ import annotations
 
+import re
 from typing import Annotated, Any
 from urllib.parse import quote
 
@@ -27,6 +28,14 @@ from oig_mcp.utils import (
 )
 
 _LOOKUP_LIMIT = 10
+
+# Words people put around a place that OIG's facility names do not carry in that
+# order: "the New York VA", "Durham VAMC", "El Paso VA hospital".
+_GENERIC_WORDS = re.compile(
+    r"\b(?:the|va|v\.a\.|vamc|vahcs|veterans affairs|medical center|"
+    r"health ?care system|hospital)(?=\W|$)",
+    re.IGNORECASE,
+)
 _MAX_RECOMMENDATIONS = 100  # the API returns only the newest 25 unless asked
 _ACTION_CHARS = 300
 
@@ -67,6 +76,14 @@ def _pick_station(facility: str, matches: list[dict[str, Any]]) -> str | None:
     return matches[0].get("station_number") if len(matches) == 1 else None
 
 
+def place_name(facility: str) -> str:
+    """The facility text without generic words, or "" if that changes nothing."""
+    place = " ".join(_GENERIC_WORDS.sub(" ", facility).replace(",", " ").split())
+    if len(place) < 2 or place.casefold() == facility.strip().casefold():
+        return ""
+    return place
+
+
 async def fetch_profile(facility: str) -> dict[str, Any]:
     """Resolve a name, city, or station to its profile.
 
@@ -75,6 +92,9 @@ async def fetch_profile(facility: str) -> dict[str, Any]:
     """
     lookup = await fetch_object("facilities", {"q": facility, "limit": _LOOKUP_LIMIT})
     matches = lookup.get("items", [])
+    if not matches and (place := place_name(facility)):
+        lookup = await fetch_object("facilities", {"q": place, "limit": _LOOKUP_LIMIT})
+        matches = lookup.get("items", [])
     if not matches:
         return {
             "error": f"No facility matched '{facility}'.",
@@ -129,11 +149,12 @@ def register(mcp: FastMCP) -> None:
     ) -> dict[str, Any]:
         """Get one facility's reports, inspections, findings, and repeat findings.
 
-        To prepare the facility for an inspection, use vaoig_get_inspection_brief
-        instead. If several facilities match, returns them as matches so the user
-        can choose. This server reports records and does not rate facilities.
-        Long corrective actions are shortened and marked; vaoig_get_report has
-        the full text.
+        Use this when a question names one facility or VA location, such as "what
+        has OIG found at the El Paso VA". To prepare the facility for an
+        inspection, use vaoig_get_inspection_brief instead. If several facilities
+        match, returns them as matches so the user can choose. This server reports
+        records and does not rate facilities. Long corrective actions are
+        shortened and marked; vaoig_get_report has the full text.
 
         Always pass on every entry in notices and each *_basis field. The next
         window is an estimate and must be labeled as one, because OIG publishes
