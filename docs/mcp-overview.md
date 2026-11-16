@@ -1,6 +1,6 @@
 # MCP Exec Summary: VA OIG Recommendations Assistant
 
-*For leaders and staff. Status as of November 10, 2026. Figures from the data as of November 4, 2026.*
+*For leaders and staff. Status as of November 16, 2026. Figures from the data as of November 4, 2026.*
 
 ## In brief
 
@@ -116,8 +116,9 @@ Taken alone, that looks like facilities improved and then slipped. The data cann
 | Status | Capability |
 |---|---|
 | **Working now** | Plain-language search of findings and corrective actions; full report details; facility profiles and repeat findings; recurring-finding groups; counts and trends by year; time to close and open-item aging by office, topic, or report type; a one-step inspection brief for a facility |
-| **Tested** | 24 questions scored against answers computed from the data, on two AI models. Each passed 23, with no made-up report numbers. The test is small, and its authors wrote the questions, so see the [evaluation](evaluation.md) for its limits. An independent agent's answers are in the [test bank](https://www.troymd.com/mcp-hackathon-test-bank) |
-| **Not yet done** | Connecting it to a hosted assistant. It currently runs on one computer |
+| **Tested** | 24 questions scored against answers computed from the data, on two AI models. Each passed 23, with no made-up report numbers. The test is small, and its authors wrote the questions, so see the [testing results](testing-results.md) for its limits. An independent agent's answers are in the [test bank](https://www.troymd.com/mcp-hackathon-test-bank). IBM's own assistant in watsonx Orchestrate is being tested on the same questions |
+| **Deployed** | In IBM watsonx Orchestrate, where an assistant uses its tools |
+| **Not yet done** | Hosting the data on a cloud service. It currently runs on one computer, so it can go down |
 
 Search results are mixed: fewer than half were relevant in the small test above, results vary by topic, and near-identical findings can crowd the top. Treat results as a starting point to check, and do not treat a search shortlist as a count. Statuses can also change after the data is collected, which is why each answer states its date.
 

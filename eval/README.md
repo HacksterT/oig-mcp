@@ -1,6 +1,6 @@
 # Evaluation harness
 
-An assistant answers gold questions using only this server's tools, and its answers are scored against answers computed by SQL. Results and what they mean are in [`docs/evaluation.md`](../docs/evaluation.md).
+An assistant answers gold questions using only this server's tools, and its answers are scored against answers computed by SQL. How the testing works is in [`docs/testing-architecture.md`](../docs/testing-architecture.md), and the results are in [`docs/testing-results.md`](../docs/testing-results.md). The same questions run against watsonx Orchestrate's agent as described in [`orchestrate/README.md`](orchestrate/README.md).
 
 ## Run it
 

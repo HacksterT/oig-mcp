@@ -3,8 +3,8 @@
 
 watsonx Orchestrate runs a LOCAL MCP toolkit by starting this script inside its
 own runtime and speaking MCP over stdio. This entrypoint reuses the EXISTING
-FastMCP server defined in the `oig_mcp` package and runs it over stdio —
-no HTTP, no Code Engine, no container.
+FastMCP server defined in the `oig_mcp` package and runs it over stdio, with
+no HTTP endpoint and no container.
 
 The register script stages this file NEXT TO the `oig_mcp` package
 (flattened out of the repo's src/ layout), so `oig_mcp` is importable

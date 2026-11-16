@@ -1,4 +1,4 @@
-# Container image for remote (streamable HTTP) deployment, such as IBM Code Engine.
+# Container image for hosted (Streamable HTTP) deployment, on any container platform.
 #
 # Serves MCP at :8080/mcp with a health check at :8080/health. app.py selects
 # HTTP because PORT is set below, and refuses to start without MCP_AUTH_TOKEN.

@@ -5,7 +5,7 @@ An MCP server that answers questions across VA Office of Inspector General (OIG)
 An entry in the [GSA MCP Server and AI Agent Government Hackathon](https://www.gsa.gov/si-community-of-practice/events-and-training/mcp-server-and-si-agent-government-hackathon), Dataset Access track.
 
 - **Proposal:** [troymd.com/mcp-hackathon](https://www.troymd.com/mcp-hackathon)
-- **Project overview and deployment plan:** [docs/project-overview.md](docs/project-overview.md)
+- **Project overview and deployment:** [docs/project-overview.md](docs/project-overview.md)
 - **Data:** a structured, regularly refreshed copy of what VA OIG publishes at vaoig.gov, built and served by the companion `oig-data-source` repository, which is private. [docs/data-api.md](docs/data-api.md) documents the API this server expects from it. No internal VA systems or nonpublic information are used.
 
 ## Status
@@ -108,7 +108,7 @@ An agent answers 24 questions using only these tools, scored against answers com
 
 ## Security
 
-Callers authenticate to `/mcp` with a bearer token, with a rate limit per token. The server authenticates to the data API with a separate Cloudflare Access token and the API's own key. The outbound boundary is tested: one operator-configured origin, relative paths only, no redirects, no proxy environment, a response size cap, and sanitized upstream errors. Every tool is read-only, and report text is marked as quoted source material, not instructions. Questions and answers are recorded during the hackathon, and users are told. See [SECURITY.md](SECURITY.md).
+Over HTTP, callers authenticate to `/mcp` with a bearer token, with a rate limit per token. In watsonx Orchestrate the server runs over stdio inside Orchestrate's runtime, with no network endpoint. The server authenticates to the data API with a separate Cloudflare Access token and the API's own key. The outbound boundary is tested: one operator-configured origin, relative paths only, no redirects, no proxy environment, a response size cap, and sanitized upstream errors. Every tool is read-only, and report text is marked as quoted source material, not instructions. Questions and answers are recorded during the hackathon, and users are told. See [SECURITY.md](SECURITY.md).
 
 ## Acknowledgements
 

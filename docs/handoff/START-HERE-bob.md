@@ -1,24 +1,20 @@
 # Start here, Bob
 
-You are deploying oig-mcp, an MCP server over public VA Office of Inspector General data, to IBM Code Engine, and registering it in watsonx Orchestrate. The server is built and tested on Troy's Mac. Nothing has run on IBM yet.
+oig-mcp, an MCP server over public VA Office of Inspector General data, runs in watsonx Orchestrate as a local (stdio) toolkit, registered from this VM with [`deploy/ibm/local-mcp-toolkit/register-toolkit.sh`](../../deploy/ibm/local-mcp-toolkit/README.md). Orchestrate runs the server itself and passes it the data API's settings from a key_value connection. IBM Code Engine was planned and not used: the account had no resource group, registry namespace, or Code Engine project. Your reports on that work are in this folder: Phase 0, Phase 1, and Phases 2 to 4, dated 2026-11-16.
 
-Repository: https://github.com/HacksterT/oig-mcp (branch `main`, public). The handoff was updated on 2026-11-10; its "What changed" section lists the differences from an earlier copy.
+Repository: https://github.com/HacksterT/oig-mcp (branch `main`, public).
 
-Read these two files before doing anything else, in this order:
+## How work reaches you now
 
-1. [`2026-11-04-troy-bob-deployment-handoff.md`](2026-11-04-troy-bob-deployment-handoff.md): your steps, what has been tested, and every assumption about IBM
-2. [`../project-overview.md`](../project-overview.md): background and the rules for working here
+Troy leaves numbered notes in [`Bob-communication/`](Bob-communication/). When he says "read note N", run `git pull --no-rebase origin main`, then read and follow it. A newer note wins over anything older. Notes already carried out are in [`Bob-communication/_archive/`](Bob-communication/_archive/).
 
-Where your own skills differ from these documents on something specific to this project, these documents win.
+Background and the rules for working here are in [`../project-overview.md`](../project-overview.md). Where your own skills differ from it on something specific to this project, it wins. The original Code Engine plan, [`2026-11-04-troy-bob-deployment-handoff.md`](2026-11-04-troy-bob-deployment-handoff.md), is kept as a record and no longer describes the deployment.
 
-Troy also leaves numbered notes in [`Bob-communication/`](Bob-communication/). When he says "read note N", run `git pull origin main`, then read and follow it. A newer note wins over the handoff where they differ.
+## Standing rules
 
-Work through Phases 0 to 4 in the handoff, one at a time. Stop at the end of each phase and write a report using [`TEMPLATE.md`](TEMPLATE.md), including which assumptions held and which were wrong, with exact error text. Work on an `ibm/` branch. Never push to `main`.
-
-Use the initials `TES` in every IBM resource name.
-
-Troy will give you these values directly when you need them: the data API URL, the Cloudflare client ID and secret, the data API key, his IBM account details, and the Orchestrate URL and key. Generate `MCP_AUTH_TOKEN` yourself, as the handoff describes. Confirm you received a secret without repeating its value, and never put a secret in a commit, a log, or a report.
-
-If the server cannot reach the data API or Orchestrate rejects the connection, stop and send Troy the exact error. Do not weaken authentication, add a proxy, or change the transport to get past it. Ask before creating anything paid that the handoff does not list.
-
-Start now with Phase 0, and tell Troy what you need from him for Phase 1.
+- Work on `ibm/deploy`. Never push to `main`, and never force-push.
+- Changes to repository files go onto `main` from Troy's Mac. Report the problem with the exact error and your proposed fix, and stop. Your own reports are the exception.
+- Use the initials `TES` in every IBM resource name.
+- Never put a secret, token, account or instance or agent ID, or email address in a commit, a log, or a report. Confirm you received a secret without repeating its value.
+- If something fails, send Troy the exact error and stop. Do not weaken authentication, add a proxy, or change the transport to get past it. Ask before creating anything paid.
+- Write reports with [`TEMPLATE.md`](TEMPLATE.md), named `YYYY-MM-DD-bob-<topic>.md`, unless a note gives another name.
