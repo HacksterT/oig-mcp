@@ -1,4 +1,4 @@
-"""Tool-call traces: complete, linked to the API, never fatal, and capped."""
+"""Traces of tool calls and resource reads: linked to the API, never fatal, capped."""
 
 from __future__ import annotations
 
@@ -48,6 +48,10 @@ async def mcp_client(store: TraceStore | None):
     @server.tool
     async def lookup(question: str) -> dict:
         return {"answer": await utils.fetch_json("meta", params={"q": question})}
+
+    @server.resource("vaoig://taxonomy/{facet}", mime_type="application/json")
+    async def taxonomy(facet: str) -> dict:
+        return await utils.fetch_json(f"taxonomy/{facet}")
 
     add_usage_controls(server, trace_store=store)
     http_app = server.http_app(stateless_http=True, json_response=True)
@@ -226,3 +230,29 @@ def test_reader_handles_no_traces(tmp_path: Path, command: list[str]) -> None:
         text=True,
     )
     assert "No" in result.stdout + result.stderr
+
+
+async def test_resource_read_is_traced_and_linked_to_the_api(
+    tmp_path, monkeypatch
+) -> None:
+    seen = fake_api(monkeypatch, body={"items": [{"value": "x"}]})
+    async with mcp_client(TraceStore(tmp_path, 10_000_000)) as client:
+        await client.post(
+            "/mcp",
+            json={
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "resources/read",
+                "params": {"uri": "vaoig://taxonomy/topic"},
+            },
+            headers={
+                "Accept": "application/json, text/event-stream",
+                "Authorization": f"Bearer {ALICE}",
+            },
+        )
+    [record] = records(tmp_path)
+    assert record["tool"] == "read_resource"
+    assert record["arguments"] == {"uri": "vaoig://taxonomy/topic"}
+    assert record["result"] == [{"items": [{"value": "x"}]}]
+    assert seen[-1].headers["X-Trace-Id"] == record["trace_id"]
+    assert seen[-1].headers["X-OIG-Tool"] == "read_resource"

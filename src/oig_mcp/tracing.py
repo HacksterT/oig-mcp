@@ -1,7 +1,8 @@
-"""Full tool-call traces, on through the hackathon including judging.
+"""Full traces of tool calls and resource reads, on through judging.
 
 Each tool call gets a trace ID, sent to the data API as X-Trace-Id with the client
 and tool names, so the API's own trace of each request can be matched to the call.
+A resource read is traced as tool read_resource, with its URI as the argument.
 When MCP_TRACE_DIR is set, the call is also written as one JSON file: who called,
 the arguments, every API request it made, and the result. That includes what
 people searched for, so anyone connected must be told: vaoig://about says so.
@@ -21,10 +22,12 @@ from typing import Any
 
 # Arguments are traced before validation, so a caller could send megabytes that the
 # tool then refuses. Bounding each value and each record keeps one client from
-# flushing everyone's traces past the store's cap.
+# flushing everyone's traces past the store's cap. Real results are kept whole: the
+# largest seen is about 180 KB (a facility profile), so the record cap sits well
+# above any real answer and only stops what no tool would return.
 MAX_TRACED_STRING = 2_000
 MAX_TRACED_ITEMS = 100
-MAX_RECORD_BYTES = 256_000
+MAX_RECORD_BYTES = 1_000_000
 
 
 def bounded(value: Any) -> Any:
@@ -58,6 +61,12 @@ def start(client: str, tool: str, arguments: Any) -> tuple[dict[str, Any], Token
         "api_calls": [],
     }
     return record, _current.set(record)
+
+
+def current_id() -> str | None:
+    """The trace ID of the call in progress, if there is one."""
+    record = _current.get()
+    return record["trace_id"] if record else None
 
 
 def finish(token: Token) -> None:

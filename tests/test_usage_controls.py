@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import re
 import subprocess
 import sys
 from contextlib import asynccontextmanager
@@ -156,7 +157,7 @@ def test_usage_summary_counts_each_client(tmp_path: Path) -> None:
     log_file.write_text(
         "2026-11-05T10:00:00Z client=alice tool=echo outcome=ok ms=5\n"
         "2026-11-05T10:01:00Z client=alice tool=echo outcome=error ms=5\n"
-        "2026-11-05T10:02:00Z client=bob tool=echo outcome=ok ms=5\n"
+        "2026-11-05T10:02:00Z client=bob tool=echo outcome=ok ms=5 trace=0a1b\n"
         "not a usage line\n"
     )
     result = subprocess.run(
@@ -168,3 +169,9 @@ def test_usage_summary_counts_each_client(tmp_path: Path) -> None:
     lines = result.stdout.splitlines()
     assert lines[1].split() == ["alice", "2", "1", "2026-11-05T10:01:00Z"]
     assert lines[2].split() == ["bob", "1", "0", "2026-11-05T10:02:00Z"]
+
+
+async def test_each_line_carries_the_trace_id(usage_lines) -> None:
+    async with mcp_client() as client:
+        await call(client, ALICE)
+    assert re.search(r" trace=[0-9a-f]{16}$", usage_lines[0])

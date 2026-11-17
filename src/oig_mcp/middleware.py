@@ -1,19 +1,22 @@
-"""Per-client request limits, a usage log, and tool-call traces for the MCP endpoint.
+"""Per-client request limits, a usage log, and traces for the MCP endpoint.
 
 Each client has its own limit, so one runaway agent can't use up the shared Mac.
-The usage log records who called which tool and how it ended, never the arguments.
-Traces (tracing.py) record everything, including arguments and results, and are
+The usage log records who called which tool or read which resource, how it ended,
+and the trace ID, never the arguments. Traces (tracing.py) record everything,
+including arguments and results, and are
 written only while MCP_TRACE_DIR is set. They stay on through the hackathon,
 including judging, to see what people ask; users are told in vaoig://about.
 """
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import re
 import sys
 import time
+from collections.abc import Callable
 from logging.handlers import RotatingFileHandler
 from typing import Any
 
@@ -82,12 +85,13 @@ class UsageLogMiddleware(Middleware):
             raise
         finally:
             usage_log.info(
-                "client=%s %s=%s outcome=%s ms=%d",
+                "client=%s %s=%s outcome=%s ms=%d trace=%s",
                 _client_name(),
                 kind,
                 name,
                 outcome,
                 round((time.monotonic() - started) * 1000),
+                tracing.current_id() or "-",
             )
 
 
@@ -102,8 +106,27 @@ def _result_data(result: Any) -> Any:
     ]
 
 
-class ToolTraceMiddleware(Middleware):
-    """Trace each tool call, and write the trace when a store is given."""
+def _resource_data(result: Any) -> Any:
+    """What a resource read returned: parsed JSON where it is JSON."""
+    data = []
+    for item in getattr(result, "contents", None) or []:
+        content = item.content
+        if isinstance(content, bytes):
+            data.append(f"[{len(content)} bytes]")
+            continue
+        try:
+            data.append(json.loads(content))
+        except (TypeError, ValueError):
+            data.append(content)
+    return data
+
+
+class TraceMiddleware(Middleware):
+    """Trace each tool call and resource read; write it when a store is given.
+
+    It runs outermost, so the usage log can stamp each line with the trace ID, and
+    a resource read's data API requests carry trace headers like a tool call's.
+    """
 
     def __init__(self, store: tracing.TraceStore | None) -> None:
         self.store = store
@@ -111,16 +134,33 @@ class ToolTraceMiddleware(Middleware):
     async def on_call_tool(
         self, context: MiddlewareContext, call_next: CallNext
     ) -> Any:
-        record, token = tracing.start(
-            _client_name(),
-            _safe(str(context.message.name), _TOOL_NAME),
-            context.message.arguments,
+        name = _safe(str(context.message.name), _TOOL_NAME)
+        return await self._traced(
+            name, context.message.arguments, _result_data, context, call_next
         )
+
+    async def on_read_resource(
+        self, context: MiddlewareContext, call_next: CallNext
+    ) -> Any:
+        arguments = {"uri": str(context.message.uri)}
+        return await self._traced(
+            "read_resource", arguments, _resource_data, context, call_next
+        )
+
+    async def _traced(
+        self,
+        name: str,
+        arguments: Any,
+        result_data: Callable[[Any], Any],
+        context: MiddlewareContext,
+        call_next: CallNext,
+    ) -> Any:
+        record, token = tracing.start(_client_name(), name, arguments)
         started = time.monotonic()
         try:
             result = await call_next(context)
             record["outcome"] = "error" if getattr(result, "is_error", False) else "ok"
-            record["result"] = _result_data(result)
+            record["result"] = result_data(result)
             return result
         except Exception as exc:
             limited = isinstance(exc, RateLimitError)
@@ -212,13 +252,14 @@ def add_usage_controls(
     burst: int = BURST,
     trace_store: tracing.TraceStore | None = None,
 ) -> None:
-    """Attach logging and tracing outside the limit, so refused calls appear too.
+    """Attach tracing and logging outside the limit, so refused calls appear too.
 
-    The first middleware added is the outermost. ToolFailureMiddleware goes last,
-    nearest the tool, so every layer above it sees a failed call as isError.
+    The first middleware added is the outermost. Tracing comes first so each usage
+    line carries the trace ID. ToolFailureMiddleware goes last, nearest the tool,
+    so every layer above it sees a failed call as isError.
     """
+    server.add_middleware(TraceMiddleware(trace_store))
     server.add_middleware(UsageLogMiddleware())
-    server.add_middleware(ToolTraceMiddleware(trace_store))
     server.add_middleware(
         ClientRateLimitMiddleware(
             max_requests_per_second=requests_per_second,

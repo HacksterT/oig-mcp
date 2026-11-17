@@ -16,6 +16,8 @@ The server is the subject of every test. The models that call it are instruments
 
 **Test hostile input against the running server, not only in unit tests.** A robustness check sends every tool traversal, injection, and out-of-bounds values, then bursts past the rate limit and the data API's search slots, and inspects every reply for stack traces, addresses, and credentials. It passed 43 of 43 before and after the hardening, and runs against every deployment.
 
+**Measure the logs before trimming them.** The traces were the evidence for most of this week's findings: they showed every Orchestrate call that reached the data API succeeded, and they found the backend's 500 on response filters. Before any change to them, a measurement: 11 MB of server traces and 79 MB of data API traces against caps of 400 and 600 MB, nothing pruned, and no argument or result ever cut. So the changes added detail instead of trimming it. Each usage-log line now carries the trace ID that finds its full trace, resource reads are traced like tool calls, and the per-record cap rose from 256 KB to 1 MB, well above the largest real answer (about 180 KB), so it stops only what no tool would return. The same measurement found older trace files on both stores readable by any local user; they were made private.
+
 **Least privilege costs little in a container.** Dropping every Linux capability, a read-only filesystem, and memory and process limits needed no code change, and every check still passed.
 
 ## November 17, 2026: the Orchestrate runs, the baseline, and the adversarial set
