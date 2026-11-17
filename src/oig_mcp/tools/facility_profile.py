@@ -16,8 +16,14 @@ from pydantic import Field
 
 from oig_mcp.facility_choice import choose_station
 from oig_mcp.failures import UpstreamServiceError, tool_error
-from oig_mcp.guidance import CITE_TOTALS, FACILITY_VISN_NOTICE, READ_ONLY_TOOL
+from oig_mcp.guidance import (
+    CITE_TOTALS,
+    FACILITY_VISN_NOTICE,
+    READ_ONLY_TOOL,
+    choose_facility_step,
+)
 from oig_mcp.models import (
+    STATE_NAMES,
     FacilityMatches,
     FacilityProfile,
     NotFound,
@@ -29,6 +35,8 @@ from oig_mcp.results import build_provenance, paginate, report_urls, with_citati
 from oig_mcp.upstream import fetch_object
 
 _LOOKUP_LIMIT = 10
+# Full state names, for a facility question that names only a state.
+_STATES = {name.casefold(): name for name in STATE_NAMES.values()}
 
 # Words people put around a place that OIG's facility names do not carry in that
 # order: "the New York VA", "Durham VAMC", "El Paso VA hospital".
@@ -92,13 +100,28 @@ def compact(record: dict[str, Any], left_out: frozenset[str]) -> dict[str, Any]:
     }
 
 
-def _pick_station(facility: str, matches: list[dict[str, Any]]) -> str | None:
-    """Return the station to open: an exact station match, or the only match."""
+def _named_exactly(facility: str, matches: list[dict[str, Any]]) -> str | None:
+    """The station whose number, name, or an alias is exactly what was asked."""
     wanted = facility.strip().casefold()
     for match in matches:
-        if str(match.get("station_number", "")).casefold() == wanted:
+        aliases = match.get("aliases") or []
+        names = [match.get("station_number"), match.get("name"), *aliases]
+        if any(str(name).casefold() == wanted for name in names if name):
             return match["station_number"]
-    return matches[0].get("station_number") if len(matches) == 1 else None
+    return None
+
+
+def _merged(lookups: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], int]:
+    """Every facility the lookups found, each once and in lookup order, and how
+    many matched in all (a lower bound when a lookup had more than it returned)."""
+    merged, seen = [], set()
+    for lookup in lookups:
+        for match in lookup.get("items", []):
+            if match.get("station_number") not in seen:
+                seen.add(match.get("station_number"))
+                merged.append(match)
+    totals = [lookup.get("total") or 0 for lookup in lookups]
+    return merged[:_LOOKUP_LIMIT], max(len(merged), *totals)
 
 
 def place_name(facility: str) -> str:
@@ -120,10 +143,26 @@ async def fetch_profile(
     for the caller to return as is (facility_choice.py).
     """
     lookup = await fetch_object("facilities", {"q": facility, "limit": _LOOKUP_LIMIT})
-    matches = lookup.get("items", [])
-    if not matches and (place := place_name(facility)):
-        lookup = await fetch_object("facilities", {"q": place, "limit": _LOOKUP_LIMIT})
-        matches = lookup.get("items", [])
+    matches, total = lookup.get("items", []), lookup.get("total")
+    station = _named_exactly(facility, matches)
+    if station is None:
+        # A name that matches one facility can still mean several: "California
+        # VA" contains an alias of VA Central California but most likely means
+        # the state, and "Columbia VA" is in South Carolina and in Missouri. So
+        # unless the name is exact, look up the place on its own and as a state,
+        # and treat the name as ambiguous if those find other facilities.
+        place = place_name(facility) or facility.strip()
+        lookups = [lookup]
+        if place != facility.strip() and len(matches) <= 1:
+            lookups.append(
+                await fetch_object("facilities", {"q": place, "limit": _LOOKUP_LIMIT})
+            )
+        if state := _STATES.get(place.casefold()):
+            in_state = {"state": state, "limit": _LOOKUP_LIMIT}
+            lookups.insert(0, await fetch_object("facilities", in_state))
+        matches, total = _merged(lookups)
+        if len(matches) == 1:
+            station = matches[0].get("station_number")
     if not matches:
         return {
             "error": f"No facility matched '{facility}'.",
@@ -133,7 +172,6 @@ async def fetch_profile(
                 "may be empty."
             ),
         }
-    station = _pick_station(facility, matches)
     if station is None:
         choice = await choose_station(ctx, facility, matches)
         if isinstance(choice, InputRequiredResult):
@@ -142,8 +180,8 @@ async def fetch_profile(
     if station is None:
         return {
             "matches": matches,
-            "total_matches": lookup.get("total"),
-            "hint": "Several facilities matched. Ask which one is meant.",
+            "total_matches": total,
+            "next_step": choose_facility_step(facility, len(matches), total),
             "provenance": build_provenance(
                 lookup.get("data_as_of"), citation=CITE_TOTALS
             ),
@@ -197,9 +235,14 @@ def register(mcp: FastMCP) -> None:
         and a ready-made citation. Findings come with their status, not the
         facility's responses: to prepare the facility for an inspection, use
         vaoig_get_inspection_brief; for what it committed to do about a finding,
-        use vaoig_get_report on that report. If several facilities match, returns
-        them as matches so the user can choose. This server reports records and
-        does not rate facilities.
+        use vaoig_get_report on that report. This server reports records and does
+        not rate facilities.
+
+        A city, a state, or a common word can match several facilities: "New York
+        VA" matches about ten, from Manhattan and the Bronx to Albany and Buffalo.
+        Then the result lists them as matches. Do not choose one for the user, not
+        even the largest or best known: ask which they mean, then call again with
+        its station number.
 
         Always pass on every entry in notices and each *_basis field. The next
         window is this server's estimate from past inspection dates, not OIG's:

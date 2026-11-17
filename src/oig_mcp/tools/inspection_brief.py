@@ -169,8 +169,13 @@ def register(mcp: FastMCP) -> None:
         the facility's open findings with its responses and what peers were cited
         for and committed to do. For a facility's history, counts, or list of
         reports, use vaoig_get_facility_profile; for a topic across facilities, use
-        vaoig_search_findings. If several facilities match, returns them as
-        matches so the user can choose.
+        vaoig_search_findings.
+
+        A city, a state, or a common word can match several facilities: "New York
+        VA" matches about ten, from Manhattan and the Bronx to Albany and Buffalo.
+        Then the result lists them as matches. Do not choose one for the user, not
+        even the largest or best known: ask which they mean, then call again with
+        its station number.
 
         Always pass on every entry in notices and each *_basis field. The next
         window is this server's estimate from past inspection dates, not OIG's:
