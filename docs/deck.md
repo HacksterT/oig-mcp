@@ -280,9 +280,10 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 - **Per question, Claude Opus 5.5:** about 14 seconds on average, with 2.3 tool calls, about 25,000 input tokens, and 1,400 output tokens. Tool results make up most of the input.
 - **Latency:** median tool latency from about 0.13 seconds (analysis) to about 2 seconds (the inspection brief).
 - **Reliability:** every Orchestrate call that reached the data service succeeded.
+- **Load:** ramped from 1 to 40 concurrent clients through the public URL, all 2,059 calls were answered, with no errors and no unclean reply. The median call slowed from 0.33 to 1.8 seconds as the server queued requests to protect the data service.
 - **Cost:** about $3 per full Claude Opus 5.5 run, including the judge.
 
-**Limits:** One builder wrote the questions and the server, and fixes followed failures on these same questions. Twenty-four questions are a check, not a statistical estimate. The service has not been load tested.
+**Limits:** One builder wrote the questions and the server, and fixes followed failures on these same questions. Twenty-four questions are a check, not a statistical estimate. The load test was one run on one Mac, to 40 clients, not to failure.
 
 **Visual:** A screenshot of the Phoenix experiments chart for the 24-question dataset, showing score and average latency across runs, as the sample deck does. Beside it, a bar chart of no tools against with the server for both models.
 

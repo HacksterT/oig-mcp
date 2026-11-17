@@ -166,6 +166,8 @@ The model and its settings were the same before and after; only the server chang
 
 Measured through the server against the hosted data API: median tool latency from about 0.13 seconds (analysis) to about 2 seconds (the inspection brief, which runs up to ten searches). In Orchestrate the agent's average response time was 5.9 to 7.6 seconds per turn, most of it the model. Of 72 Orchestrate conversations, 4 met a platform error; every call that reached the data API succeeded. A full Claude Opus 5.5 run of 24 questions costs about $3 at list prices, including the judge.
 
+**Load.** A [load test](../eval/results/2026-11-17-load-test/summary.md) through the public URL ramped from 1 to 40 concurrent clients, each with its own token, repeating tool calls recorded from the Claude runs. All 2,059 calls were answered, with no errors, refusals, or unclean replies, and the data API answered all 5,941 of its requests. The median call took 0.33 seconds with one client and 1.8 seconds with 40, and the inspection brief 5.4. Inside the data API the median request stayed at 7 to 13 milliseconds, so the added time is the server's queue ahead of it, most likely its limit of eight upstream requests at once.
+
 ### Error handling
 
 Every tool reports a failure as an MCP error result with a hint the agent can act on, distinguished by cause: a rejected filter, a busy search queue, a slow search, a data API failure, or an unreachable API. A filter value the data does not use is refused with the fix where it can be (an office in the domain filter names the office filter), and an empty result says to check the filter values before concluding there is nothing. "Not found" and "several facilities match" are answers, not errors. Each behavior is covered by automated tests.
@@ -227,7 +229,7 @@ Gold answers computed independently of the API caught errors the API would have 
 
 ### Limitations
 
-One builder wrote the questions and the server, and some fixes followed failures on these same questions, so later runs are not blind on those points. 24 questions, with 6 adversarial, are a check, not a statistical estimate. Judges are models, and no person reviewed every answer. The service has not been load tested.
+One builder wrote the questions and the server, and some fixes followed failures on these same questions, so later runs are not blind on those points. 24 questions, with 6 adversarial, are a check, not a statistical estimate. Judges are models, and no person reviewed every answer. The load test was one run, on one Mac, to 40 clients, and not to failure.
 
 ### Recommendations
 

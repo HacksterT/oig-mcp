@@ -97,6 +97,6 @@ A separate review agent read the code without the builder's conclusions and prob
 - **The registration script.** `deploy/ibm/local-mcp-toolkit/register-toolkit.sh` passes the Cloudflare secret, the data API key, and the Orchestrate key as command-line arguments, visible to other users of the same machine while it runs, and exports dependencies without hashes. It runs on a single-user virtual machine; on a shared host, pass the values through files.
 - **Quoted text is marked by field name.** Fields the server passes through from the data API are marked as quoted only if they are on the list in `guidance.py`. The data API is the project's own; a third-party upstream would warrant marking every upstream field as quoted by default.
 - **Client names reach the data API** in an `X-OIG-Client` header, to link its traces to the server's.
-- **Not load tested** beyond the robustness check's bursts.
+- **Load tested once, to 40 concurrent clients.** All 2,059 calls were answered, with no errors and no unclean reply, and the median call slowed from 0.33 to 1.8 seconds ([results](eval/results/2026-11-17-load-test/summary.md)). It was not run to failure, and it ran on one Mac.
 
 These boundaries are covered by `tests/test_http_security.py`, `tests/test_mcp_auth.py`, `tests/test_oig.py`, and `tests/test_robustness.py`. The outbound client design is adapted from the GSA TTS MCP hackathon template.
