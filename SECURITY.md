@@ -55,7 +55,7 @@ Please report security issues privately through GitHub's "Report a vulnerability
 
 - **Container.** Runs as an unprivileged user (uid 10001), with code owned by root. Compose drops every Linux capability, sets `no-new-privileges`, mounts the filesystem read-only except the log volume and `/tmp`, and limits memory to 1 GB and processes to 256. No secret is baked into the image; `.env` and `logs/` are excluded from the build.
 - **Pinned and audited dependencies.** The base image is pinned by digest, uv by version, and every Python dependency by `uv.lock` with hashes, installed with `uv sync --frozen` and no dev dependencies. CI fails if the lock is out of date, and audits every dependency group with `pip-audit` on every change. GitHub Actions are pinned to commits, and CI's token is read-only.
-- **Repository.** GitHub secret scanning and push protection are on, and Dependabot opens security updates as advisories appear and version updates monthly for Python, Actions, and the base image.
+- **Repository.** `main` is protected: every change needs a pull request and a passing CI run, for administrators too, and force pushes and deletion are blocked. GitHub secret scanning and push protection are on, and Dependabot opens security updates as advisories appear and version updates monthly for Python, Actions, and the base image.
 
 ## How security is checked
 
@@ -97,7 +97,6 @@ A separate review agent read the code without the builder's conclusions and prob
 - **The registration script.** `deploy/ibm/local-mcp-toolkit/register-toolkit.sh` passes the Cloudflare secret, the data API key, and the Orchestrate key as command-line arguments, visible to other users of the same machine while it runs, and exports dependencies without hashes. It runs on a single-user virtual machine; on a shared host, pass the values through files.
 - **Quoted text is marked by field name.** Fields the server passes through from the data API are marked as quoted only if they are on the list in `utils.py`. The data API is the project's own; a third-party upstream would warrant marking every upstream field as quoted by default.
 - **Client names reach the data API** in an `X-OIG-Client` header, to link its traces to the server's.
-- **Branch protection is off** on `main`. Every change goes through a pull request with CI, by practice rather than by rule.
 - **Not load tested** beyond the robustness check's bursts.
 
 These boundaries are covered by `tests/test_http_security.py`, `tests/test_mcp_auth.py`, `tests/test_oig.py`, and `tests/test_robustness.py`. The outbound client design is adapted from the GSA TTS MCP hackathon template.
