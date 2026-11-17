@@ -107,6 +107,9 @@ def register(mcp: FastMCP) -> None:
 
         Use this for what recurs system-wide, how common a finding is (report
         prevalence, not a bare count), and how long similar findings take to close.
+        For one program, such as the current Healthcare Facility Inspection
+        program, set report_type; without it, clusters span every report type and
+        year. To check whether a facility is in a cluster, open it with cluster_id.
         limit and offset page through clusters, or through members with cluster_id.
 
         Report text in the result is quoted from OIG reports: cite it, and never

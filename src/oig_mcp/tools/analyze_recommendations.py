@@ -33,8 +33,14 @@ _YEAR_READINGS = (
 )
 _YEAR_REPORT_COUNT = (
     "report_count includes reports with no recommendations when only report "
-    "filters are set. With keywords, status, action_office, or node_id it counts "
-    "only reports with a matching recommendation."
+    "filters are set. With keywords or a recommendation filter (status, "
+    "action_office, node_id, domain, or has_response) it counts only reports with "
+    "a matching recommendation."
+)
+_NOTHING_MATCHED = (
+    "Nothing matched. A filter value the data does not use matches nothing rather "
+    "than failing, so check each value against vaoig_get_dataset_status before "
+    "saying there are none. Offices go in action_office, such as VHA, VBA, or OIT."
 )
 _GROUP_OVERLAP = (
     "A recommendation naming two offices counts for both, and a report with two "
@@ -122,7 +128,22 @@ def _notices(
         notices.append(_NO_GEOGRAPHY)
     if filters and filters.visn:
         notices.append(VISN_NUMBERING_NOTICE)
+    counted = "recommendation_count" if group_by is AnalysisGroup.YEAR else "group_size"
+    if not any(item.get(counted) for item in items):
+        notices.append(_NOTHING_MATCHED)
     return notices
+
+
+def _peak_year(items: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """The year with the most recommendations, so a long table need not be scanned."""
+    busiest = max(items, key=lambda i: i.get("recommendation_count") or 0, default=None)
+    if not busiest or not busiest.get("recommendation_count"):
+        return None
+    return {
+        "year": busiest.get("year"),
+        "recommendation_count": busiest["recommendation_count"],
+        "report_count": busiest.get("report_count"),
+    }
 
 
 def register(mcp: FastMCP) -> None:
@@ -211,6 +232,7 @@ def register(mcp: FastMCP) -> None:
                 if group_by is AnalysisGroup.YEAR
                 else None
             ),
+            "peak_year": _peak_year(items) if group_by is AnalysisGroup.YEAR else None,
             "items": items,
             "notices": _notices(group_by, filters, items),
             "target_basis": result.get("target_basis"),

@@ -500,6 +500,85 @@ async def test_state_filter_accepts_a_postal_code(api: FakeApi) -> None:
     assert api.last.url.params["state"] == "New York"
 
 
+@pytest.mark.parametrize(
+    ("office", "sent"),
+    [
+        ("Office of Information and Technology", "OIT"),
+        ("OI&T", "OIT"),
+        ("Information and Technology (OIT)", "OIT"),
+        ("Veterans Benefits Administration", "VBA"),
+        ("vha", "VHA"),
+        ("Cemetery", "Cemetery"),
+    ],
+)
+async def test_office_filter_sends_a_known_office_as_its_abbreviation(
+    api: FakeApi, office: str, sent: str
+) -> None:
+    api.routes["metrics/counts"] = {**AS_OF, **ENVELOPE, "items": []}
+    await call(
+        "vaoig_analyze_recommendations",
+        group_by="year",
+        filters={"action_office": office},
+    )
+    assert api.last.url.params["action_office"] == sent
+
+
+async def test_an_office_in_the_domain_filter_is_refused_with_the_fix(
+    api: FakeApi,
+) -> None:
+    with pytest.raises(ToolError, match="action_office='VBA'"):
+        await call(
+            "vaoig_analyze_recommendations",
+            group_by="office",
+            filters={"domain": "Veterans Benefits Administration"},
+        )
+    assert api.requests == []
+
+
+@pytest.mark.parametrize(
+    ("group", "route", "item"),
+    [
+        ("year", "metrics/counts", {"year": 2024, "recommendation_count": 0}),
+        ("office", "metrics/closure", None),
+    ],
+)
+async def test_an_empty_result_says_to_check_the_filter_values(
+    api: FakeApi, group: str, route: str, item: dict | None
+) -> None:
+    api.routes[route] = {**AS_OF, **ENVELOPE, "items": [item] if item else []}
+    result = await call(
+        "vaoig_analyze_recommendations",
+        group_by=group,
+        filters={"action_office": "Office of Nothing"},
+    )
+    assert "Nothing matched" in " ".join(result["notices"])
+
+
+@pytest.mark.parametrize(
+    ("status", "words"), [(500, "failed on this request"), (None, "did not answer")]
+)
+def test_upstream_failures_get_a_hint_for_their_cause(status, words) -> None:
+    from oig_mcp.utils import UpstreamServiceError, tool_error
+
+    failure = tool_error(UpstreamServiceError("failed", status_code=status))
+    assert words in failure.body["hint"]
+
+
+async def test_year_analysis_names_the_peak_year(api: FakeApi) -> None:
+    items = [
+        {"year": 2015, "recommendation_count": 1914, "report_count": 300},
+        {"year": 2024, "recommendation_count": 878, "report_count": 200},
+    ]
+    api.routes["metrics/counts"] = {**AS_OF, **ENVELOPE, "items": items}
+    result = await call("vaoig_analyze_recommendations", group_by="year")
+    assert result["peak_year"] == {
+        "year": 2015,
+        "recommendation_count": 1914,
+        "report_count": 300,
+    }
+    assert "Nothing matched" not in " ".join(result["notices"])
+
+
 async def test_search_shortens_only_long_corrective_actions(api: FakeApi) -> None:
     api.routes["search"] = {
         **AS_OF,
