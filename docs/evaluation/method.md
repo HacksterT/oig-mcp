@@ -110,6 +110,20 @@ A single judge can be wrong in either direction, so each Orchestrate run is read
 
 Where the two judges agree and the traces support them, the result stands. Where they disagree, the answer is read against the gold answer and the traces, and the results say which judge was right and why, along with how often the judges agreed.
 
+## Phoenix evaluators, as IBM's skill specifies
+
+IBM's `mcp-eval-wxai` skill builds the evaluation on Arize Phoenix with `arize-phoenix-evals` judges on a watsonx.ai model. The harness follows it in the agent on watsonx.ai, the traces, and the experiments; the judges are in [`eval/phoenix/judges/`](../../eval/phoenix/judges/), as the skill lays out:
+
+| Judge | From | What it decides |
+|---|---|---|
+| `match_expected_response` | The skill | The answer is correct against the gold reference, tolerating formatting |
+| `check_answer_scope` | The skill | The answer is in scope, or rightly declines what is not |
+| `tool_selection` | Phoenix built-in | The right tools were chosen for the question |
+| `tool_invocation` | Phoenix built-in | The tools were called with correct, complete arguments |
+| `tool_response_handling` | Phoenix built-in | The answer uses its tool responses correctly and invents nothing |
+
+All five run on Llama 3.3 70B on watsonx.ai, the skill's default judge, through Phoenix's LiteLLM wrapper. [`eval/phoenix/phoenix_evals.py`](../../eval/phoenix/phoenix_evals.py) runs them on saved answers, with each answer's full tool responses, and logs each run as a Phoenix experiment. Beyond the skill, the harness keeps its code checks against SQL-computed answers, its citation checks, and a second judge from another model family (Claude). The question set lives in JSON with its SQL, not the skill's CSV, because every reference answer is computed from the pinned snapshot. Results: [Phoenix evaluators on watsonx.ai](results.md#phoenix-evaluators-on-watsonxai).
+
 ## Repeatability
 
 **The data is frozen.** Every run uses the snapshot of November 4, 2026, and the harness stops if the server's data differs from it.

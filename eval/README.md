@@ -62,6 +62,16 @@ It writes `judge_watsonx.json` and `judge-comparison.md` into each run folder.
 
 The smoke test confirms the credentials, that the model is listed for tool calling in the region, a chat call, and a real tool call, and prints no credential. watsonx.ai usage is not priced in the summary.
 
+## Phoenix evaluators on watsonx.ai
+
+IBM's skill judges with `arize-phoenix-evals` on a watsonx.ai model. To judge saved runs that way, with the watsonx.ai credentials in `.env`:
+
+```bash
+uv run --group eval python eval/phoenix/phoenix_evals.py eval/results/<folder> [...]
+```
+
+It writes `phoenix_evals.json` and `phoenix_evals.md` next to each run (each `run-N` for Orchestrate) and logs a Phoenix experiment for each. The judge is `JUDGE_MODEL_WATSONX`, by default `meta-llama/llama-3-3-70b-instruct`. `--handling-only` judges tool response handling again and keeps the other judgments; `--no-phoenix` skips the experiments. It calls neither the MCP server nor the data API.
+
 ## Layout
 
 | Path | Contents |
@@ -75,6 +85,8 @@ The smoke test confirms the credentials, that the model is listed for tool calli
 | `phoenix/watsonx_smoke.py` | Checks watsonx.ai credentials and tool calling before a run |
 | `phoenix/rejudge_watsonx.py` | Judges saved answers again with a watsonx.ai model and compares the two judges |
 | `phoenix/scoring.py` | Scoring by code, and the judge |
+| `phoenix/judges/` | The arize-phoenix-evals judges IBM's skill specifies, on a watsonx.ai model: correctness, scope, and Phoenix's tool selection, tool invocation, and tool response handling |
+| `phoenix/phoenix_evals.py` | Runs those judges on saved runs, with full tool responses, and logs Phoenix experiments |
 | `phoenix/run_experiment.py` | The command above |
 | `phoenix/score_external.py` | Scores answers from an agent outside this harness |
 | `orchestrate/score_runs.py` | Scores watsonx Orchestrate ADK transcripts with the same gold and judges |

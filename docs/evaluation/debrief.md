@@ -21,7 +21,7 @@ Yes. On the agent that had room to improve, the gains were modest and consistent
 Three things make the improvement credible rather than chance:
 
 1. **Every round-2 run beat every round-1 run on all three measures.** Round 1 varied by three questions between runs; both round-2 runs sit above its best.
-2. **Three independent scorers moved together:** the code checks, the Claude judge, and IBM's evaluation engine.
+2. **Four independent scorers moved together:** the code checks, the Claude judge, IBM's evaluation engine, and Phoenix's correctness judge on watsonx.ai, built as IBM's skill specifies (16, 16, and 15 of 24 correct in round 1; 20 and 20 in round 2).
 3. **The gains fall on the questions the fixes targeted.** The peak year (now precomputed by the server), the VBA median, and the no-forecast question failed every round-1 run and passed both round-2 runs.
 
 **Reliability and abuse resistance:**
@@ -35,6 +35,7 @@ Three things make the improvement credible rather than chance:
 
 ## Where the changes did not help, or the effect is unknown
 
+- **Which tool the agent chose, and with which arguments, did not move:** Phoenix's tool selection and tool invocation judges scored Orchestrate about the same in both rounds. The server improved what the agent did with results, not its choice of tool.
 - **Links in GPT-OSS answers barely moved,** 3 of 8 at best in both rounds. A ready-made citation helps a model that copies it (Claude Sonnet reached 8 of 8), not one that omits links.
 - **Five questions regressed** from passing once in round 1 to failing both round-2 runs. Three of them met Orchestrate's own "connection refused" tool errors in round 2's first run; the other two look like sampling variance, which two runs cannot settle.
 - **The Orchestrate agent failed the instruction-override question** in both adversarial runs.

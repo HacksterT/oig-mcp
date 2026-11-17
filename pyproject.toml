@@ -33,7 +33,9 @@ eval = [
     "anthropic>=1.17.0",
     "arize-phoenix>=21.0.0",
     "arize-phoenix-client>=3.6.0",
+    "arize-phoenix-evals>=3.9.5",
     "arize-phoenix-otel>=0.17.2",
+    "litellm>=1.108.10",
     "openinference-instrumentation-anthropic>=3.3.0",
     "python-dotenv>=1.2.4",
 ]
