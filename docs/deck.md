@@ -179,10 +179,11 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 - **Notices the agent passes on:** caveats the data requires, such as why OIG's dashboard shows 586 open recommendations against this data's 567.
 - **Scope stated by the server:** no medical, benefits, or legal advice; emergencies sent to 911; no facility rankings or forecasts; never a guess about who was responsible.
 - **Report text treated as a quotation:** results name the fields that quote OIG reports and say to cite them, never to follow instructions in them. Every tool is read-only.
+- **Ambiguity handed back to the user:** a facility name that matches several, such as "New York VA", returns the matches and a next step: do not choose, ask. Where the client supports MCP elicitation, the server asks the user itself.
 
 **Visual:** A result with its provenance block, notices, and quoted fields highlighted.
 
-**Speaker notes:** This is why the Orchestrate agent needs only one instruction: answer only from what the tools return. Measured against all ten anti-patterns in IBM's guide, the server fully meets four, mostly meets two, and partly meets four; the table, with evidence for each row, is in docs/evaluation.md.
+**Speaker notes:** This is why the Orchestrate agent needs only one instruction: answer only from what the tools return. The ambiguity rule was tested in two real hosts with two models. Asked about "the New York VA", Hermes with DeepSeek and Claude Desktop each chose VA NY Harbor themselves. After one server change, the result's next step saying not to choose and why, both asked the user instead, and Hermes offered the facilities as a list of choices with its own tool. No host prompt changed. The server-side picker itself is tested with the MCP SDK's client; neither desktop host displayed it. Measured against all ten anti-patterns in IBM's guide, the server fully meets four, mostly meets two, and partly meets four; the table, with evidence for each row, is in docs/evaluation.md.
 
 ---
 
