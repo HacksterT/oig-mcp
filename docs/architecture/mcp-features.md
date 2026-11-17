@@ -8,7 +8,7 @@
 
 **What it is.** Elicitation lets a server pause a tool call and ask the user a question directly, through the host. The server sends a message and a small schema for the answer; the host shows it, usually as a form; the user accepts with an answer, declines, or cancels; and the answer goes straight back to the server, which checks it and finishes the same call. The model is not in the loop, so the user's choice reaches the server unchanged.
 
-**How the server uses it.** When a facility name matches several facilities, such as "Columbia VA" (South Carolina and Missouri) or "Tennessee VA" (Memphis, Mountain Home, and Tennessee Valley), the server asks which one is meant, as a single choice listing each match by name and station number. It accepts only one of the matching stations; any other answer, a decline, or no answer within two minutes returns the matches instead.
+**How the server uses it.** When a facility name matches several facilities, such as "Columbia VA" (South Carolina and Missouri) or "Tennessee VA" (Memphis, Mountain Home, and Tennessee Valley), the server asks which one is meant, as a single choice listing each match by name and station number. It accepts only one of the matching stations; any other answer, a malformed one, a decline, or no answer within two minutes returns the matches instead. A host that declares URL mode only, which cannot show a form, is never asked.
 
 **Two protocol paths.** On protocol 2026-07-28 the tool returns an `input_required` result carrying the question, and the client calls again with the answer, so each round is a self-contained request. On 2025-11-25 and earlier the server asks within the call, over the open connection. Over stdio both always work. Over HTTP the hosted endpoint keeps a session per client and streams its replies, so it can ask on every protocol version.
 
@@ -18,7 +18,7 @@
 
 | Host | Declares | Shows the server's form? | Observed with this server |
 |---|---|---|---|
-| MCP Python SDK client | Form | Yes | The tests and the robustness check: asked, answered, and invalid answers ignored, on both protocol versions over HTTP |
+| MCP Python SDK client | Form | Yes | The tests and the robustness check: asked, answered, and invalid or malformed answers ignored, on both protocol versions over HTTP; a URL-only declaration is never asked |
 | VS Code 1.145 (Copilot chat) | Form and URL | Expected, over stdio or HTTP | Not yet tried |
 | Cursor 3.26 | Form | Expected, over stdio or HTTP | Not yet tried |
 | Claude Code 2.1 | Form | Expected | Not yet tried |
