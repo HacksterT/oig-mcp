@@ -1,0 +1,32 @@
+[
+    {
+        "role": "user",
+        "content": "What percentage of VHA recommendations missed their target completion dates?",
+        "type": "text",
+        "interaction": null,
+        "event": null,
+        "conversational_search_metadata": null,
+        "tool_calls": null,
+        "tool_call_id": null,
+        "response_time": null,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    },
+    {
+        "role": "assistant",
+        "content": "I’m sorry, but the OIG data set does not include the information needed to calculate the percentage of VHA recommendations that missed their target completion dates. The available tools can count recommendations, show their status (open, closed‑implemented, closed‑not‑implemented), and provide details about target‑date **basis** (how the target date was set), but they do not contain the actual target dates or the dates on which those targets were supposed to be met. Without those dates, a “missed‑target” calculation cannot be performed from the data that the OIG API provides.",
+        "type": "text",
+        "interaction": null,
+        "event": "message.created",
+        "conversational_search_metadata": null,
+        "tool_calls": null,
+        "tool_call_id": null,
+        "response_time": 2.924,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    }
+]

@@ -126,7 +126,7 @@ Without the server, neither model could give the data's figures, beyond one by O
 | Claude Opus 5.5, harness | 23 of 24 on every run from November 4 to 17; 22 of 24 after the November 17 result-size changes; 29 of 30 on the final server (tag `eval-final-1`), with the 6 adversarial questions | Each failure is a scoring call on a correct answer, kept as a failure |
 | Claude Sonnet 5.5, harness | 23 of 24 on November 4 and again on November 17; 28 of 30 on the final server, with the 6 adversarial questions | Citations where required rose from 7 of 8 to 8 of 8; the new final-round miss gave a link pattern instead of each link |
 | Llama 3.3 70B, harness on watsonx.ai | 9 of 24, before and after the November 17 server changes | Tool choice, citations, and data dates improved; one question overflows the model's context |
-| GPT-OSS 120B, the Orchestrate agent, three runs | 10, 8, and 11 of 24 on the project's scoring; IBM's engine: 14, 14, and 13 | Server changes from these runs are deployed; a second round, with the adversarial questions, is planned for November 17 |
+| GPT-OSS 120B, the Orchestrate agent | Round 1, three runs: 10, 8, and 11 of 24 (IBM's engine 14, 14, 13). Round 2, two runs on the fixed server: 12 and 12 of 24 (IBM's engine 16, 18); adversarial 4 and 4 of 6 | Same agent and model; only the server changed. The judge's agreement rose from 16, 14, and 15 to 19 and 19 of 24 |
 | DeepSeek V4 Pro, Hermes Agent | All 18 answers agree with the gold reference | Not a blind run |
 
 **Citation integrity.** No answer from the server-backed Claude, Llama, or Orchestrate runs cited a report number that does not exist. The only one on any platform is in a logged answer from the Hermes agent.
@@ -156,6 +156,7 @@ Each failure was read against the tool results and the data API's traces and sor
 | 24 questions, Llama 3.3 70B: passing every check | 9 of 24 | 9 of 24 |
 | 24 questions, Llama 3.3 70B: right tool, citation, data date | 17 of 20, 1 of 8, 1 of 5 | 19 of 20, 3 of 8, 3 of 5 |
 | 24 questions, Claude Opus 5.5 (regression check) | 23 of 24 | 23 of 24, every measure unchanged |
+| 24 questions, the Orchestrate agent (GPT-OSS 120B), round 1 against round 2 | 10, 8, and 11 of 24; judge 16, 14, 15 | 12 and 12 of 24; judge 19 and 19. The peak year, the VBA median, and the no-forecast question moved from failing every run to passing both |
 | 30 questions, Claude Opus 5.5 and Sonnet 5.5, final server (tag `eval-final-1`) | Opus 22 of 24; Sonnet 23 of 24 | Opus 29 of 30, Sonnet 28 of 30; the judge agrees on 30 of 30 for both. Durham fails as on every run; nothing regressed |
 | 24 questions, Claude Opus 5.5, after the result-size changes (F06-S22) | 23 of 24, about 25,300 input tokens a question | 22 of 24, about 26,100; the judge agrees on 24 of 24. The new miss is wording on a correct answer* |
 
