@@ -182,6 +182,16 @@ The changes between the columns were all in the server: its instructions now sta
 
 IBM's `mcp-eval-wxai` skill evaluates with `arize-phoenix-evals` judges on a watsonx.ai model. The saved answers were judged that way after the final rounds ([`eval/phoenix/phoenix_evals.py`](../../eval/phoenix/phoenix_evals.py)), with Llama 3.3 70B on watsonx.ai as the judge, the skill's default: the skill's two judges, correctness against the gold reference and answer scope, and Phoenix's built-in tool selection, tool invocation, and tool response handling evaluators. Each answer's tool calls were judged with their full responses, from Orchestrate's transcripts and this server's traces. Each run is also logged as a Phoenix experiment on the gold dataset.
 
+**In short:** an independent judge, built as IBM intended, confirms that the server's changes made a weaker agent noticeably more accurate, about 16 to 20 of 24, mainly by helping it use results correctly rather than choose tools better, while Claude stayed near perfect throughout.
+
+- **The main result holds under a judge this project did not build:** Orchestrate's correct answers rose from 16, 16, and 15 to 20 and 20 of 24, matching the Claude judge.
+- **The gain came from using results, not choosing tools:** Orchestrate's tool selection and tool arguments did not move between rounds.
+- **Claude is close to perfect on what matters:** correct on 30 and 29 of 30, in scope every time, and faithful to its tool responses in all 26 answers with tool calls.
+- **Claude's low tool selection score is the judge disagreeing with the server's design,** counting the dataset status call the server asks for, and correct refusals without a tool, as wrong.
+- **The weaker agents' real failures show clearly:** ignoring a tool error, or misreading which open recommendation was oldest in a long result.
+
+The closing assessment is in the [Debrief](debrief.md#what-the-phoenix-evaluators-showed). The detail:
+
 | Run | Correct (gold) | In scope | Tool selection | Tool arguments | Tool responses used correctly |
 |---|---|---|---|---|---|
 | Claude Opus 5.5, final, 30 questions | 30 of 30 | 30 of 30 | 7 of 30 | 26 of 30 | 26 of 26 |
