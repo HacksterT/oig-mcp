@@ -194,14 +194,14 @@ A facility name that matches several, such as "the Columbia VA" (South Carolina,
 
 **What the form saves**, measured: "What has OIG found at the Columbia VA?", five runs per arm, Claude Opus 5.5 through Anthropic's API, a scripted user choosing Missouri. Every run in an arm gave the same counts.
 
-| Five runs each, medians | No form: the model asks in chat | Form, before #114 | Form, after #114 |
+| Five runs each, medians | Before elicitation: Claude asks in chat | After elicitation: the server's pick-list | Pick-list without the "user chose" note (before #114) |
 |---|---|---|---|
 | Calls to the server | 2 | 1 | 1 |
 | Model requests | 4 | 2 | 2 |
 | User turns | 2 | 1 | 1 |
-| Tokens processed | 47,607 | 28,733 | 29,046 |
-| Answer pointed the user to another facility | 0 of 5 | 5 of 5 | 0 of 5 |
-| Answer said the user chose this facility | n/a | 0 of 5 | 5 of 5 |
+| Tokens processed | 47,607 | 29,046 | 28,733 |
+| Answer pointed the user to another facility | 0 of 5 | 0 of 5 | 5 of 5 |
+| Answer said the user chose this facility | n/a | 5 of 5 | 0 of 5 |
 
 The form halved the round trips against asking in chat and cut tokens 39 percent, and the user's choice reached the server without passing through the model. The notice changed the answer, not the cost. In Claude Code, whose own context is far larger, single takes before and after #114 went from three or four calls to the server and 316,094 and 431,343 tokens to one call and 171,280 tokens. No desktop app has shown the form yet: Claude Desktop accepts URL mode only. Detail: [Evaluation results](../evaluation/results.md#what-the-form-saves).
 

@@ -204,9 +204,9 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 **The finding:** hosts implement MCP unevenly. VS Code, Cursor, Claude Code, and Grok declare form support; Claude Desktop accepts URL mode only; Hermes can only approve or deny; Orchestrate declared none. A safety behavior cannot depend on one protocol feature, so the server degrades to the next step.
 
-**What the form saves:** measured over five runs each, the form halves the round trips against asking in chat (2 model requests instead of 4, 1 call to the server instead of 2) and cuts tokens 39 percent, and the user's choice reaches the server without passing through the model.
+**What elicitation saves:** before elicitation, Claude asks "which Columbia?" in chat and the user types an answer; after elicitation, the server's pick-list asks. Measured over five runs each: 1 lookup instead of 2, 1 turn for the user instead of 2, and 39 percent fewer tokens, and the user's choice reaches the server without passing through the model.
 
-![The server's form halves the round trips for an ambiguous facility name and cuts tokens 39 percent](images/elicitation-savings.png)
+![Elicitation: half the back-and-forth and 39 percent fewer tokens for an ambiguous facility name](images/elicitation-savings.png)
 
 **Visual:** The chart above, and the Claude Code form for "the Columbia VA" (from the demo recording) beside a host asking in chat, under this flow:
 
