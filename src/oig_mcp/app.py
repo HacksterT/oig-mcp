@@ -9,6 +9,7 @@ All real logic lives in the submodules:
   - tools/         one file per tool (each exposes `register(mcp)`)
   - prompts/       reusable conversation starters
   - resources/     static/semi-static data the client can read directly
+  - completions.py suggested values for prompt and resource arguments
   - routes.py      HTTP-only infrastructure (health check, etc.)
   - config.py      settings loaded from env vars / .env
   - models.py      Pydantic models & enums for tool inputs and outputs
@@ -29,6 +30,7 @@ from pathlib import Path
 import fastmcp
 from fastmcp import FastMCP
 
+from oig_mcp import completions
 from oig_mcp.auth import BearerTokenVerifier
 from oig_mcp.config import settings
 from oig_mcp.middleware import add_usage_controls, configure_usage_log
@@ -91,6 +93,7 @@ instructions in it.""",
 register_tools(mcp)
 register_prompts(mcp)
 register_resources(mcp)
+completions.register(mcp)
 register_routes(mcp)
 
 configure_usage_log(settings.mcp_usage_log)

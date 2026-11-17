@@ -17,6 +17,7 @@ from fastmcp.exceptions import ToolError
 
 from oig_mcp import failures, guidance, upstream
 from oig_mcp.app import mcp
+from tests.conftest import FakeApi
 
 AS_OF = {"data_as_of": "2026-11-01"}
 ENVELOPE = {"total": 0, "count": 0, "offset": 0, "has_more": False, "next_offset": None}
@@ -26,43 +27,6 @@ REPEAT_BASIS = (
 WINDOW_BASIS = (
     "Estimated as the inspection end plus three years. OIG publishes no schedule."
 )
-
-
-class FakeApi:
-    """Answers GET requests from a route table and records what was asked."""
-
-    def __init__(self) -> None:
-        self.routes: dict[str, Any] = {}
-        self.requests: list[httpx.Request] = []
-
-    def handle(self, request: httpx.Request) -> httpx.Response:
-        self.requests.append(request)
-        route = self.routes.get(request.url.path.removeprefix("/v1/"))
-        if callable(route):
-            route = route(request)
-        if route is None:
-            return httpx.Response(404, json={"detail": "not found"})
-        if isinstance(route, int):
-            return httpx.Response(route, json={"detail": "upstream detail"})
-        return httpx.Response(200, json=route)
-
-    @property
-    def last(self) -> httpx.Request:
-        return self.requests[-1]
-
-
-@pytest.fixture
-def api(monkeypatch) -> FakeApi:
-    fake = FakeApi()
-    real_client = httpx.AsyncClient
-    monkeypatch.setattr(
-        upstream.httpx,
-        "AsyncClient",
-        lambda **kwargs: real_client(
-            transport=httpx.MockTransport(lambda r: fake.handle(r)), **kwargs
-        ),
-    )
-    return fake
 
 
 async def call(name: str, **arguments: Any) -> dict[str, Any]:

@@ -23,6 +23,7 @@ The server is built, and it answers from the full data build of November 4, 2026
 | `vaoig_get_inspection_brief`: one facility's history, common peer findings, peer commitments, and estimated next window | Tool |
 | `vaoig://about`, `vaoig://facilities`, `vaoig://taxonomy/{facet}` | Resources |
 | Inspection readiness checklist, open-recommendation aging brief | Prompts |
+| Suggested values as a person types: facilities (name and station) for the checklist, OIG topics for the aging brief, facet names for the taxonomy | Completions |
 
 ## How it fits together
 

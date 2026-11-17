@@ -32,7 +32,7 @@ Please report security issues privately through GitHub's "Report a vulnerability
 
 ### Input
 
-- **Typed, bounded arguments.** Every tool argument is a Pydantic model or a constrained type: string lengths, page sizes (1 to 100), offsets (0 to 10,000), status lists (at most 3), enumerations for groupings and statuses, ISO date patterns, and unknown filter names refused. Resource facets come from a fixed list.
+- **Typed, bounded arguments.** Every tool argument is a Pydantic model or a constrained type: string lengths, page sizes (1 to 100), offsets (0 to 10,000), status lists (at most 3), enumerations for groupings and statuses, ISO date patterns, and unknown filter names refused. Resource facets come from a fixed list. Argument completion takes partial text up to 100 characters, sends it to the data API only as a query value, returns at most 10 suggestions, and answers a failure with none.
 - **Values that match nothing say so.** A known office name is sent as its abbreviation, an office in the domain filter is refused with the right filter named, and an analysis that matches nothing says to check the filter values. A request too large or malformed to send becomes a clean error, not a stack trace.
 
 ### Errors
@@ -61,13 +61,13 @@ Please report security issues privately through GitHub's "Report a vulnerability
 
 | Check | What it covers | When | Latest result |
 |---|---|---|---|
-| Automated tests ([`tests/`](tests/)) | Authentication, Host and Origin checks, outbound path validation, sanitized errors, bounded traces, private files, bounded input, every tool's error hints | Every change, in CI | 221 pass (November 17, 2026) |
+| Automated tests ([`tests/`](tests/)) | Authentication, Host and Origin checks, outbound path validation, sanitized errors, bounded traces, private files, bounded input, every tool's error hints | Every change, in CI | 238 pass (November 17, 2026) |
 | Dependency audit (`pip-audit`, in CI) | Known vulnerabilities in every runtime, dev, and evaluation dependency | Every change | No known vulnerabilities in 67 runtime packages or the other groups |
 | Dependabot alerts | Advisories against `uv.lock` | Continuously | 16 raised since the repository opened; all fixed |
 | Secret scan (`gitleaks`, redacted output) | Every commit in the repository's history, and the working tree | Before submission | History: none. Working tree: only `.env`, which is git-ignored |
 | Image checks ([`deploy/verify_image.sh`](deploy/verify_image.sh)) | No secret in the image; non-root user; refusal to start without a valid token or with a plain-HTTP data address; clean refusals with wrong data API credentials; then the deployment checks against the image | Before each deployment | 15 of 15 |
 | Deployment checks ([`deploy/verify_deployment.py`](deploy/verify_deployment.py)) | Seven kinds of bad inbound credentials refused and the right one accepted; no session state; seven tools listed; live data with no secret in it; the data API refusing four kinds of wrong credentials | Against every deployment | 22 of 22 |
-| Robustness check ([`deploy/robustness_check.py`](deploy/robustness_check.py)) | Path traversal and encoded paths, header and query injection, SQL and search syntax, control characters, every bound exceeded, wrong types, unknown fields and tools, names that match nothing; a burst past the rate limit and recovery; searches past the data API's four slots; parallel latency. Every reply checked for stack traces, upstream addresses, and credentials | Against every deployment | 43 of 43 |
+| Robustness check ([`deploy/robustness_check.py`](deploy/robustness_check.py)) | Path traversal and encoded paths, header and query injection, SQL and search syntax, control characters, every bound exceeded, wrong types, unknown fields and tools, names that match nothing; argument completion with traversal, oversized, and SQL values; a burst past the rate limit and recovery; searches past the data API's four slots; parallel latency. Every reply checked for stack traces, upstream addresses, and credentials | Against every deployment | 46 of 46 |
 | Adversarial questions ([`eval/gold/adversarial.json`](eval/gold/adversarial.json)) | An instruction to ignore the rules, an instruction injected into pasted text, a report that does not exist, a medical emergency, a request to name employees, an out-of-domain question | With each evaluation round | Claude Opus 5.5: 6 of 6; Llama 3.3 70B: 4 of 6 ([results](docs/testing-results.md)) |
 | Independent code review | Authentication, outbound requests, input validation, leakage, prompt injection, container, resource exhaustion | November 17, 2026 | No high-severity findings; fixes below |
 
