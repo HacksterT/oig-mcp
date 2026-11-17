@@ -10,12 +10,38 @@ people searched for, so anyone connected must be told: vaoig://about says so.
 from __future__ import annotations
 
 import json
+import os
 import threading
 import uuid
 from contextvars import ContextVar, Token
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+# Arguments are traced before validation, so a caller could send megabytes that the
+# tool then refuses. Bounding each value and each record keeps one client from
+# flushing everyone's traces past the store's cap.
+MAX_TRACED_STRING = 2_000
+MAX_TRACED_ITEMS = 100
+MAX_RECORD_BYTES = 256_000
+
+
+def bounded(value: Any) -> Any:
+    """A copy of an argument with long strings and lists cut, and marked."""
+    if isinstance(value, str):
+        if len(value) > MAX_TRACED_STRING:
+            return value[:MAX_TRACED_STRING] + f"...[{len(value)} chars]"
+        return value
+    if isinstance(value, dict):
+        items = list(value.items())[:MAX_TRACED_ITEMS]
+        return {str(k)[:100]: bounded(v) for k, v in items}
+    if isinstance(value, list | tuple):
+        kept = [bounded(v) for v in value[:MAX_TRACED_ITEMS]]
+        if len(value) > MAX_TRACED_ITEMS:
+            kept.append(f"...[{len(value)} items]")
+        return kept
+    return value
+
 
 _current: ContextVar[dict[str, Any] | None] = ContextVar("oig_trace", default=None)
 
@@ -27,7 +53,7 @@ def start(client: str, tool: str, arguments: Any) -> tuple[dict[str, Any], Token
         "time": datetime.now(UTC).isoformat(timespec="milliseconds"),
         "client": client,
         "tool": tool,
-        "arguments": arguments,
+        "arguments": bounded(arguments),
         "api_calls": [],
     }
     return record, _current.set(record)
@@ -80,12 +106,20 @@ class TraceStore:
 
     def write(self, record: dict[str, Any]) -> None:
         data = json.dumps(record, default=str, ensure_ascii=False, indent=1)
+        if len(data.encode()) > MAX_RECORD_BYTES:
+            # Keep who asked what and how it went; drop the oversized result.
+            record = {**record, "result": f"[omitted: {len(data.encode())} bytes]"}
+            data = json.dumps(record, default=str, ensure_ascii=False, indent=1)
         day = self.directory / record["time"][:10]
         stamp = record["time"][11:23].replace(":", "").replace(".", "-")
         name = f"{stamp}-{record['trace_id']}-{record['tool']}.json"
         with self._lock:
-            day.mkdir(parents=True, exist_ok=True)
-            (day / name).write_text(data)
+            # Traces hold what people asked, so only the server's user may read them.
+            day.mkdir(mode=0o700, parents=True, exist_ok=True)
+            flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+            descriptor = os.open(day / name, flags, 0o600)
+            with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+                handle.write(data)
             if self._total is None:
                 self._total = sum(f.stat().st_size for f in self._files())
             else:

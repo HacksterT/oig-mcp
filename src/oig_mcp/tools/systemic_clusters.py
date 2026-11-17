@@ -61,7 +61,8 @@ def register(mcp: FastMCP) -> None:
             Field(max_length=200, description="Words in the label or any member."),
         ] = None,
         min_reports: Annotated[
-            int | None, Field(ge=1, description="Fewest matching reports to include.")
+            int | None,
+            Field(ge=1, le=10_000, description="Fewest matching reports to include."),
         ] = None,
         active_since: Annotated[
             int | None,
@@ -100,7 +101,10 @@ def register(mcp: FastMCP) -> None:
             ),
         ] = 10,
         offset: Annotated[
-            int, Field(ge=0, description="Items to skip; use next_offset to page.")
+            int,
+            Field(
+                ge=0, le=10_000, description="Items to skip; use next_offset to page."
+            ),
         ] = 0,
     ) -> dict[str, Any]:
         """Find findings that recur across reports, and how common they are.

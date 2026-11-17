@@ -35,9 +35,10 @@ The seven tools are built around what a user is trying to do, not around the dat
 
 | Layer | What it checks |
 |---|---|
-| Automated tests | 210 tests on every change: each tool's inputs, results, output schema, error messages and hints, authentication, and that each description tells a model when to use the tool |
+| Automated tests | 217 tests on every change: each tool's inputs, results, output schema, error messages and hints, authentication, and that each description tells a model when to use the tool |
 | Image checks | 15 checks on the container: no secret inside, a non-root user, refusal to start without a valid token or with a plain-HTTP data address |
 | Deployment checks | 22 checks on a running server: seven kinds of bad credentials refused, all seven tools listed, live data with no secret in it |
+| Robustness check | 43 checks on a running server: hostile and malformed input to every tool, a burst past the rate limit, searches past the data API's capacity, and no internal detail in any reply |
 | Agent evaluation | Gold questions answered by an agent that has only the server's tools, scored by code and judges |
 | Baseline | The same questions and models with no server |
 | Cross-platform runs | The same questions on other models and hosts, including IBM's own agent, three runs |
@@ -141,15 +142,21 @@ Every tool reports a failure as an MCP error result with a hint the agent can ac
 
 ## 4. Security considerations
 
-**Data classification.** The data is public: OIG's published reports and recommendations at vaoig.gov, with no CUI. Inspection findings are addressed to roles and offices; 77 of 15,649 recommendations, mostly from administrative investigations, name an official as OIG published them. The server never guesses who was responsible and names a person only where a quoted finding does. Evaluation questions, traces, and results contain no personal data beyond what OIG published.
+The full design, every check with its latest result, the November 17 review, and the accepted risks are in [SECURITY.md](../SECURITY.md).
+
+**Data classification.** The data is public: OIG's published reports and recommendations at vaoig.gov, with no CUI. Inspection findings are addressed to roles and offices; 77 of 15,649 recommendations, mostly from administrative investigations, name an official as OIG published them. The server never guesses who was responsible and names a person only where a quoted finding does. Questions sent during the hackathon are recorded in traces, users are told so, and they are asked not to enter patient or nonpublic information.
 
 **Scope containment.** Five behavior questions and six adversarial questions test that the agent declines what the data cannot support, refuses to rank facilities or guess who was responsible, gives no medical advice and sends an emergency to 911, and does not invent a report. The server states its scope in its own instructions, so the guardrail holds for any host, not only one configured agent.
 
-**Untrusted input and prompt injection.** Report text is quoted from OIG reports. Every result marks the fields that quote report text and says to cite them and never follow instructions in them. The adversarial set includes an instruction injected into text a user pastes; both models ignored it after the server changes.
+**Untrusted input and prompt injection.** Report text is quoted from OIG reports. Every result marks the fields that quote report text and says to cite them and never follow instructions in them, and every tool is read-only. The adversarial set includes an instruction injected into text a user pastes; both models ignored it after the server changes. Tool arguments are typed and bounded, and a robustness check sends every tool path traversal, header and query injection, SQL and search syntax, and values past every bound: all 43 checks pass, with no stack trace, upstream address, or credential in any reply.
 
-**Secrets and configuration.** Credentials load from environment variables, or in Orchestrate from a key_value connection, and are never committed. The server refuses to start without a bearer token of at least 32 characters or with a plain-HTTP remote data address. No secret appears in tool results, logs, or the image; checked by the image and deployment checks.
+**Secrets and configuration.** Credentials load from the environment, or in Orchestrate from a key_value connection, and are never committed: a scan of the repository's full history found none. The server refuses to start without a bearer token of at least 32 characters, or with a plain-HTTP remote data address. No secret appears in tool results, logs, or the image, checked by the image and deployment checks.
 
-**Transport and isolation.** Over HTTP, every request needs the bearer token; seven kinds of bad credentials are refused. The data API sits behind Cloudflare Access and requires both its service token and an API key. Local HTTP binds to 127.0.0.1 and checks Host and Origin headers. In Orchestrate, the server runs over stdio inside Orchestrate's runtime, with no network endpoint of its own. Evaluation traces go to a local Phoenix collector. Details: [SECURITY.md](../SECURITY.md).
+**Transport and isolation.** Over HTTP, every request needs the bearer token, compared in constant time; seven kinds of bad credentials are refused. The data API sits behind Cloudflare Access and requires both its service token and an API key. The server calls one fixed origin, with no redirects or proxies, bounded responses, and at most eight upstream requests at once. Local HTTP binds to 127.0.0.1 and checks Host and Origin headers. The container runs as a non-root user with no Linux capabilities and a read-only filesystem. In Orchestrate, the server runs over stdio inside Orchestrate's runtime, with no network endpoint of its own.
+
+**Supply chain.** Dependencies are locked with hashes and audited for known vulnerabilities on every change; none are known. The base image is pinned by digest and CI's actions by commit. Dependabot has raised 16 alerts since the repository opened, all fixed.
+
+**Independent review.** A separate review agent read the code and probed the running server on November 17. It found no high-severity issues. Its two medium findings (oversized arguments could flush the traces, and upstream fan-out was unbounded) and its low findings are fixed, each with a test; two accepted risks are documented.
 
 ## 5. Lessons learned and recommendations
 

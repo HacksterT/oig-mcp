@@ -60,7 +60,10 @@ def register(mcp: FastMCP) -> None:
             int, Field(ge=1, le=100, description="Results to return, 1 to 100.")
         ] = 10,
         offset: Annotated[
-            int, Field(ge=0, description="Results to skip; use next_offset to page.")
+            int,
+            Field(
+                ge=0, le=10_000, description="Results to skip; use next_offset to page."
+            ),
         ] = 0,
     ) -> dict[str, Any]:
         """Find OIG recommendations and corrective actions matching a question.

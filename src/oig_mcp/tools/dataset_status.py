@@ -56,13 +56,20 @@ async def _filter_values() -> dict[str, list[str]]:
 
 def _reconciliation_notices(reconciliation: dict[str, Any]) -> list[str]:
     """Say why OIG's open total differs, so its age bands are not read as ours."""
+
+    # These numbers go into notices, which the model passes on as the server's own
+    # words, so only integers from the upstream record are used.
+    def number(value: Any) -> int | None:
+        return value if isinstance(value, int) and not isinstance(value, bool) else None
+
     open_counts = reconciliation.get("open") or {}
-    blank_rows = (reconciliation.get("open_set") or {}).get("oig_blank_rows")
-    if not blank_rows or open_counts.get("oig") == open_counts.get("database"):
+    blank_rows = number((reconciliation.get("open_set") or {}).get("oig_blank_rows"))
+    oig, database = number(open_counts.get("oig")), number(open_counts.get("database"))
+    if not blank_rows or oig is None or database is None or oig == database:
         return []
     return [
-        f"OIG's dashboard shows {open_counts.get('oig')} open and this data has "
-        f"{open_counts.get('database')}. A row-by-row comparison found the same "
+        f"OIG's dashboard shows {oig} open and this data has "
+        f"{database}. A row-by-row comparison found the same "
         f"recommendations in both; the difference is {blank_rows} blank rows on "
         "OIG's pages. oig_open_by_age follows OIG's total, so it does not add up "
         "to this data's open count."

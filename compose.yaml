@@ -16,6 +16,16 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:8000:8080"
+    # Least privilege: no Linux capabilities, no privilege escalation, a read-only
+    # filesystem except the log volume and /tmp, and bounded memory and processes.
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    mem_limit: 1g
+    pids_limit: 256
     # Keeps the usage log when the container is recreated.
     volumes:
       - ./logs:/logs
