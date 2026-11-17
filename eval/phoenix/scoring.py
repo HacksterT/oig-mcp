@@ -70,6 +70,19 @@ its number. Return an empty list if there are none.
 Keep each reason to one sentence."""
 
 
+GOLD_SETS = {"main": "questions.json", "adversarial": "adversarial.json"}
+
+
+def load_gold(which: str = "main") -> dict:
+    """A gold set by name ("main", "adversarial", or "all"), with its snapshot."""
+    names = list(GOLD_SETS) if which == "all" else [which]
+    sets = [json.loads((GOLD_DIR / GOLD_SETS[name]).read_text()) for name in names]
+    return {
+        "snapshot": sets[0]["snapshot"],
+        "questions": [q for gold in sets for q in gold["questions"]],
+    }
+
+
 def load_index() -> tuple[set[str], set[str]]:
     index = json.loads((GOLD_DIR / "report_index.json").read_text())
     return set(index["report_numbers"]), set(index["urls"])
@@ -141,7 +154,11 @@ def score_code(gold: dict, run: dict, numbers: set[str], urls: set[str]) -> dict
         "tools_called": sorted(called),
         "tool_errors": sum(call["is_error"] for call in run["tool_calls"]),
         "cited_numbers": cited_numbers,
-        "unknown_numbers": [n for n in cited_numbers if n not in numbers],
+        # A number the question itself names (a report that does not exist, say)
+        # is the user's, not a citation the answer made up.
+        "unknown_numbers": [
+            n for n in cited_numbers if n not in numbers and n not in gold["question"]
+        ],
         "cited_urls": cited_urls,
         "unknown_urls": [u for u in cited_urls if u not in known_urls],
         "citation_present": bool(cited_numbers and cited_urls)

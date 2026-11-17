@@ -1124,3 +1124,26 @@ async def test_visn_filter_description_names_the_change() -> None:
     )
     visn = filters["properties"]["visn"]
     assert "August 2026" in visn["description"]
+
+
+def test_profile_items_keep_what_a_citation_needs_and_drop_repeats() -> None:
+    from oig_mcp.tools.facility_profile import compact
+
+    record = {
+        "rec_id": "1-1",
+        "text": "Secure medication carts.",
+        "report_number": "24-00586-11",
+        "url": "https://www.vaoig.gov/reports/x",
+        "published_at": "2024-12-11",
+        "title": "Healthcare Facility Inspection of Durham",
+        "report_type": "healthcare-facility-inspection",
+        "node_id": 21277,
+        "domain": None,
+    }
+    assert compact(record) == {
+        "rec_id": "1-1",
+        "text": "Secure medication carts.",
+        "report_number": "24-00586-11",
+        "url": "https://www.vaoig.gov/reports/x",
+        "published_at": "2024-12-11",
+    }

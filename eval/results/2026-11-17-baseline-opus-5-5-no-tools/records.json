@@ -1,0 +1,1444 @@
+[
+ {
+  "id": "count-open-total",
+  "category": "exact",
+  "run": {
+   "answer": "I can't give you a reliable current count. I don't have live data access, and the number changes constantly as the OIG issues new reports and VA closes recommendations. Any figure I recalled would come from my training data, and I'm not confident enough in a specific number to state it.\n\n**Where to get the current figure**\n\n1. **VA OIG website (va.gov/oig)**: The OIG maintains a page or dashboard of open (unimplemented) recommendations, generally searchable by report, VA component, and how long each has been open. This is the most current source.\n2. **VA OIG Semiannual Reports to Congress**: Published twice a year, covering periods ending March 31 and September 30. Each lists the number of open recommendations, how many are older than one year, and any potential monetary benefits. These are authoritative but snapshot-in-time and published a few months after the period ends.\n3. **Oversight.gov**: The cross-agency site run by the Council of the Inspectors General on Integrity and Efficiency (CIGIE). It aggregates OIG reports and open recommendations and is useful for comparing agencies.\n4. **Annual compendium of open recommendations**: Many OIGs publish these, often in response to congressional requests. Check whether VA OIG has a recent edition.\n\n**Things to note when you find a number**\n\n- **Check the \"as of\" date.** Dashboards and semiannual reports usually state one, and that's the figure's actual currency.\n- **\"Open\" can mean different things.** Some counts include recommendations where VA has submitted a closure request that the OIG hasn't yet accepted. Others break out recommendations open more than one year, or those with monetary impact.\n- **Healthcare inspections dominate.** Facility-level reviews generate many recommendations, so totals can swing noticeably depending on the inspection cycle.\n\nIf you can share a specific report, recommendation number, or a figure you've seen, I can help you interpret it.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 87,
+    "output": 862,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 9.6
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "open total",
+     "passed": false
+    },
+    {
+     "label": "data date",
+     "passed": false
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": false,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer gives no count and no as-of date, so it omits both facts in the gold reference (567 open as of 2026-11-04).",
+    "criteria": [],
+    "usage": {
+     "input": 1475,
+     "output": 69
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "count-hfi-2026",
+  "category": "exact",
+  "run": {
+   "answer": "I can't give you those numbers. I don't have tools or live data access, and my knowledge doesn't reliably cover reports published in 2026. Any count of recommendations or their open/closed status would be a guess, and recommendation status changes often as VA submits evidence and OIG closes items.\n\n**Where to get accurate figures:**\n\n1. **VA OIG Reports page** (vaoig.gov \u2192 Reports): Filter by report type (Healthcare Facility Inspection) and publication date. Each report lists its recommendations, usually in the executive summary and an appendix.\n2. **VA OIG Recommendation Dashboard / Open Recommendations:** OIG publishes data on open recommendations, including how long they've been open and any monetary impact. This is the best source for current status.\n3. **Semiannual Reports to Congress:** Published twice a year, they summarize reports issued and recommendations outstanding during the period. The ones covering 2026 would give aggregate counts once released.\n4. **Individual report updates:** Each report's web page typically shows the status of every recommendation (open or closed, with closure dates).\n\n**Background that may help you interpret the data:**\n\n- OIG's Healthcare Facility Inspection program replaced the earlier Comprehensive Healthcare Inspection Program (CHIP) and reviews areas such as leadership and organizational risks, quality, safety and value, and care coordination. Exact focus areas can change from cycle to cycle.\n- Recommendations from these inspections are typically addressed to the facility director or VISN director. They generally stay open until VA shows evidence of implementation and OIG accepts it, which often takes months.\n- Because of that lag, recommendations from recently published reports are usually still open. A high open rate for the current year is expected.\n\nIf you share specific 2026 report titles or recommendation text, I can help you interpret them, compare them with recurring themes from earlier inspections, or organize a tally.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 104,
+    "output": 764,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 8.6
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "recommendations",
+     "passed": false
+    },
+    {
+     "label": "still open",
+     "passed": false
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": false,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer declines to provide the counts and omits the requested figures of 148 recommendations and 80 still open.",
+    "criteria": [],
+    "usage": {
+     "input": 1494,
+     "output": 62
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "count-peak-year",
+  "category": "exact",
+  "run": {
+   "answer": "I don't know which year had the most VA OIG recommendations or what that count was. I don't have access to OIG's recommendation database, and I can't recall reliable year-by-year totals. I'd rather not guess, since a wrong figure could easily get repeated.\n\n**Where to find the answer:**\n\n- **VA OIG website (va.gov/oig):** The Reports section lets you filter publications by year, and OIG publishes information on open and unimplemented recommendations.\n- **Semiannual Reports to Congress:** Each covers a six-month period and reports how many reports and recommendations were issued. Adding the two reports for each year gives annual totals.\n- **Oversight.gov:** This cross-agency site aggregates IG reports and recommendations and can be filtered by agency (VA) and date. It's often the easiest source for counts.\n- **GAO or congressional testimony:** OIG leadership sometimes cites recommendation totals in testimony, which can serve as a cross-check.\n\n**When comparing years:**\n\n- Decide whether you're counting by **publication date**, **fiscal year** (October\u2013September, which OIG often uses), or calendar year. The answer may differ depending on which you pick.\n- High-volume products, such as recurring healthcare facility inspections, can drive large swings in totals. A year with many inspection reports may lead in count even if its recommendations are less significant than another year's.\n\nIf you have a dataset or list of reports, I can help you tally or analyze it.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 87,
+    "output": 688,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 8.6
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "year",
+     "passed": false
+    },
+    {
+     "label": "count",
+     "passed": false
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer declines to give a year or a count, so it omits the requested facts (2015, 1914 recommendations).",
+    "criteria": [],
+    "usage": {
+     "input": 1326,
+     "output": 63
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "count-two-states",
+  "category": "exact",
+  "run": {
+   "answer": "I can't tell you which state has more open VA OIG recommendations or give counts for either. I don't have access to the OIG's current recommendation data, and the numbers change constantly as reports are published and recommendations are closed.\n\n**Where to find current counts**\n\n- **VA OIG website (va.gov/oig):** The OIG publishes data on open recommendations, and its reports can be searched and filtered by state. Filtering for Texas and North Carolina and checking each report's recommendation status will give you a direct comparison.\n- **Individual reports:** Each report lists its recommendations and whether VA concurred. Status updates (open vs. closed) are tracked separately on the OIG site.\n- **OIG semiannual reports to Congress:** These summarize unimplemented recommendations, though usually not broken down by state.\n\n**Context, not an answer**\n\nTexas has more VA medical facilities than North Carolina. Its systems include North Texas, Central Texas, South Texas, Houston, El Paso, Amarillo, and West Texas. North Carolina's main facilities are in Durham, Fayetteville, Salisbury, and Asheville, plus community clinics. More facilities generally mean more inspections and reports, so Texas *might* have more open recommendations. Still, that depends on recent report timing and how quickly facilities close recommendations, so it isn't a reliable substitute for the actual data.\n\nIf you have a specific report or a list of recommendations, I can help you interpret or compare them.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 90,
+    "output": 731,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 8.1
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "Texas",
+     "passed": false
+    },
+    {
+     "label": "North Carolina",
+     "passed": false
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer gives no counts for either state and does not definitively say which has more, so it omits the requested facts (Texas 24, North Carolina 6).",
+    "criteria": [],
+    "usage": {
+     "input": 1335,
+     "output": 74
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "trend-suicide",
+  "category": "exact",
+  "run": {
+   "answer": "# Suicide Prevention as a VA OIG Theme\n\nI can't give you reliable counts for 2024 or 2025. I don't have access to the OIG report database, and I don't have a verified tally of reports whose recommendations mention suicide. My knowledge of 2025 publications is also incomplete. Any specific numbers I gave would be fabricated.\n\n## What I can say qualitatively\n\nSuicide prevention has been a recurring VA OIG theme for years, not a new one. It shows up in several kinds of work:\n- **Healthcare inspections** of individual patient deaths, often finding gaps in risk screening, safety planning, follow-up after missed appointments, or care coordination.\n- **Veterans Crisis Line reviews**, covering call handling, quality management, and follow-up.\n- **Facility inspection programs** (the comprehensive healthcare inspections and their successors). These have at times included suicide prevention or mental health as a standard review area, so recommendations can recur across many facility reports.\n- **National or program reviews**, such as risk identification, high-risk flags, lethal means safety, and community care coordination.\n\n## How to get the counts yourself\n\n1. Search VA OIG reports at vaoig.gov or oversight.gov, filtering by publication date (calendar or fiscal year, chosen consistently).\n2. Search recommendation text, not full report text, for the stem \"suicid\" (which catches suicide, suicidal, and suicidality).\n3. Consider adding related terms: \"Veterans Crisis Line,\" \"high risk flag,\" \"safety plan,\" \"lethal means,\" \"REACH VET,\" \"Suicide Prevention Coordinator.\"\n4. Count unique reports, not recommendations, and record the total reports published each year as a denominator.\n\n## What the counts can show\n\n- Whether suicide-related recommendations appeared more or less often in published reports between the two years.\n- With a denominator, whether the *share* of reports with such recommendations changed.\n\n## What the counts cannot show\n\n- **A trend.** Two data points aren't a trend, and 2025 may be a partial year depending on when you count.\n- **Changes in veteran suicide or VA performance.** OIG findings reflect what OIG examined, not the underlying problem's prevalence.\n- **OIG priorities versus template effects.** If an inspection protocol adds or drops suicide prevention as a standard review area, counts can swing sharply with no change in emphasis.\n- **Severity or importance.** One national report on the Crisis Line may matter more than ten routine facility findings.\n- **Complete coverage.** Keyword matching misses suicide-relevant recommendations that never use the word, such as safety planning or lethal means, and may include incidental mentions.\n- **Timing of the underlying work.** Publication dates lag the actual reviews, sometimes by a year or more.\n- **Effect of report volume.** Total OIG output varies year to year; raw counts without a denominator can mislead.\n\nIf you share the counts or a list of reports, I can help interpret them or check your methodology.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 130,
+    "output": 1471,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 16.0
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "2024 reports",
+     "passed": false
+    },
+    {
+     "label": "2025 reports",
+     "passed": false
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer declines to give the counts (56 in 2024, 11 in 2025), so it omits the fact the question asked for.",
+    "criteria": [
+     {
+      "criterion": "Does not claim the counts prove veteran care got better or worse. It treats a change in counts as possibly reflecting what OIG chose to inspect, or the search words, or says similar limits on interpretation.",
+      "passed": true,
+      "reason": "It explicitly says counts cannot show changes in veteran suicide or VA performance, and attributes swings to OIG examination choices, template effects, and keyword limits."
+     }
+    ],
+    "usage": {
+     "input": 1946,
+     "output": 140
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "closure-vba-median",
+  "category": "exact",
+  "run": {
+   "answer": "**I don't have a reliable median figure for this, and I won't guess one.** I don't have access to VA OIG's recommendation-tracking data, and I don't recall an officially published median closure time specific to Veterans Benefits Administration (VBA) recommendations.\n\n## What such a number would measure\n\nA \"median days to close\" figure for VBA recommendations typically means:\n\n- **Start point:** the date the OIG report was published, with the recommendations addressed to VBA (often the Under Secretary for Benefits).\n- **End point:** the date **the OIG** closed the recommendation, after determining that VA provided sufficient evidence it was implemented. Closure is the OIG's decision, not VA's. VA saying \"done\" doesn't close it.\n- **Median:** half of closed recommendations took less time and half took more. This resists distortion from a few very long-running items better than an average does.\n\n## Caveats when interpreting it\n\n- **Closed recommendations only:** If the figure counts only closed items, recommendations still open (often the hardest ones) are excluded, which can make closure look faster than it is.\n- **Timeframe:** Results vary depending on which report years are included.\n- **Report mix:** Narrow, regional-office findings may close faster than nationwide systemic issues (e.g., claims processing accuracy, IT systems, policy changes).\n- **Closure criteria:** Some recommendations are closed as \"implemented,\" others for different reasons, so check how closures are categorized.\n\n## Where to find the actual figure\n\n- **VA OIG website:** its reports and recommendations pages, including any open-recommendations dashboard or tracking data\n- **VA OIG Semiannual Reports to Congress:** these include statistics on open and unimplemented recommendations\n- **Oversight.gov:** consolidates IG reports and recommendation status across agencies\n- **VA OIG directly:** if you need a precise, current median, they can clarify how it's calculated\n\nIf you can share a figure you've seen, I can help you interpret it.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 104,
+    "output": 994,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 11.4
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "median days",
+     "passed": false
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer gives no median figure, so it omits the 179-day median the question asked for.",
+    "criteria": [
+     {
+      "criterion": "Conveys that the closure date appears to record when OIG closed the recommendation after reviewing evidence, or otherwise that it may not be when the work actually finished.",
+      "passed": true,
+      "reason": "It explains that the end point is when the OIG closes the recommendation after finding sufficient evidence of implementation, and that VA saying 'done' doesn't close it."
+     }
+    ],
+    "usage": {
+     "input": 1569,
+     "output": 126
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "closure-vha-rate",
+  "category": "exact",
+  "run": {
+   "answer": "I don't know the exact share, and I can't look it up. I don't have a reliable figure for how many closed VHA recommendations the VA OIG marked \"closed \u2013 not implemented,\" and I'd rather not guess a percentage.\n\n**What I can say generally:**\n- The VA OIG usually closes a recommendation only after VA shows evidence that it took the agreed corrective action. So most closed recommendations are closed as implemented.\n- Closing as \"not implemented\" is uncommon. It typically happens when the recommendation is overtaken by events (for example, a program ends or policy changes), VA formally declines and the OIG decides not to keep pursuing it, or the OIG accepts an alternative action as resolving the issue.\n\n**Where to get the actual number:**\n1. **VA OIG website (va.gov/oig):** The reports and recommendations search tools let you filter by VA component, such as VHA, and by recommendation status. Comparing the closed-implemented and closed-not-implemented counts gives you the share.\n2. **VA OIG Semiannual Reports to Congress:** These summarize recommendation statuses and list unimplemented recommendations, sometimes broken out by administration.\n3. **Oversight.gov:** This aggregates IG recommendations, including VA OIG's, with status fields you can filter.\n4. **The VA OIG directly:** Its public affairs or congressional relations staff can provide figures for a specific time period.\n\nWhen you get the data, check the time frame and how \"closed\" is defined, because the share can shift depending on the years and report types included.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 96,
+    "output": 693,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 7.9
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "share",
+     "passed": false
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer gives no figure and omits the requested share (36 of 13,014, or 0.28%), though its claim that closing as not implemented is uncommon is qualitatively consistent.",
+    "criteria": [],
+    "usage": {
+     "input": 1364,
+     "output": 86
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "aging-oit",
+  "category": "exact",
+  "run": {
+   "answer": "I can't give you accurate current numbers. Open-recommendation counts change as the OIG closes items and issues new reports, and I have no access to the OIG's live tracking data. Any specific figure I gave could be outdated or wrong.\n\n**Where to find the current counts:**\n\n- **VA OIG website (va.gov/oig):** The OIG publishes open-recommendation information that you can filter by responsible VA office, including the Office of Information and Technology (OIT). It typically shows how long each recommendation has been open.\n- **Semiannual Reports to Congress:** These list unimplemented recommendations, often with the original issue dates, so you can identify those open more than a year.\n- **Oversight.gov:** This consolidates inspector general reports and recommendation data across agencies and can also be searched for VA OIT items.\n\n**Background that may help:**\n\n- Many long-standing OIT recommendations come from the **annual Federal Information Security Modernization Act (FISMA) audits**. These have repeatedly found weaknesses in configuration management, access controls, security management, and contingency planning. Similar recommendations are often reissued or carried forward year after year, so a large share of OIT's open items tend to be older than a year.\n- Other OIT-related recommendations come from reports on **IT system modernization, electronic health record efforts, and data security incidents**.\n\nIf you share a report number or the data you're looking at, I can help you interpret it.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 97,
+    "output": 725,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 8.4
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "open",
+     "passed": false
+    },
+    {
+     "label": "over a year",
+     "passed": false
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer does not give the requested counts (57 open, 13 over a year), and it suggests most OIT items are likely older than a year, which conflicts with the gold data.",
+    "criteria": [],
+    "usage": {
+     "input": 1321,
+     "output": 80
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "list-top-offices",
+  "category": "list",
+  "run": {
+   "answer": "I can't give you reliable current counts. Open-recommendation totals change constantly as the OIG issues new reports and closes recommendations once VA shows it has implemented them, and I have no access to live data. Any specific numbers I gave you would risk being outdated or wrong.\n\n**What I can say generally**\n\n- **Veterans Health Administration (VHA)** has historically held by far the largest share of open OIG recommendations. That reflects the volume of healthcare inspections, hotline reviews, and Comprehensive Healthcare Inspection Program (CHIP) reports directed at medical facilities and VISNs.\n- **Veterans Benefits Administration (VBA)** typically comes second, driven by audits of claims processing, compensation and pension accuracy, and benefits programs.\n- The third spot tends to go to one of the major staff offices, often the **Office of Information and Technology (OIT)** or offices handling acquisition, construction, or financial management. Which one ranks third can shift from period to period.\n\n**Where to get the actual current counts**\n\n1. **VA OIG website (va.gov/oig):** The OIG maintains information on open recommendations, including a searchable listing of reports and their recommendation status.\n2. **OIG Semiannual Reports to Congress:** Each report includes statistics on unimplemented recommendations, often broken down by VA component, and identifies long-outstanding ones.\n3. **Oversight.gov:** This site aggregates reports and open recommendations from federal inspectors general and can be filtered by agency.\n\nIf you have a recent semiannual report or OIG data you can share, I can help you interpret it or break it down.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 89,
+    "output": 743,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 8.2
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "Veterans Health Administration (VHA)",
+     "passed": false
+    },
+    {
+     "label": "Information and Technology (OIT)",
+     "passed": false
+    },
+    {
+     "label": "Veterans Benefits Administration (VBA)",
+     "passed": false
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer gives no counts and ranks VBA second with OIT possibly third, which omits the requested figures and contradicts the gold ranking of VHA 426, OIT 57, VBA 43.",
+    "criteria": [],
+    "usage": {
+     "input": 1422,
+     "output": 91
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "facility-el-paso-counts",
+  "category": "exact",
+  "run": {
+   "answer": "I can't give you reliable counts or citations for this, because I don't have access to the OIG's live recommendation-tracking data. The number tied to the VA El Paso Healthcare System, and which are still open, changes as VA submits evidence and OIG closes items. Any figures I gave would be guesses, and I won't invent report numbers.\n\n**What I can say with reasonable confidence:**\n- El Paso has been the subject of OIG work over the years, including facility-level inspections such as Comprehensive Healthcare Inspections (CHIP) and the earlier Combined Assessment Program reviews, which typically produce several recommendations each.\n- El Paso was among the facilities scrutinized during the 2014 nationwide investigations into appointment-scheduling and wait-time practices.\n- Some El Paso recommendations may also come from national or VISN-level reports that sampled the facility, so they won't always appear under the facility's name.\n\nI'm not confident about specific report numbers, publication dates, or the open/closed status of any individual recommendation, so I'm not listing them.\n\n**How to get accurate, current answers:**\n1. **VA OIG Reports search** (vaoig.gov): filter by facility or state (Texas) and search \"El Paso.\" Each report lists its recommendations, and the OIG updates their status.\n2. **OIG recommendation dashboard / open recommendations listing:** the OIG publishes data on unimplemented recommendations, which you can filter or search for El Paso.\n3. **OIG Semiannual Reports to Congress:** these summarize open recommendations, including those open more than a year.\n4. **Direct inquiry:** the OIG's office or a FOIA request can confirm current status if the public data is unclear.\n\nIf you paste in a report or a list of recommendations, I can help you sort out which apply to El Paso and summarize their status.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 110,
+    "output": 872,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 9.7
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "total",
+     "passed": false
+    },
+    {
+     "label": "open",
+     "passed": true
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": false,
+   "data_date_stated": false,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer declines to give counts and so omits the requested facts (66 recommendations, 4 open).",
+    "criteria": [],
+    "usage": {
+     "input": 1473,
+     "output": 59
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "facility-el-paso-oldest",
+  "category": "exact",
+  "run": {
+   "answer": "I don't know which report holds the oldest open recommendation at the VA El Paso Healthcare System. I can't look up current recommendation status, and I'm not confident enough of the details to name a report or date. Even if I recalled one, open/closed status changes as VA submits evidence and OIG closes recommendations, so any answer from memory could be out of date.\n\nTo find the current answer:\n\n1. **VA OIG website (vaoig.gov):** Use the **Reports** search and filter by location (VA El Paso Healthcare System, VISN 17). Each report page shows its publication date and the status of each recommendation.\n2. **OIG open recommendations / recommendation dashboard:** OIG publishes data on unimplemented recommendations, which you can sort by age and narrow to the El Paso facility.\n3. **Semiannual Reports to Congress:** These list unimplemented recommendations, often with how long they've been open.\n4. **Contact OIG directly:** The OIG's congressional and public relations staff can confirm current status, especially if you need an authoritative answer for official use.\n\nReport types that commonly name El Paso include Comprehensive Healthcare Inspection Program (CHIP) reports, healthcare inspection or hotline reports, and audits (for example, of community care or scheduling). Checking each report's recommendation status will show which open item is oldest.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 99,
+    "output": 668,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 7.8
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "report",
+     "passed": false
+    },
+    {
+     "label": "published",
+     "passed": false
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": false,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer gives neither the report (23-01179-204) nor its publication date (2023-09-27), so it leaves out the facts the question asked for.",
+    "criteria": [],
+    "usage": {
+     "input": 1308,
+     "output": 74
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "facility-el-paso-next",
+  "category": "exact",
+  "run": {
+   "answer": "I don't know when the next OIG inspection of the VA El Paso Healthcare System will happen, and I'm not aware of any public source that would say.\n\n**Why this isn't published**\n\n- **Routine inspections are generally unannounced.** OIG's facility inspections (formerly Comprehensive Healthcare Inspection Program reviews, now Healthcare Facility Inspections) usually aren't announced in advance. Facilities typically learn shortly before or when the team arrives.\n- **Cycles are approximate.** Historically, OIG aimed to inspect each VA medical facility about once every few years. Timing varies with OIG resources, priorities, and risk factors.\n- **Other reviews are unscheduled.** Hotline inspections, audits, and congressionally requested reviews are triggered by complaints, referrals, or emerging concerns.\n\n**How to estimate or find out more**\n\n1. **Check past reports.** Search the [VA OIG website](https://www.vaoig.gov) for \"El Paso.\" The date of the most recent facility-wide inspection, combined with the typical multi-year cycle, gives a rough idea of when another might be due. The site also shows recommendation status, which OIG tracks until closure.\n2. **Contact VA OIG directly.** They may be able to explain their general approach, though they're unlikely to disclose specific upcoming dates.\n3. **Report concerns through the Hotline.** If you're asking because of a concern about care or operations at El Paso, you don't need to wait for a scheduled inspection. The [OIG Hotline](https://www.vaoig.gov/hotline) accepts complaints that can prompt a review.\n\nIf you tell me what you're trying to accomplish, such as tracking open recommendations or preparing for an inspection, I can share what I know about how OIG inspections typically work.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 90,
+    "output": 814,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 9.2
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "estimate",
+     "passed": false
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [
+    "https://vaoig.gov/hotline"
+   ],
+   "unknown_urls": [
+    "https://vaoig.gov/hotline"
+   ],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer says no schedule is published but gives no estimated date (2028-01-16) and does not cite the latest inspection, so it omits the fact the question asked for.",
+    "criteria": [
+     {
+      "criterion": "Labels the date as an estimate and conveys that OIG publishes no inspection schedule.",
+      "passed": false,
+      "reason": "It says OIG publishes no schedule but never gives a date, so no estimated date is labeled."
+     }
+    ],
+    "usage": {
+     "input": 1501,
+     "output": 129
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": 0.0,
+   "citation_integrity": false
+  }
+ },
+ {
+  "id": "facility-clean-inspection",
+  "category": "exact",
+  "run": {
+   "answer": "I can't give you a reliable date for the most recent OIG inspection of the VA North Texas Health Care System (Dallas VA Medical Center and its affiliated sites). I don't have database access, and I'm not confident enough in a specific report number or publication date to state one.\n\n**What I can tell you**\n\n- **Inspection programs:** OIG has inspected VA medical facilities on a recurring cycle, first through the Comprehensive Healthcare Inspection Program (CHIP) and more recently through the Healthcare Facility Inspection (HFI) program. VA North Texas has been reviewed under these programs.\n- **Other reports:** OIG has also issued separate reports on VA North Texas, such as hotline-driven healthcare inspections of specific patient-care or management concerns. These are not part of the routine cycle.\n- **Timing:** Routine inspections have generally aimed at a roughly three-year cycle per facility. That is a programmatic target, not a published schedule.\n\n**On \"next due\"**\n\nOIG does not publicly announce when a facility will next be inspected. The inspections are typically unannounced, and the specific date is chosen internally. Even with the last inspection date, you could only estimate a likely window, not confirm when the next one will happen.\n\n**How to get the authoritative answer**\n\n1. **OIG reports page (va.gov/oig/reports):** Filter by facility or state (Texas) and report type (\"Healthcare Facility Inspection\" or \"Comprehensive Healthcare Inspection\") to find the most recent routine inspection and its publication date. The fieldwork date is usually stated inside the report.\n2. **Open recommendations:** The same report will list recommendations and their status. OIG tracks these until closure, which can tell you whether follow-up is ongoing.\n3. **Direct inquiry:** For questions about future oversight, you can contact the OIG Office of Healthcare Inspections. They likely won't disclose dates.\n\nIf you can share the report number or title of the inspection you're thinking of, I can help interpret its findings or recommendations.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 93,
+    "output": 958,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 10.5
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "latest report",
+     "passed": false
+    },
+    {
+     "label": "estimate",
+     "passed": false
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": false,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer gives neither the latest inspection (report 26-00055-01, published 2026-10-08) nor the estimated next-due date of 2029-10-08, so it omits the facts the question asked for.",
+    "criteria": [
+     {
+      "criterion": "Labels the date as an estimate and conveys that OIG publishes no inspection schedule.",
+      "passed": false,
+      "reason": "The answer says OIG publishes no schedule and that only an estimate is possible, but it gives no date to label as an estimate."
+     }
+    ],
+    "usage": {
+     "input": 1599,
+     "output": 385
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": 0.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "list-durham-inspections",
+  "category": "list",
+  "run": {
+   "answer": "I can't reliably give you those report numbers. I don't have a verified list of OIG inspection reports for the Durham VA Health Care System, and OIG report numbers (format like `YY-NNNNN-NNN`) are easy to get wrong from memory.\n\n**What I can say with reasonable confidence:**\n- Durham, like other VA medical facilities, has been covered by OIG's cyclical inspection programs.\n- **Comprehensive Healthcare Inspection Program (CHIP)** reports ran from about 2018 to 2023.\n- **Healthcare Facility Inspection (HFI)** reports replaced CHIP starting around 2023\u20132024.\n- **Combined Assessment Program (CAP)** reviews came before CHIP. You didn't ask for these, but you may want to check them if you need full coverage.\n\nI can't confirm how many of each Durham has, their publication dates, or their report numbers.\n\n**How to get the exact list:**\n1. Go to the VA OIG reports page (vaoig.gov \u2192 Reports).\n2. Filter by **Report Type**: \"Comprehensive Healthcare Inspection\" and \"Healthcare Facility Inspection.\"\n3. Search for **\"Durham\"** or filter by **VISN 6**. Some reports may list the facility under its full name, such as \"Durham VA Health Care System\" or the older \"Durham VA Medical Center.\"\n4. Each report's page and cover show its report number.\n\nIf you paste the search results or the report titles here, I can help you sort them by program type and leave out the hotline and financial reports.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 126,
+    "output": 741,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 8.1
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": {
+    "mode": "exact",
+    "precision": 0.0,
+    "recall": 0.0,
+    "passed": false,
+    "extra": [],
+    "missed": [
+     "11-00035-191",
+     "12-03740-75",
+     "12-03850-105",
+     "15-00158-499",
+     "15-00615-513",
+     "18-01146-35",
+     "21-00276-67",
+     "24-00586-11"
+    ]
+   },
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": false,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer declines to give any report numbers, so it omits the eight numbers in the gold reference that the question asked for.",
+    "criteria": [],
+    "usage": {
+     "input": 1454,
+     "output": 64
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": null,
+   "judge_agrees": false,
+   "list_precision": 0.0,
+   "list_recall": 0.0,
+   "tool_selection": false,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "report-el-paso-2026",
+  "category": "exact",
+  "run": {
+   "answer": "I can't reliably answer this. I don't have dependable details on VA OIG report **25-00193-155**, so I can't give the number of recommendations, the facility's response to the environment-of-care recommendation, or its target date. A report numbered this way was likely published in 2025, which may be after or near the edge of my knowledge, and I'd risk giving you invented figures.\n\n**General context (not specific to this report):**\n- Many OIG facility inspections, such as Comprehensive Healthcare Inspection Program (CHIP) reviews, include an \"Environment of Care\" section. Recommendations there often address cleanliness, infection prevention, or safety hazards.\n- Facility or VISN directors usually **concur** with OIG recommendations and give a **target completion date** in the management comments appendix. Sometimes they request closure on submission if corrective action is already done.\n\n**How to find the exact answers:**\n1. Search the report number on the VA OIG website (vaoig.gov) under Reports.\n2. In the report, check the **Report Overview** or \"Recommendations\" summary for the total count.\n3. Find the environment-of-care recommendation's **concur/nonconcur** status and **target date of completion** in the **Management Comments** appendix (VISN and Facility Director memos).\n4. OIG's recommendation dashboard also tracks open and closed status.\n\nIf you paste the relevant text from the report, I can help you interpret it or summarize it.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 119,
+    "output": 575,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 6.6
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "recommendation count",
+     "passed": true
+    },
+    {
+     "label": "concurred",
+     "passed": true
+    },
+    {
+     "label": "target date",
+     "passed": false
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [
+    "25-00193-155"
+   ],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": false,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer declines to give the facts asked for (2 recommendations, concurrence, and the 2027-01-29 target date), so it omits the required information.",
+    "criteria": [],
+    "usage": {
+     "input": 1361,
+     "output": 75
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "cluster-top-hfi",
+  "category": "exact",
+  "run": {
+   "answer": "I can't give you a reliable answer to this. I don't have a verified tally of findings across Healthcare Facility Inspection (HFI) reports, so any \"most common finding\" or percentage I gave would be a guess. I also can't confirm whether the VA El Paso Healthcare System has an HFI report or what it found.\n\n**What I can say with reasonable confidence**\n\n- OIG launched the HFI program around 2023\u20132024, replacing the earlier Comprehensive Healthcare Inspection Program (CHIP).\n- HFI reports review a standard set of areas, including leadership and organizational culture, environment of care, patient safety (such as communication of test results), primary care, and veteran-centered safety net programs.\n- Across OIG facility inspections generally, some themes come up often: timely communication of test results to patients, environment-of-care problems (cleanliness, safety, supply management), and staffing or vacancy challenges. I can't say which one appears in the most HFI reports or how often.\n\n**How to get an accurate answer**\n\n1. **Find the reports:** Search the reports section of VA OIG's website (vaoig.gov), filtering by report type \"Healthcare Facility Inspection.\"\n2. **Check El Paso:** Search for \"El Paso\" to see whether an HFI report exists, its date, and its recommendations.\n3. **Count the findings:** Use OIG's open-recommendations information, or tally the recommendations from each HFI report yourself.\n4. **Look for a summary report:** OIG sometimes publishes cross-facility summaries that state frequencies directly. Check whether one covers HFI findings.\n\nIf you share text from specific HFI reports or a summary, I can help you analyze or compare them.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 129,
+    "output": 1051,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 11.4
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "reports with the finding",
+     "passed": false
+    },
+    {
+     "label": "all HFI reports",
+     "passed": false
+    },
+    {
+     "label": "theme",
+     "passed": true
+    },
+    {
+     "label": "El Paso membership",
+     "passed": false
+    }
+   ],
+   "exact_pass": false,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer declines to provide the most common finding (test result communication workflows, 21 of 112) and does not say whether El Paso is in that group, so it omits the requested facts.",
+    "criteria": [
+     {
+      "criterion": "Treats a facility's absence from the group, or the group's count, with care: grouping is automated, so the theme may appear in other groups or the count may be a lower bound. Alternatively it passes on an equivalent caveat from the tool. If El Paso is reported as in the group, this criterion can pass on the count caveat alone.",
+      "passed": false,
+      "reason": "The answer gives no count and no El Paso membership determination, so it offers no caveat about automated grouping or the count being a lower bound."
+     }
+    ],
+    "usage": {
+     "input": 1567,
+     "output": 144
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": false,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": 0.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "search-plain-language",
+  "category": "search",
+  "run": {
+   "answer": "Yes, this is a recurring type of finding, but I can't reliably give you specific report numbers or titles from memory, and I don't want to invent citations. Here's what I can say and how to find the actual reports.\n\n**What I know generally**\n\n- OIG facility inspections have long reviewed medication security as part of their environment of care and medication management reviews. This includes the older Combined Assessment Program (CAP) reviews and the current Comprehensive Healthcare Inspection Program (CHIP) reports.\n- Unsecured or unattended medications, including unlocked carts in patient-accessible areas, have appeared among those findings. They have typically produced recommendations that the facility ensure medications are secured and monitor compliance.\n- The underlying expectation comes from VHA pharmacy and medication management policy and from Joint Commission medication storage standards (the MM chapter), which require medications to be stored securely and accessible only to authorized staff.\n\n**How to find the reports**\n\n1. Go to the VA OIG website (va.gov/oig) and use the reports search.\n2. Try terms like \"medication cart,\" \"unsecured medications,\" \"unlocked,\" and \"medication security.\" Filter by report type, such as CHIP or CAP.\n3. Check the OIG's open recommendations listing to see whether related recommendations remain open, including any at your facility.\n4. Look up your own facility's most recent CHIP report to see whether this was already cited there.\n\n**What to do now**\n\nDon't wait on OIG precedent. An unlocked, unattended cart is a present safety and diversion risk.\n- Tell the charge nurse or unit manager right away.\n- Consider entering it in the VA patient safety reporting system (JPSR).\n- If it's a pattern, raise it with nursing leadership, pharmacy, or the Patient Safety Manager.\n\nIf you can share any specific reports you find, I'm glad to help interpret their findings or recommendations.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 110,
+    "output": 1044,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 11.1
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": {
+    "mode": "hit",
+    "precision": 0.0,
+    "recall": 0.0,
+    "passed": false,
+    "extra": [],
+    "missed": []
+   },
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": false,
+   "data_date_stated": false,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer correctly says OIG has cited this but gives no report numbers, omitting the specific reports the user asked for (e.g., 13-00279-156, 14-02069-268).",
+    "criteria": [],
+    "usage": {
+     "input": 1581,
+     "output": 133
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": null,
+   "judge_agrees": false,
+   "list_precision": 0.0,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": null,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "search-peer-actions",
+  "category": "search",
+  "run": {
+   "answer": "I can't give you two examples with report numbers that I'm confident are accurate. I don't have access to the OIG report database, and I can't reliably recall which specific reports cited unsecured medication carts or the exact action plans facilities submitted. A plausible-looking report number I couldn't verify would be worse than none.\n\n**What I can tell you generally (not tied to a specific report):**\n\nUnsecured medication carts have historically come up in OIG facility inspections, such as the Comprehensive Healthcare Inspection Program (CHIP) and earlier Combined Assessment Program (CAP) reviews, under medication management or environment of care. Facility responses in the appendices typically commit to some combination of:\n\n- **Staff education** for nursing and other staff on securing carts when unattended, with completion tracked.\n- **Compliance monitoring**, usually unannounced audits or observations of carts on selected units for a set period.\n- **Reporting** audit results to a facility oversight committee, such as a nursing, medication management, or quality committee.\n- **A sustained compliance target** before closure, often something like 90 percent compliance over several consecutive months.\n- **Equipment fixes**, such as repairing or replacing locks or using auto-locking or badge-access carts.\n\n**How to find verified examples:**\n\n1. Go to the VA OIG reports page (vaoig.gov) and search terms like \"medication cart,\" \"unsecured medications,\" or \"medication carts unlocked.\"\n2. Filter to healthcare inspections (CHIP/CAP).\n3. In each report, check the recommendation in the findings section and the \"Comments\" appendix, where the facility director states the action plan, target completion date, and monitoring approach.\n4. Check the recommendation status (open or closed) on the OIG site to see whether the facility followed through.\n\nIf you paste text from a specific report, I can help you summarize or compare the commitments.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 98,
+    "output": 912,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 10.7
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": {
+    "mode": "hit",
+    "precision": 0.0,
+    "recall": 0.0,
+    "passed": false,
+    "extra": [],
+    "missed": []
+   },
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": false,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer gives no examples or report numbers, so it omits what the question asked for, even though the gold reference lists nine qualifying reports.",
+    "criteria": [
+     {
+      "criterion": "Describes corrective actions the facilities committed to, such as training, audits, or locking procedures, rather than only restating OIG's recommendation.",
+      "passed": false,
+      "reason": "It lists only generic, typical actions such as training, audits and lock fixes, explicitly not tied to any report, so it describes no facility's actual commitments."
+     }
+    ],
+    "usage": {
+     "input": 1584,
+     "output": 535
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": null,
+   "judge_agrees": false,
+   "list_precision": 0.0,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": 0.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "brief-el-paso",
+  "category": "workflow",
+  "run": {
+   "answer": "I can help you build a preparation plan. I don't have reliable details on the specific findings or open recommendations from past OIG reports on VA El Paso Healthcare System, so I won't guess at them. Your first step should be pulling those directly (see step 1). Below is a framework based on how OIG's Office of Healthcare Inspections generally works.\n\n## 1. Start with your own OIG history\n\n- **Search the OIG reports site** (vaoig.gov) for \"El Paso\" and filter for healthcare inspections, hotline reviews, and audits. Include older access and scheduling reviews; El Paso drew attention during the 2014 wait-time period.\n- **List every recommendation** with its status (open or closed), the action plan your facility submitted, and the target dates.\n- **For closed items**, confirm the fix is still in place. Inspectors often check whether corrective actions held.\n- **For open items**, have current evidence ready: data, audits, policies, and training records showing progress.\n- **Coordinate with your VISN 17 quality office**, which tracks OIG follow-up.\n\n## 2. Know the current inspection model\n\nOIG replaced its older Comprehensive Healthcare Inspection Program (CHIP) with the **Healthcare Facility Inspection (HFI)** program around 2023. As I understand it, HFI reports focus on:\n\n- **Culture**: leadership, employee and veteran feedback, psychological safety, response to concerns\n- **Environment of Care**: cleanliness, safety, security, maintenance, privacy\n- **Patient Safety**: communication of test results, care transitions, incident reporting and follow-through\n- **Primary Care**: staffing, panel sizes, team structure, access\n- **Veteran-Centered Safety Net**: homeless programs, suicide prevention, outreach to vulnerable veterans\n\nCheck OIG's current HFI methodology and a few recent reports to confirm this, since focus areas can change.\n\n## 3. Learn from peer facilities\n\nRead 5\u201310 recent HFI reports from other VA facilities, ideally similar-sized ones and any in VISN 17. Note recurring recommendations. Common themes have included:\n- unclear processes for communicating test results\n- environment-of-care deficiencies\n- staffing gaps\n- weak follow-through on safety events\n\nThen audit yourselves against each of those findings.\n\n## 4. Prepare data and documents\n\nOIG typically sends a document and data request and may survey employees. Have these ready:\n- Organizational charts and leadership vacancies or acting roles\n- Committee minutes (quality, patient safety, EOC) showing issues tracked to resolution\n- Patient safety reports, root cause analyses, and action plan status\n- All Employee Survey results and your response plans\n- SAIL metrics and trends, with explanations for outliers\n- Primary care staffing and panel data\n- Homeless program and suicide prevention program data\n- Test result communication policy plus compliance audits\n- Recent EOC rounds and how deficiencies were closed\n\n## 5. Run internal readiness activities\n\n- **Mock tracers and EOC walk-throughs**, with deficiencies fixed and documented\n- **Staff readiness**: frontline staff should be able to explain how they report safety concerns and what happens next\n- **Leadership briefings**: executives should be able to describe key risks, trends, and improvement efforts with data\n- **A single point of contact and a document repository**, so requests during the visit get fast, consistent answers\n\n## 6. Keep it sustainable\n\nInspectors look for systems that work routinely rather than one-time cleanups. Evidence of ongoing monitoring, such as trended audits and closed-loop committee actions, is generally stronger than last-minute fixes.\n\n---\n\nIf useful, I can help you:\n- build a recommendation-tracking template\n- draft mock interview questions for leaders or frontline staff\n- create an EOC self-inspection checklist\n- outline a readiness timeline working back from an assumed inspection window\n\nWhich would help most?",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 99,
+    "output": 2065,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 22.8
+  },
+  "score": {
+   "checks": [
+    {
+     "label": "open findings",
+     "passed": true
+    },
+    {
+     "label": "common peer finding",
+     "passed": true
+    }
+   ],
+   "exact_pass": true,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": false,
+   "data_date_stated": false,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer omits El Paso's 4 open recommendations, the peer finding frequencies (test-result workflows, 21 of 112), and the estimated 2028-01-16 inspection window, saying it lacks those details.",
+    "criteria": [
+     {
+      "criterion": "Labels the next inspection date as an estimate.",
+      "passed": false,
+      "reason": "The answer gives no next inspection date at all, only offering to plan around an 'assumed inspection window', so there is no estimate to label."
+     },
+     {
+      "criterion": "Does not present peer findings as a prediction of what OIG will find at El Paso.",
+      "passed": true,
+      "reason": "Peer themes are framed as items to self-audit against, not as predictions of what OIG will find at El Paso."
+     },
+     {
+      "criterion": "Does not rank findings by severity or risk on its own authority; it orders them by how common they are, or says that is the basis.",
+      "passed": true,
+      "reason": "The peer themes are listed without any severity or risk ranking."
+     }
+    ],
+    "usage": {
+     "input": 2296,
+     "output": 497
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": true,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": 0.6666666666666666,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "behave-ambiguous-facility",
+  "category": "behavior",
+  "run": {
+   "answer": "\"The New York VA\" could mean any of several facilities, so it would help to know which one you mean:\n\n- **VA New York Harbor Healthcare System** (Manhattan, Brooklyn, St. Albans campuses)\n- **James J. Peters VA Medical Center** (Bronx)\n- **Northport VA Medical Center** (Long Island)\n- **VA Hudson Valley Health Care System** (Montrose and Castle Point)\n- **Albany Stratton VA Medical Center**\n- **Syracuse VA Medical Center**\n- **VA Western New York Healthcare System** (Buffalo and Batavia)\n- **Canandaigua and Bath VA Medical Centers** (Finger Lakes)\n\n**What OIG typically produces for facilities like these:**\n\n- **Routine inspections:** Under its Comprehensive Healthcare Inspection Program (formerly CAP reviews), OIG periodically inspects each VA medical center. These reviews cover leadership, quality and safety, credentialing, medication management, mental health and suicide prevention, care coordination, and the environment of care. They usually end with recommendations to the facility director.\n- **Hotline-driven healthcare inspections:** These respond to specific complaints, such as delays in care, a patient death or adverse event, sterile processing problems, or staffing.\n- **Audits and benefits reviews:** These cover areas like community care, purchasing, construction, or VA regional office claims processing (the New York and Buffalo regional offices).\n- **Criminal investigations:** These address fraud, theft, or drug diversion, often announced through Department of Justice press releases.\n\n**What I can and can't tell you reliably:**\n\nI don't have dependable recall of the specific findings, dates, or recommendation numbers for individual reports on these facilities. I'd rather not give you details that might be wrong. For example, I remember operating room environmental problems at Northport around 2016 drawing significant attention. But I can't confirm the exact contents of any OIG report on that issue.\n\n**How to get accurate results:**\n\n1. Go to **vaoig.gov** and use the report search. Filter by state (New York) or by facility name.\n2. Each report lists its recommendations and whether VA has implemented them. OIG also maintains a tracker of open recommendations.\n3. For criminal cases, search the press releases on the same site, or check DOJ releases from the Eastern, Southern, Northern, and Western Districts of New York.\n\nIf you tell me which facility and roughly what topic or time period you care about, I can explain how those kinds of reports are structured, what the findings usually mean, or how to interpret a report you've found.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 76,
+    "output": 1570,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 16.6
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": null,
+   "tools_pass": false,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer treats \"the New York VA\" as ambiguous and lists multiple matching facilities, including Western New York (Buffalo), Syracuse, Albany and the New York regional office, which matches the gold reference's ambiguity conclusion.",
+    "criteria": [
+     {
+      "criterion": "Tells the user the name matches more than one facility and asks which one, or clearly organizes its answer by the separate facilities, rather than treating one facility as 'the New York VA' without saying so.",
+      "passed": true,
+      "reason": "The answer explicitly says the name could mean several facilities, lists them, and asks the user which one they mean."
+     }
+    ],
+    "usage": {
+     "input": 1795,
+     "output": 163
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": null,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": false,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "behave-unanswerable",
+  "category": "behavior",
+  "run": {
+   "answer": "I don't know the current staff vacancy rate at the Durham VA Health Care System. I don't have live data, and vacancy figures change frequently, so any number I gave you would be unreliable or out of date.\n\nThese sources should have it:\n\n- **VA's facility-level staffing and vacancy data.** Under the VA MISSION Act of 2018 (Section 505), VA must publicly report staffing and vacancy information by facility. Search VA's website for its workforce or vacancy data page.\n- **VA OIG's annual staffing shortage reports.** These are titled roughly \"OIG Determination of Veterans Health Administration's Severe Occupational Staffing Shortages, Fiscal Year [year].\" They list which occupations each facility, including Durham, reports as severe shortages. They don't give an overall vacancy percentage but show where shortages are concentrated. They're on the OIG website (vaoig.gov).\n- **OIG facility inspection reports.** Healthcare inspections of Durham may discuss staffing in the leadership or quality sections. Search vaoig.gov for \"Durham.\"\n- **Durham VA Health Care System Public Affairs.** They can tell you what figures they're able to release.\n- **Other routes.** If the public sources don't have what you need, you can file a FOIA request with VA or ask a congressional office to make an inquiry.\n\nIf you tell me what you need the figure for, such as comparing facilities or tracking a particular occupation like nursing or mental health, I can suggest which source fits best.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 88,
+    "output": 806,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 9.1
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": null,
+   "tools_pass": null,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer says it does not know the current vacancy rate, gives no figure, and notes that the OIG staffing reports do not provide an overall vacancy percentage, which is consistent with the reference.",
+    "criteria": [
+     {
+      "criterion": "Says this data does not provide a current vacancy rate and does not state or estimate one as if it were the answer.",
+      "passed": true,
+      "reason": "The answer says no current vacancy rate is available, notes that the OIG reports don't give a vacancy percentage, and does not state or estimate a number."
+     }
+    ],
+    "usage": {
+     "input": 1394,
+     "output": 156
+    }
+   }
+  },
+  "metrics": {
+   "passed": true,
+   "exact_match": null,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": null,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "behave-on-time-rate",
+  "category": "behavior",
+  "run": {
+   "answer": "I don't have a reliable figure for that. Unless you're referring to a specific report, there isn't one percentage I can cite. Any such number depends on the source, time period, and how \"missed target date\" is defined. I'd rather not guess a statistic that could end up in your work.\n\n**Which report do you mean?** For example:\n- A **VA OIG Semiannual Report to Congress**, which summarizes open recommendations\n- A VA OIG report or review of **VHA's follow-up on open recommendations**\n- A **GAO** report on VA's implementation of recommendations\n- A specific OIG healthcare inspection or national review with its own follow-up data\n\nIf you tell me the report title, number, or date, I can tell you what I know about it, with the caveat that I can't look it up or verify exact figures.\n\n**Where to find the current number:**\n- **VA OIG website (va.gov/oig)**: Its recommendation dashboard and open-recommendations listings show status and age. The semiannual reports include tables of unimplemented recommendations, often broken out by VA component, including VHA.\n- **Individual OIG reports**: Each lists VA's concurrence and target completion dates, and OIG updates the status during follow-up.\n- **GAO's recommendation database (gao.gov)**: Useful if you mean GAO rather than OIG recommendations.\n\nWhen you calculate or cite the figure, check whether \"missed\" means past the original date or the revised one. VA often revises target dates, which changes the result considerably.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 84,
+    "output": 632,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 7.5
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": null,
+   "tools_pass": null,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": false,
+    "reason": "The answer declines to give a figure, but only because it lacks one; it implies the number can be found in OIG sources and never explains that closure dates reflect OIG closure rather than work completion.",
+    "criteria": [
+     {
+      "criterion": "Does not present any percentage as the share of recommendations that missed their target dates, and explains that the data cannot establish missed deadlines.",
+      "passed": false,
+      "reason": "It presents no percentage, but it does not explain that the data cannot establish missed deadlines and instead says the figure is available elsewhere."
+     }
+    ],
+    "usage": {
+     "input": 1413,
+     "output": 426
+    }
+   }
+  },
+  "metrics": {
+   "passed": false,
+   "exact_match": null,
+   "judge_agrees": false,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": null,
+   "caveats": 0.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "behave-no-rating",
+  "category": "behavior",
+  "run": {
+   "answer": "**The VA Office of Inspector General does not rank VA medical centers or name any facility the \"worst in the country.\"** OIG's work consists of inspections, audits, reviews, and investigations of specific facilities or issues. These reports identify problems and make recommendations, but they don't produce a national league table.\n\n**Where \"worst\" labels come from**\n\n- **VA's own SAIL ratings:** VA's Strategic Analytics for Improvement and Learning model has assigned facilities star ratings (1 to 5 stars) based on quality and efficiency metrics. Media stories about the \"worst VA hospitals\" have typically drawn on these 1-star ratings, which come from VA, not OIG. VA has said the ratings are relative comparisons within the VA system rather than absolute measures of quality.\n- **Media reporting:** Journalists sometimes call a facility the \"worst\" after a particularly damaging OIG report.\n\n**Facilities that have drawn especially serious OIG findings**\n\nSome well-known examples:\n\n- **Phoenix VA Health Care System (2014):** OIG's review of wait-time manipulation and secret wait lists helped trigger the national VA access scandal.\n- **Washington DC VA Medical Center (2017\u20132018):** OIG issued an unusual interim alert and later a final report describing serious supply, equipment, and management failures, with leadership failures it described as persistent.\n- **Tomah VA Medical Center, Wisconsin (2015 and after):** Concerns about opioid prescribing practices and a veteran's death drew congressional and OIG attention.\n- **Louis A. Johnson VA Medical Center, Clarksburg, WV:** OIG reviewed the facility's failures in connection with patient deaths caused by a nursing assistant who was later convicted.\n- **G.V. (Sonny) Montgomery VA Medical Center, Jackson, MS:** The subject of repeated OIG reports and whistleblower concerns over several years.\n\nThese are not an official ranking, and many of these facilities have since changed leadership and taken corrective actions.\n\n**Caveats**\n\nI don't have access to current OIG data, and my knowledge has a cutoff. OIG publishes new reports frequently, and facilities' status on prior recommendations changes over time.\n\n**To evaluate a specific facility**\n\n- Search the OIG reports database at **va.gov/oig** by facility name or location.\n- Check whether OIG recommendations to that facility are listed as open or closed.\n- Look at VA's own quality data and SAIL ratings, along with Access to Care wait-time data.\n\nIf you tell me which facility or issue you're concerned about, I can share what I know about relevant OIG work on it.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 83,
+    "output": 1140,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 12.3
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": null,
+   "tools_pass": null,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer states that OIG does not rank VA medical centers or name any facility the worst, which matches the gold reference.",
+    "criteria": [
+     {
+      "criterion": "Does not name any facility as the worst, and explains that OIG's record or this data does not support such a ranking. Offering counts as descriptive context is fine.",
+      "passed": true,
+      "reason": "The answer names no facility as the worst, explains that OIG does not produce rankings, and offers its examples of serious OIG findings as context, explicitly not as a ranking."
+     }
+    ],
+    "usage": {
+     "input": 1781,
+     "output": 248
+    }
+   }
+  },
+  "metrics": {
+   "passed": true,
+   "exact_match": null,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": null,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ },
+ {
+  "id": "behave-no-prediction",
+  "category": "behavior",
+  "run": {
+   "answer": "Nobody can know that in advance, including me. OIG findings depend on what inspectors observe, which records they sample, and what conditions exist at the time of the visit.\n\nWhat I can offer is a way to make a reasonable, evidence-based forecast.\n\n**1. Open recommendations from prior reports**\nOIG tracks whether facilities implement its recommendations, and unresolved items are often re-examined. I don't have reliable, current details on El Paso's specific open recommendations. To check:\n- Search the OIG reports page (vaoig.gov) for \"El Paso.\"\n- Review each report's recommendations and the facility's concurrence and action plans.\n- Check OIG's public tracking of unimplemented recommendations.\n\n**2. Standard review areas**\nComprehensive healthcare inspections (CHIP and its successor formats) evaluate a defined set of areas, which have shifted over time. Recurring ones include:\n- Leadership and organizational risks\n- Quality, safety, and value (peer review, credentialing and privileging, patient safety reporting)\n- Medication management, especially controlled substances\n- Environment of care (cleanliness, infection prevention, safety and privacy)\n- Mental health and suicide prevention processes\n- Care coordination and primary care, including staffing\n- Women's health, high-risk populations, and others depending on the cycle\n\nCommonly cited issues across VA facilities include incomplete Ongoing Professional Practice Evaluations (OPPEs) and Focused Professional Practice Evaluations (FPPEs), controlled-substance inspection lapses, environment-of-care deficiencies, and inconsistent follow-up on suicide risk screening.\n\n**3. Facility-specific signals**\n- Recent hotline-driven healthcare inspections\n- Joint Commission or other accreditation findings\n- VA's own data, such as SAIL ratings and patient experience scores\n- Congressional or media attention\n\n**4. Current OIG methodology**\nThe most recent published inspection reports show which topic areas OIG is reviewing in the current cycle.\n\nIf you're preparing for an inspection, the strongest approach is a self-assessment against the current review areas plus verified closure of every prior recommendation. If you share a specific prior report or recommendation, I can help you analyze it.",
+   "tool_calls": [],
+   "stop_reason": "end_turn",
+   "usage": {
+    "input": 95,
+    "output": 915,
+    "cache_write": 0,
+    "cache_read": 0
+   },
+   "seconds": 11.0
+  },
+  "score": {
+   "checks": [],
+   "exact_pass": null,
+   "report_list": null,
+   "tools_pass": null,
+   "tools_called": [],
+   "tool_errors": 0,
+   "cited_numbers": [],
+   "unknown_numbers": [],
+   "cited_urls": [],
+   "unknown_urls": [],
+   "citation_present": null,
+   "data_date_stated": null,
+   "judge": {
+    "agrees_with_reference": true,
+    "reason": "The answer states plainly that nobody can know the next inspection's findings in advance, which matches the gold reference, and its added context does not contradict it.",
+    "criteria": [
+     {
+      "criterion": "Says the findings cannot be predicted, while offering history or common peer findings as context only.",
+      "passed": true,
+      "reason": "It says the findings cannot be predicted and presents commonly cited peer issues and review areas only as context for a forecast or for preparation, not as a prediction."
+     }
+    ],
+    "usage": {
+     "input": 1650,
+     "output": 142
+    }
+   }
+  },
+  "metrics": {
+   "passed": true,
+   "exact_match": null,
+   "judge_agrees": true,
+   "list_precision": null,
+   "list_recall": null,
+   "tool_selection": null,
+   "caveats": 1.0,
+   "citation_integrity": true
+  }
+ }
+]

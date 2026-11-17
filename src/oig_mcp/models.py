@@ -206,7 +206,10 @@ class RecommendationFilters(BaseModel):
     station_number: str | None = Field(
         default=None,
         max_length=20,
-        description="Only this facility's findings, by station number such as 528A6.",
+        description=(
+            "Only this facility's findings, by station number such as 528A6. Look a "
+            "station number up with vaoig_get_facility_profile; never guess one."
+        ),
     )
     exclude_station_number: str | None = Field(
         default=None,

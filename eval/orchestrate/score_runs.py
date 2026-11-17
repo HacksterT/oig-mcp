@@ -27,8 +27,8 @@ from dotenv import load_dotenv
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "eval" / "phoenix"))
-from run_experiment import GOLD_PATH, metrics_for  # noqa: E402
-from scoring import load_index, score_code, score_judge  # noqa: E402
+from run_experiment import metrics_for  # noqa: E402
+from scoring import load_gold, load_index, score_code, score_judge  # noqa: E402
 
 
 def first_reply(messages: list[dict]) -> dict:
@@ -68,7 +68,7 @@ def first_reply(messages: list[dict]) -> dict:
 
 
 def gold_by_test() -> dict:
-    gold = json.loads(GOLD_PATH.read_text())["questions"]
+    gold = load_gold("all")["questions"]
     return {q["id"]: q for q in gold}
 
 

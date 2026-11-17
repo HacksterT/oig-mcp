@@ -70,7 +70,12 @@ def register(mcp: FastMCP) -> None:
                 if not matches:
                     return {
                         "error": f"No report has the number {report_number}.",
-                        "hint": "Use vaoig_search_findings to find the report.",
+                        "hint": (
+                            "Tell the user no report with that number is in the "
+                            "data, and do not describe another report in its place. "
+                            "If the number may be mistyped, vaoig_search_findings "
+                            "can find the report by its subject."
+                        ),
                     }
                 node_id = matches[0].get("node_id")
                 if node_id is None:

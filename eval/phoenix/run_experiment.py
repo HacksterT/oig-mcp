@@ -34,6 +34,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from agent import preflight, run_question, run_question_watsonx  # noqa: E402
 from scoring import (  # noqa: E402
     cost,
+    load_gold,
     load_index,
     question_passed,
     score_code,
@@ -41,7 +42,6 @@ from scoring import (  # noqa: E402
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-GOLD_PATH = REPO_ROOT / "eval" / "gold" / "questions.json"
 RESULTS_DIR = REPO_ROOT / "eval" / "results"
 PHOENIX_HOST = "127.0.0.1"
 PHOENIX_PORT = 6006
@@ -190,7 +190,8 @@ def write_summary(path: Path, gold: dict, records: list[dict], args) -> str:
     categories = Counter(r["category"] for r in records)
 
     lines = [
-        f"# Evaluation run: {args.model}",
+        f"# Evaluation run: {args.model}"
+        + (" with no tools (baseline)" if getattr(args, "no_tools", False) else ""),
         "",
         f"Data snapshot `{gold['snapshot']['sha256'][:16]}`, data as of "
         f"{gold['snapshot']['data_as_of']}. Agent `{args.model}` "
@@ -310,6 +311,7 @@ async def answer_all(questions, args, llm, token, chat=None, tracer=None) -> lis
                         url=args.url,
                         token=token,
                         tracer=tracer,
+                        use_tools=not args.no_tools,
                     )
                 else:
                     run = await run_question(
@@ -319,9 +321,27 @@ async def answer_all(questions, args, llm, token, chat=None, tracer=None) -> lis
                         effort=args.effort,
                         url=args.url,
                         token=token,
+                        use_tools=not args.no_tools,
                     )
             except (anthropic.APIError, WatsonxError) as exc:
-                raise SystemExit(f"{gold['id']}: {type(exc).__name__}: {exc}") from exc
+                # One failed question is a failed answer, not a failed run: a model
+                # whose context the tool results overflow has still answered nothing.
+                error = f"{type(exc).__name__}: {str(exc)[:300]}"
+                print(f"  {gold['id']} failed: {error}", flush=True)
+                run = {
+                    "answer": "",
+                    "tool_calls": [],
+                    "stop_reason": "error",
+                    "error": error,
+                    "usage": {
+                        "input": 0,
+                        "output": 0,
+                        "cache_write": 0,
+                        "cache_read": 0,
+                    },
+                    "seconds": 0,
+                }
+                return {"id": gold["id"], "category": gold["category"], "run": run}
         print(
             f"  answered {gold['id']}: {len(run['tool_calls'])} tool calls, "
             f"{run['seconds']}s, stop {run['stop_reason']}",
@@ -353,7 +373,7 @@ async def score_all(records, questions, args, llm) -> None:
 async def main_async(args) -> int:
     load_dotenv(REPO_ROOT / ".env")
     token = os.environ.get("MCP_AUTH_TOKEN", "")
-    gold = json.loads(GOLD_PATH.read_text())
+    gold = load_gold(args.gold)
     questions = [
         q for q in gold["questions"] if not args.only or q["id"] in args.only.split(",")
     ]
@@ -391,10 +411,11 @@ async def main_async(args) -> int:
             kept = {q["id"] for q in questions}
             records = [record for record in records if record["id"] in kept]
         else:
-            if not token:
-                print("MCP_AUTH_TOKEN must be set.")
-                return 2
-            await preflight(args.url, token, gold["snapshot"])
+            if not args.no_tools:
+                if not token:
+                    print("MCP_AUTH_TOKEN must be set.")
+                    return 2
+                await preflight(args.url, token, gold["snapshot"])
             name = args.name or f"{date.today().isoformat()}-{args.model}"
             out_dir = RESULTS_DIR / name
             out_dir.mkdir(parents=True, exist_ok=True)
@@ -433,9 +454,20 @@ def main() -> int:
     parser.add_argument("--effort", default=os.getenv("AGENT_EFFORT", "medium"))
     parser.add_argument("--concurrency", type=int, default=3)
     parser.add_argument("--only", help="Comma-separated question IDs")
+    parser.add_argument(
+        "--gold",
+        choices=["main", "adversarial", "all"],
+        default="main",
+        help="Which gold questions: the 24 (main), the adversarial set, or both",
+    )
     parser.add_argument("--name", help="Results folder name")
     parser.add_argument("--rescore", help="A results folder to score again")
     parser.add_argument("--no-phoenix", action="store_true")
+    parser.add_argument(
+        "--no-tools",
+        action="store_true",
+        help="Baseline: the same model and questions with no server",
+    )
     parser.add_argument("--keep-phoenix", action="store_true")
     return asyncio.run(main_async(parser.parse_args()))
 

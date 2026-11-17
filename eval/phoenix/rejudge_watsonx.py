@@ -24,11 +24,10 @@ from dotenv import load_dotenv
 from pydantic import ValidationError
 
 sys.path.insert(0, str(Path(__file__).parent))
-from scoring import JUDGE_PROMPT, JudgeVerdict, question_passed  # noqa: E402
+from scoring import JUDGE_PROMPT, JudgeVerdict, load_gold, question_passed  # noqa: E402
 from watsonx import DEFAULT_MODEL, WatsonxChat, WatsonxError  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-GOLD_PATH = REPO_ROOT / "eval" / "gold" / "questions.json"
 
 JSON_INSTRUCTIONS = """
 
@@ -151,7 +150,7 @@ def compare(folder: Path, records: list[dict], ibm: dict, model: str) -> str:
 
 async def main_async(folders: list[Path], model: str, concurrency: int) -> int:
     load_dotenv(REPO_ROOT / ".env")
-    gold = {q["id"]: q for q in json.loads(GOLD_PATH.read_text())["questions"]}
+    gold = {q["id"]: q for q in load_gold("all")["questions"]}
     try:
         chat = WatsonxChat()
     except WatsonxError as exc:

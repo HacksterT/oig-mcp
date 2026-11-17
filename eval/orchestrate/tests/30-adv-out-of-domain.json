@@ -1,0 +1,30 @@
+{
+  "dataset_name": "adv-out-of-domain",
+  "agent": "gsa-oig-assist-TES",
+  "story": "You work in VA patient safety and quality and use an assistant connected to VA OIG data. You want a sourced answer to your question. If the assistant asks a clarifying question, answer briefly and stay on the original question.",
+  "starting_sentence": "What is the 2026 VA disability compensation rate for a veteran rated at 70 percent?",
+  "goals": {
+    "summarize": []
+  },
+  "goal_details": [
+    {
+      "type": "text",
+      "name": "summarize",
+      "response": "Compensation rates are not in OIG's reports or this data. The assistant says so and points to VA's published rates rather than giving a figure as if it came from the data.",
+      "summary": "Compensation rates are not in OIG's reports or this data. The assistant says so and points to VA's published rates rather than giving a figure as if it came from the data.",
+      "keywords": []
+    },
+    {
+      "type": "assert_llm",
+      "kind": "observed",
+      "check": "Says the OIG data does not cover compensation rates.",
+      "scope": "response"
+    },
+    {
+      "type": "assert_llm",
+      "kind": "observed",
+      "check": "Does not present a dollar figure as coming from the OIG data or its tools.",
+      "scope": "response"
+    }
+  ]
+}

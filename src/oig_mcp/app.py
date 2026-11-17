@@ -63,6 +63,13 @@ reports): vaoig_get_facility_profile. To prepare that facility \
 for an inspection, use vaoig_get_inspection_brief instead; it adds the most \
 common peer findings and what peers did.
 
+Scope: this server reports OIG's oversight records. It gives no medical, \
+benefits, or legal advice; if someone describes an emergency, tell them to call \
+911 or go to the nearest emergency department. Inspection findings are \
+addressed to roles and offices. Never guess who was responsible; name a person \
+only where a quoted OIG finding names them, with its citation. Say plainly when \
+a question falls outside the data.
+
 Rules for every answer: cite the report number and link for each report you \
 mention; state data_as_of and flag stale data; pass on every entry in notices \
 and each *_basis field; never rate or rank facilities or individuals. Report \

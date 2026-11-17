@@ -31,6 +31,15 @@ The harness stops if the server's data differs from the pinned snapshot, because
 | `--rescore` | | Score a saved results folder again, without asking the assistant |
 | `--no-phoenix` | | Skip Phoenix |
 
+## Baseline and adversarial questions
+
+```bash
+uv run --group eval python eval/phoenix/run_experiment.py --no-tools          # the same model, no server
+uv run --group eval python eval/phoenix/run_experiment.py --gold adversarial  # six adversarial questions
+```
+
+`--no-tools` asks the same questions of the same model with no server and a system prompt saying it has no data access, so the difference from a normal run is what the server adds. `--gold adversarial` runs the six questions in `gold/adversarial.json` (`--gold all` runs all 30). Both work with `--model` for watsonx.ai models.
+
 ## On IBM watsonx.ai models
 
 IBM's `mcp-eval-wxai` skill runs this kind of evaluation with the agent on watsonx.ai. The harness does the same when `--model` is a watsonx.ai model ID: the agent's turns go to IBM's chat API, at temperature 0, with the server's own instructions and tools, and everything else (the questions, the code checks, the Claude judge, Phoenix) is unchanged. A Claude judge on a Llama agent also keeps the judge independent of the agent's model family.
@@ -59,6 +68,7 @@ The smoke test confirms the credentials, that the model is listed for tool calli
 |---|---|
 | `gold/build_gold.py` | Computes answers by SQL from the pinned snapshot, opened read-only |
 | `gold/questions.json` | The questions, answers, patterns, required tools, and criteria |
+| `gold/adversarial.json` | Six adversarial and out-of-scope questions, in the same format |
 | `gold/report_index.json` | Every report number and link in the snapshot, for citation checks |
 | `phoenix/agent.py` | The assistant loop, for Claude or a watsonx.ai model, connected to the server over authenticated HTTP |
 | `phoenix/watsonx.py` | The watsonx.ai chat client, with IAM token refresh |
@@ -67,6 +77,7 @@ The smoke test confirms the credentials, that the model is listed for tool calli
 | `phoenix/scoring.py` | Scoring by code, and the judge |
 | `phoenix/run_experiment.py` | The command above |
 | `phoenix/score_external.py` | Scores answers from an agent outside this harness |
+| `orchestrate/score_runs.py` | Scores watsonx Orchestrate ADK transcripts with the same gold and judges |
 | `results/` | Final runs, and earlier runs under `superseded-d364ff4c/` |
 
 ## Rebuild the gold answers
