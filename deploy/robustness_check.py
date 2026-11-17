@@ -297,12 +297,46 @@ async def latency(client: Client, checker: Checker) -> None:
     )
 
 
+async def facility_choice(url: str, token: str, checker: Checker) -> None:
+    """A client that can ask its user is asked which facility; its answer must be
+    one of the matches, or the tool answers with the matches as before."""
+    print("\nChoosing among several matching facilities")
+    for pick, case, wanted in [
+        ("630", "a valid choice opens that facility", "630"),
+        ("999", "a choice outside the matches is ignored", None),
+    ]:
+        asked: list[int] = []
+
+        async def handler(message, response_type, params, context, pick=pick):
+            asked.append(len(params.requested_schema["properties"]["value"]["oneOf"]))
+            return pick
+
+        transport = bearer_transport(url, token)
+        try:
+            async with Client(transport, timeout=120, elicitation_handler=handler) as c:
+                args = {"facility": "New York VA"}
+                result = await c.call_tool(PROFILE, args, raise_on_error=False)
+            body = result.structured_content or {}
+            ok, why = checker.clean(reply_text(result))
+            station = body.get("station_number")
+            ok = ok and len(asked) == 1 and asked[0] > 1
+            ok = ok and (station == wanted if wanted else "matches" in body)
+            outcome = f"asked once with {asked[0] if asked else 0} choices, got " + (
+                f"station {station}" if station else "the matches"
+            )
+        except Exception as exc:
+            ok, why, outcome = False, f"client raised {type(exc).__name__}", ""
+        checker.report.check(f"facility choice: {case}", ok, why or outcome)
+        await asyncio.sleep(PACE)
+
+
 async def run(url: str, token: str, checker: Checker) -> None:
     async with Client(bearer_transport(url, token), timeout=120) as client:
         await hostile_inputs(client, checker)
         await rate_limit(client, checker)
         await parallel_searches(client, checker)
         await latency(client, checker)
+    await facility_choice(url, token, checker)
 
 
 def main() -> int:
