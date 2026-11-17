@@ -238,6 +238,19 @@ What a model reads is mostly tool results, so their size decides cost and whethe
 
 Characters per result. The facility profile now leaves out fields its report list already carries and the facility's responses, which the brief, search, and report tools carry; search, the brief, and the report grew by their new `citation` fields. A 100-item page for Durham, the question that overflowed Llama's context, went from 70,126 to 40,906 characters.
 
+## Ambiguous facility names in real hosts
+
+A facility name that matches several facilities, such as "New York VA", should never be answered for one the model chose. The server returns the matches with a next step (do not choose, ask, then call again with the station number), and where the client supports MCP elicitation it asks the user itself. Each host below was asked "What has OIG found at the New York VA?" on November 17, after #92 except where noted.
+
+| Host | Model | MCP elicitation | What happened |
+|---|---|---|---|
+| MCP SDK client (tests and robustness check) | none | Yes, both protocol versions | The server asked; the answer covered the facility chosen, and a choice outside the matches was ignored |
+| Hermes Agent, hosted endpoint | DeepSeek | No: its handler answers only approve or deny, and on protocol 2026-07-28 its tool call fails on `input_required` | Before #92 it chose VA NY Harbor itself. After, it offered the facilities with its own `clarify` tool and called again with the one chosen |
+| Claude Desktop, stdio | Claude | No form shown | Before #92 it chose VA NY Harbor itself. After, it listed the facilities and asked |
+| watsonx Orchestrate | GPT-OSS 120B | To be tested in round 2 | |
+
+So the server's next step, not elicitation, is what made the desktop hosts ask. The server-side picker is proven only with the MCP SDK's client.
+
 ## Load test
 
 On November 17, [`deploy/load_test.py`](../deploy/load_test.py) ramped from 1 to 40 concurrent clients against the hosted server through its public URL, each with its own token, for 60 seconds per stage. Each client repeated tool calls recorded in the Claude runs, about one a second, with no model involved. [Full results](../eval/results/2026-11-17-load-test/summary.md).
