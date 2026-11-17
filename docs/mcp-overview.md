@@ -1,6 +1,6 @@
 # MCP Exec Summary: VA OIG Recommendations Assistant
 
-*For leaders and staff. Status as of November 16, 2026. Figures from the data as of November 4, 2026.*
+*For leaders and staff. Status as of November 17, 2026. Figures from the data as of November 4, 2026.*
 
 ## In brief
 
@@ -116,7 +116,7 @@ Taken alone, that looks like facilities improved and then slipped. The data cann
 | Status | Capability |
 |---|---|
 | **Working now** | Plain-language search of findings and corrective actions; full report details; facility profiles and repeat findings; recurring-finding groups; counts and trends by year; time to close and open-item aging by office, topic, or report type; a one-step inspection brief for a facility |
-| **Tested** | 24 questions scored against answers computed from the data, on two AI models. Each passed 23, with no made-up report numbers. The test is small, and its authors wrote the questions, so see the [testing results](testing-results.md) for its limits. An independent agent's answers are in the [test bank](https://www.troymd.com/mcp-hackathon-test-bank). IBM's own assistant in watsonx Orchestrate is being tested on the same questions |
+| **Tested** | 24 questions scored against answers computed from the data. Claude Opus 5.5 passed 3 with no server and 22 or 23 with it; Claude Sonnet 5.5 passed 23; neither made up a report number. IBM's own assistant in watsonx Orchestrate passed 8 to 11 in a first round, and the server fixes it led to are deployed. The test is small, and its authors wrote the questions, so see the [evaluation](evaluation.md) for its limits. An independent agent's answers are in the [test bank](https://www.troymd.com/mcp-hackathon-test-bank) |
 | **Deployed** | In IBM watsonx Orchestrate, where an assistant uses its tools |
 | **Not yet done** | Hosting the data on a cloud service. It currently runs on one computer, so it can go down |
 
