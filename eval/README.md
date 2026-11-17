@@ -43,6 +43,14 @@ uv run --group eval python eval/phoenix/run_experiment.py --url http://127.0.0.1
   --model meta-llama/llama-3-3-70b-instruct
 ```
 
+To judge saved answers again on watsonx.ai, as the skill does, and compare with the Claude judge (no calls to the server or data API):
+
+```bash
+uv run --group eval python eval/phoenix/rejudge_watsonx.py eval/results/<run> [...]
+```
+
+It writes `judge_watsonx.json` and `judge-comparison.md` into each run folder.
+
 The smoke test confirms the credentials, that the model is listed for tool calling in the region, a chat call, and a real tool call, and prints no credential. watsonx.ai usage is not priced in the summary.
 
 ## Layout
@@ -55,6 +63,7 @@ The smoke test confirms the credentials, that the model is listed for tool calli
 | `phoenix/agent.py` | The assistant loop, for Claude or a watsonx.ai model, connected to the server over authenticated HTTP |
 | `phoenix/watsonx.py` | The watsonx.ai chat client, with IAM token refresh |
 | `phoenix/watsonx_smoke.py` | Checks watsonx.ai credentials and tool calling before a run |
+| `phoenix/rejudge_watsonx.py` | Judges saved answers again with a watsonx.ai model and compares the two judges |
 | `phoenix/scoring.py` | Scoring by code, and the judge |
 | `phoenix/run_experiment.py` | The command above |
 | `phoenix/score_external.py` | Scores answers from an agent outside this harness |

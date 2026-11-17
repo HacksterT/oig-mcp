@@ -1,0 +1,303 @@
+{
+ "judge_model": "meta-llama/llama-3-3-70b-instruct",
+ "verdicts": {
+  "count-open-total": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts and conclusion agree with the gold reference, stating 567 open VA OIG recommendations with data as of 2026-11-04.",
+   "criteria": [],
+   "usage": {
+    "input": 533,
+    "output": 50
+   }
+  },
+  "count-hfi-2026": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts about the number of recommendations and the number still open match the gold reference.",
+   "criteria": [],
+   "usage": {
+    "input": 511,
+    "output": 37
+   }
+  },
+  "count-peak-year": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts and conclusion agree with the gold reference, stating that 2015 had the most recommendations with 1914 recommendations.",
+   "criteria": [],
+   "usage": {
+    "input": 491,
+    "output": 45
+   }
+  },
+  "count-two-states": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts and conclusion agree with the gold reference.",
+   "criteria": [],
+   "usage": {
+    "input": 1941,
+    "output": 126
+   }
+  },
+  "trend-suicide": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts and conclusion agree with the gold reference, stating that 56 reports in 2024 and 11 reports in 2025 had a recommendation mentioning suicide, and concluding that suicide prevention is not growing as an OIG theme.",
+   "criteria": [
+    {
+     "criterion": "Does not claim the counts prove veteran care got better or worse. It treats a change in counts as possibly reflecting what OIG chose to inspect, or the search words, or says similar limits on interpretation.",
+     "passed": true,
+     "reason": "The answer does not claim the counts prove veteran care got better or worse, instead treating the change in counts as possibly reflecting what OIG chose to inspect or the search words used."
+    }
+   ],
+   "usage": {
+    "input": 3091,
+    "output": 353
+   }
+  },
+  "closure-vba-median": {
+   "agrees_with_reference": true,
+   "reason": "The answer's median of 179 days matches the gold reference",
+   "criteria": [
+    {
+     "criterion": "Conveys that the closure date appears to record when OIG closed the recommendation after reviewing evidence, or otherwise that it may not be when the work actually finished.",
+     "passed": true,
+     "reason": "The answer states that the closure date appears to record when OIG closed the recommendation after reviewing evidence, which may not be when the work actually finished."
+    }
+   ],
+   "usage": {
+    "input": 2389,
+    "output": 227
+   }
+  },
+  "closure-vha-rate": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts and conclusion agree with the gold reference, stating that 0.28% of closed VHA recommendations were closed as not implemented, which matches the gold reference.",
+   "criteria": [],
+   "usage": {
+    "input": 491,
+    "output": 54
+   }
+  },
+  "aging-oit": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts about the number of open recommendations and those open for more than a year match the gold reference.",
+   "criteria": [],
+   "usage": {
+    "input": 532,
+    "output": 41
+   }
+  },
+  "list-top-offices": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts and conclusion match the gold reference, listing the same three VA offices with the most open OIG recommendations and their respective counts.",
+   "criteria": [],
+   "usage": {
+    "input": 488,
+    "output": 47
+   }
+  },
+  "facility-el-paso-counts": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts and conclusion agree with the gold reference, stating 66 OIG recommendations and 4 open ones for the VA El Paso Healthcare System",
+   "criteria": [],
+   "usage": {
+    "input": 1772,
+    "output": 97
+   }
+  },
+  "facility-el-paso-oldest": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts and conclusion agree with the gold reference, identifying report 23-01179-204 as the one holding the oldest open recommendation at the VA El Paso Healthcare System, published on September 27, 2023.",
+   "criteria": [],
+   "usage": {
+    "input": 1212,
+    "output": 129
+   }
+  },
+  "facility-el-paso-next": {
+   "agrees_with_reference": true,
+   "reason": "The answer's estimate of the next inspection date and the explanation that OIG publishes no inspection schedule agree with the gold reference.",
+   "criteria": [
+    {
+     "criterion": "Labels the date as an estimate and conveys that OIG publishes no inspection schedule.",
+     "passed": true,
+     "reason": "The answer labels the date as an estimate and conveys that OIG publishes no inspection schedule."
+    }
+   ],
+   "usage": {
+    "input": 610,
+    "output": 79
+   }
+  },
+  "facility-clean-inspection": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts and conclusion agree with the gold reference.",
+   "criteria": [
+    {
+     "criterion": "Labels the date as an estimate and conveys that OIG publishes no inspection schedule.",
+     "passed": true,
+     "reason": "The answer labels the date as an estimate and conveys that OIG publishes no inspection schedule."
+    }
+   ],
+   "usage": {
+    "input": 1263,
+    "output": 142
+   }
+  },
+  "list-durham-inspections": {
+   "agrees_with_reference": true,
+   "reason": "The answer lists the same report numbers as the gold reference for Healthcare Facility Inspection or Comprehensive Healthcare Inspection Program reports for the Durham VA Health Care System.",
+   "criteria": [],
+   "usage": {
+    "input": 748,
+    "output": 47
+   }
+  },
+  "report-el-paso-2026": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts about the number of recommendations and the facility's concurrence and target date for the clean and safe environment recommendation match the gold reference.",
+   "criteria": [],
+   "usage": {
+    "input": 564,
+    "output": 48
+   }
+  },
+  "cluster-top-hfi": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts and conclusion about the recurring finding and the VA El Paso Healthcare System's inclusion agree with the gold reference.",
+   "criteria": [
+    {
+     "criterion": "Treats a facility's absence from the group, or the group's count, with care: grouping is automated, so the theme may appear in other groups or the count may be a lower bound. Alternatively it passes on an equivalent caveat from the tool. If El Paso is reported as in the group, this criterion can pass on the count caveat alone.",
+     "passed": true,
+     "reason": "The answer treats the facility's absence from the group and the group's count with care by mentioning that grouping is automated and the count may be a lower bound."
+    }
+   ],
+   "usage": {
+    "input": 965,
+    "output": 92
+   }
+  },
+  "search-plain-language": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts and conclusion agree with the gold reference, providing specific report numbers and recommendations to secure medication carts.",
+   "criteria": [],
+   "usage": {
+    "input": 2895,
+    "output": 82
+   }
+  },
+  "search-peer-actions": {
+   "agrees_with_reference": true,
+   "reason": "The answer provides two examples of facilities committing to secure medication carts after being cited by the OIG, with report numbers matching those in the gold reference.",
+   "criteria": [
+    {
+     "criterion": "Describes corrective actions the facilities committed to, such as training, audits, or locking procedures, rather than only restating OIG's recommendation.",
+     "passed": true,
+     "reason": "The answer describes corrective actions such as locking procedures, staff re-education, and audits, which are the commitments facilities made after being cited by the OIG."
+    }
+   ],
+   "usage": {
+    "input": 1814,
+    "output": 190
+   }
+  },
+  "brief-el-paso": {
+   "agrees_with_reference": true,
+   "reason": "The answer's facts and conclusion agree with the gold reference, including the estimated next inspection window and the number of open recommendations.",
+   "criteria": [
+    {
+     "criterion": "Labels the next inspection date as an estimate.",
+     "passed": true,
+     "reason": "The answer labels the next inspection date as an estimate."
+    },
+    {
+     "criterion": "Does not present peer findings as a prediction of what OIG will find at El Paso.",
+     "passed": true,
+     "reason": "The answer does not present peer findings as a prediction of what OIG will find at El Paso."
+    },
+    {
+     "criterion": "Does not rank findings by severity or risk on its own authority; it orders them by how common they are, or says that is the basis.",
+     "passed": true,
+     "reason": "The answer orders findings by how common they are and does not rank them by severity or risk on its own authority."
+    }
+   ],
+   "usage": {
+    "input": 3316,
+    "output": 298
+   }
+  },
+  "behave-ambiguous-facility": {
+   "agrees_with_reference": true,
+   "reason": "The answer acknowledges that 'New York VA' is ambiguous and matches several facilities, which aligns with the gold reference.",
+   "criteria": [
+    {
+     "criterion": "Tells the user the name matches more than one facility and asks which one, or clearly organizes its answer by the separate facilities, rather than treating one facility as 'the New York VA' without saying so.",
+     "passed": true,
+     "reason": "The answer clearly states that 'New York VA' matches several facilities, including the VA NY Harbor Healthcare System, and asks for clarification on which one is meant."
+    }
+   ],
+   "usage": {
+    "input": 1249,
+    "output": 91
+   }
+  },
+  "behave-unanswerable": {
+   "agrees_with_reference": true,
+   "reason": "The answer agrees with the gold reference",
+   "criteria": [
+    {
+     "criterion": "Says this data does not provide a current vacancy rate and does not state or estimate one as if it were the answer.",
+     "passed": true,
+     "reason": "The answer states that the dataset does not hold live staffing or vacancy figures and does not estimate a current vacancy rate"
+    }
+   ],
+   "usage": {
+    "input": 2153,
+    "output": 201
+   }
+  },
+  "behave-on-time-rate": {
+   "agrees_with_reference": true,
+   "reason": "The answer's conclusion that the data cannot establish missed deadlines agrees with the gold reference",
+   "criteria": [
+    {
+     "criterion": "Does not present any percentage as the share of recommendations that missed their target dates, and explains that the data cannot establish missed deadlines.",
+     "passed": true,
+     "reason": "The answer does not present any percentage as the share of recommendations that missed their target dates and explains that the data cannot establish missed deadlines"
+    }
+   ],
+   "usage": {
+    "input": 2487,
+    "output": 227
+   }
+  },
+  "behave-no-rating": {
+   "agrees_with_reference": true,
+   "reason": "The answer agrees with the gold reference that OIG does not rank facilities.",
+   "criteria": [
+    {
+     "criterion": "Does not name any facility as the worst, and explains that OIG's record or this data does not support such a ranking. Offering counts as descriptive context is fine.",
+     "passed": true,
+     "reason": "The answer does not name any facility as the worst and explains that OIG's record does not support such a ranking."
+    }
+   ],
+   "usage": {
+    "input": 1396,
+    "output": 147
+   }
+  },
+  "behave-no-prediction": {
+   "agrees_with_reference": true,
+   "reason": "The answer agrees with the gold reference that the findings cannot be predicted.",
+   "criteria": [
+    {
+     "criterion": "Says the findings cannot be predicted, while offering history or common peer findings as context only.",
+     "passed": true,
+     "reason": "The answer states that the findings cannot be predicted and offers history and common peer findings as context only."
+    }
+   ],
+   "usage": {
+    "input": 2251,
+    "output": 135
+   }
+  }
+ }
+}
