@@ -18,7 +18,7 @@
 | Llama 3.3 70B on IBM watsonx.ai, harness | 9 of 24, before and after the November 17 scope changes | Same model and settings; tool choice, citations, and data dates improved. Not rerun since the result-size changes |
 | No-tool baseline | Claude Opus 5.5: 3 of 24; Llama 3.3 70B: 2 of 24 | What the models do without the server |
 | Adversarial set, 6 questions | Opus 5 of 6, then 6 of 6; Llama 0 of 6, then 4 of 6, after server changes; Orchestrate 4 and 4 of 6, in round 2 | Not blind: questions and fixes written the same night |
-| Ambiguous facility name, three hosts | After #92, Hermes Agent and Claude Desktop listed the matching facilities and asked; neither chose one itself. Names that once opened one facility silently ("California VA", "Virginia VA", "Columbia VA") now list the matches | The server's own question to the user is proven only with the MCP SDK's client; Orchestrate is untested |
+| Ambiguous facility name, four hosts | After #92, Hermes Agent, Claude Desktop, and the Orchestrate agent listed the matching facilities and asked; none chose one itself. In Claude Code the server's own form asked, and after #114 the same question took one call to the server instead of three or four ([the takes](#the-form-in-claude-code)) | One trial per host; the form has been shown in Claude Code, a terminal host, and in no desktop app |
 | Automated tests | 313 pass, on every change | |
 | Image, deployment, and robustness checks | 15 of 15 and 22 of 22, on the Mac and on IBM's virtual machine; 48 of 48 robustness checks, local and through the public URL | |
 | Load test, 1 to 40 concurrent clients | All 2,059 calls answered, no errors; median 0.33 s to 1.8 s | One run, one Mac, not to failure |
@@ -319,8 +319,21 @@ A facility name that matches several facilities, such as "New York VA", should n
 | Hermes Agent, hosted endpoint | DeepSeek | No: its handler answers only approve or deny, and on protocol 2026-07-28 its tool call fails on `input_required` | Before #92 it chose VA NY Harbor itself. After, it offered the facilities with its own `clarify` tool and called again with the one chosen |
 | Claude Desktop, stdio | Claude | No form shown | Before #92 it chose VA NY Harbor itself. After, it listed the facilities and asked |
 | watsonx Orchestrate, stdio toolkit | GPT-OSS 120B | No form appeared | "New York VA": listed the facilities and asked. "California VA": did not call the facility tool; it searched the state and returned example reports |
+| Claude Code 2.1, stdio | Claude Opus 5.5 | Yes: the server's form | "Columbia VA": the form listed three facilities and the user chose one. See the three takes below |
 
-So the server's next step, not elicitation, is what made the desktop hosts ask. The server's own form was later shown in Claude Code over stdio, asked about "the Columbia VA": it listed three facilities, and the answer covered the one chosen.
+So the server's next step, not elicitation, is what made the desktop hosts ask.
+
+### The form in Claude Code
+
+The server's own form was first shown in a real host in Claude Code, on November 17, asked "What has OIG found at the Columbia VA?" (South Carolina 544, Missouri 589A4, and Washington, DC 688). The model never sees the form, so in the first two takes it treated the user's pick as the server's guess. Two server changes followed in [#114](https://github.com/HacksterT/oig-mcp/pull/114): a result chosen in the form now opens with a notice that the user chose it and that the answer covers it alone, and a name ending in a state ("Columbia South Carolina", "Columbia SC") is looked up in that state. Each take's figures come from Claude Code's own session record.
+
+| Take | Server | Calls to the server | Model requests | Tool results read | Tokens processed | What happened |
+|---|---|---|---|---|---|---|
+| 1 | Before #114 | 3, and a second turn from the user | 6 | 59,749 characters | 431,343 | The user picked Washington, DC in the form. The model called it "the wrong place", asked again in chat, then needed two more lookups, one a full name that matched nothing, to open Missouri |
+| 2 | Before #114 | 4 | 5 | 61,867 characters | 316,094 | The user picked Missouri. The model said the search "returned only the Missouri facility", tried "Columbia South Carolina" (no match), opened 544 by station, and answered for both |
+| 3 | After #114 | 1 | 3 | 30,452 characters | 171,280 | The user picked Missouri. The result said so, and the answer covered "the facility you picked from the three that match" |
+
+With the server's two changes, the same question took one call to the server instead of three or four, three model requests instead of five or six, half the tool results, and 46 to 60 percent fewer tokens. Read the token figures with their limits: one take each; most of each total is Claude Code's own context, read again on every model request and mostly from cache, so the cost saving is smaller than the token count; and take 1 also included the user's second turn. The direction is clear, the size is an illustration rather than a measurement.
 
 ## Load test
 
