@@ -1,6 +1,6 @@
 # Deployment handoff: oig-mcp to IBM Code Engine and watsonx Orchestrate
 
-> **Superseded on 2026-11-16.** This was the plan to deploy on IBM Code Engine and register a remote toolkit. Code Engine was not used: the hackathon account had no resource group, registry namespace, or Code Engine project. The server instead runs in watsonx Orchestrate as a local (stdio) toolkit; see [`deploy/ibm/local-mcp-toolkit/README.md`](../../deploy/ibm/local-mcp-toolkit/README.md) and Bob's reports in this folder (Phase 0, Phase 1, and Phases 2 to 4, dated 2026-11-16). The document is kept unchanged below as a record of the plan and its assumptions.
+> **Superseded on 2026-11-16.** This was the plan to deploy on IBM Code Engine and register a remote toolkit. Code Engine was not used: the hackathon account had no resource group, registry namespace, or Code Engine project. The server instead runs in watsonx Orchestrate as a local (stdio) toolkit; see [`deploy/ibm/local-mcp-toolkit/README.md`](../../../deploy/ibm/local-mcp-toolkit/README.md) and Bob's reports in this folder (Phase 0, Phase 1, and Phases 2 to 4, dated 2026-11-16). The document is kept unchanged below as a record of the plan and its assumptions.
 
 **Author:** Troy Sybert, with Claude Code
 **Date:** 2026-11-04, updated 2026-11-10
@@ -11,7 +11,7 @@
 
 The server is built, tested, and evaluated on Troy's Mac. Your job is to run the same image on Code Engine, register it in Orchestrate, and tell Troy which assumptions below were wrong. Nothing here has run on IBM yet, so the assumptions are real risks, and the first checks are ordered to find bad ones early.
 
-Read this first, and then [`docs/project-overview.md`](../project-overview.md) for the project and its rules. Where your own skills differ on something specific to this project, these documents win. If you need a value that is not here, ask Troy. Do not guess, and do not change the server's authentication or outbound rules to get past a problem. Stop and report it.
+Read this first, and then [`docs/project-overview.md`](../../project-overview.md) for the project and its rules. Where your own skills differ on something specific to this project, these documents win. If you need a value that is not here, ask Troy. Do not guess, and do not change the server's authentication or outbound rules to get past a problem. Stop and report it.
 
 ## What changed since 2026-11-04
 
@@ -87,7 +87,7 @@ The bearer token is the only authentication built. OAuth is not. It is one share
 | Missing or wrong Cloudflare token gives a clean refusal without the API address | Container | Pass |
 | No secret in the image, tool responses, or logs | Container | Pass |
 | An independent MCP client with a different model answers the questions | Hermes Agent running DeepSeek V4 Pro 0813, through the tunnel | Facts all correct, 18 questions. Its answers named reports but gave almost no links, under test instructions that may have caused that. See D10 |
-| 24 gold questions, on two Claude models | Container | 23 of 24 each, and Opus again on 2026-11-10 after the last changes, with the same scores. See [`docs/evaluation.md`](../evaluation.md) |
+| 24 gold questions, on two Claude models | Container | 23 of 24 each, and Opus again on 2026-11-10 after the last changes, with the same scores. See [`docs/evaluation.md`](../../evaluation.md) |
 
 **Not tested at all:** IBM's network, Code Engine, Orchestrate's import, its connections, and its model.
 
