@@ -1,6 +1,6 @@
 # Deck source: oig-mcp
 
-*Source text for the hackathon presentation deck. Each slide has a title, the body for the slide, a suggested visual, and speaker notes. Slides follow the order of the hackathon's sample deck, with three added: who the server serves (slide 4), the watsonx Orchestrate deployment (slide 9), and the failure analysis (slide 13). Figures come from [the evaluation document](evaluation-document.md) and [SECURITY.md](../../SECURITY.md) as of November 17, 2026, including the second Orchestrate round.*
+*Source text for the hackathon presentation deck. Each slide has a title, the body for the slide, a suggested visual, and speaker notes. Slides follow the order of the hackathon's sample deck, with four added: who the server serves (slide 4), asking the user instead of guessing (slide 9), the watsonx Orchestrate deployment (slide 10), and the failure analysis (slide 14). Figures come from [the evaluation document](evaluation-document.md) and [SECURITY.md](../../SECURITY.md) as of November 17, 2026, including the second Orchestrate round.*
 
 ---
 
@@ -179,15 +179,51 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 - **Notices the agent passes on:** caveats the data requires, such as why OIG's dashboard shows 586 open recommendations against this data's 567.
 - **Scope stated by the server:** no medical, benefits, or legal advice; emergencies sent to 911; no facility rankings or forecasts; never a guess about who was responsible.
 - **Report text treated as a quotation:** results name the fields that quote OIG reports and say to cite them, never to follow instructions in them. Every tool is read-only.
-- **Ambiguity handed back to the user:** a facility name that matches several, such as "New York VA", returns the matches and a next step: do not choose, ask. Where the client supports MCP elicitation, the server asks the user itself.
+- **Ambiguity handed back to the user:** a facility name that matches several is never resolved by the model. The next slide shows how.
 
 **Visual:** A result with its provenance block, notices, and quoted fields highlighted.
 
-**Speaker notes:** This is why the Orchestrate agent needs only one instruction: answer only from what the tools return. The ambiguity rule was tested in two real hosts with two models. Asked about "the New York VA", Hermes with DeepSeek and Claude Desktop each chose VA NY Harbor themselves. After one server change, the result's next step saying not to choose and why, both asked the user instead, and Hermes offered the facilities as a list of choices with its own tool. No host prompt changed. The server-side picker itself is tested with the MCP SDK's client; neither desktop host displayed it. Measured against all ten anti-patterns in IBM's guide, the server fully meets four, mostly meets two, and partly meets four; the table, with evidence for each row, is in the evaluation document.
+**Speaker notes:** This is why the Orchestrate agent needs only one instruction: answer only from what the tools return. Measured against all ten anti-patterns in IBM's guide, the server fully meets four, mostly meets two, and partly meets four; the table, with evidence for each row, is in the evaluation document.
 
 ---
 
-## Slide 9: Running on IBM watsonx Orchestrate
+## Slide 9: Asking the user, never guessing
+
+**Title:** Asking the User, Never Guessing: MCP Elicitation with a Fallback
+
+**Body:**
+
+**The risk:** "the Columbia VA" is three facilities: South Carolina (544), Missouri (589A4), and Washington, DC (688). Findings from the wrong one would be credited to the facility the user meant.
+
+**One behavior, two layers:** the server never lets the model pick.
+
+| Layer | When | What happens | Shown in |
+|---|---|---|---|
+| **1. Elicitation form** | The host can show MCP forms | The server pauses the tool call and asks the user directly. Only a matching station is accepted, and the result tells the model the user chose | Claude Code over stdio; the MCP SDK client on both protocol versions |
+| **2. Next step** | Any other host | The matches, with: do not choose, list them, ask, call again with the station number | Hermes, Claude Desktop, and Orchestrate each asked instead of guessing |
+
+**The finding:** hosts implement MCP unevenly. VS Code, Cursor, Claude Code, and Grok declare form support; Claude Desktop accepts URL mode only; Hermes can only approve or deny; Orchestrate declared none. A safety behavior cannot depend on one protocol feature, so the server degrades to the next step.
+
+**Visual:** The Claude Code form for "the Columbia VA" (from the demo recording) beside a host asking in chat, under this flow:
+
+```
+"What has OIG found at the Columbia VA?"
+              │
+   3 match: 544 SC · 589A4 MO · 688 DC
+              │
+   host shows forms? ── yes ──> the server asks the user ──> answer for the one chosen
+              │                                              "The user chose ... answer
+              no                                              for this facility only"
+              ▼
+   matches + next step: do not choose; list, ask,
+   call again with the station number ──> the agent asks in chat
+```
+
+**Speaker notes:** Elicitation is the MCP feature that lets a server ask the user a question in the middle of a tool call. The model is not in the loop, so the user's choice reaches the server unchanged, and the server accepts only a station that matched. Before the next step existed, Hermes with DeepSeek and Claude Desktop each chose VA NY Harbor for "the New York VA"; after it, both asked, with no change to either host's prompt. Testing the form in Claude Code taught two more lessons. The model cannot see the form, so it read the user's pick as the server's guess and looked up the other facilities; the result now says the user chose. And "Columbia SC" matched nothing until the lookup read a trailing state. The limit: the form has been shown in one real host, Claude Code, a terminal application, and in no desktop app yet. Claude Desktop accepts URL mode only.
+
+---
+
+## Slide 10: Running on IBM watsonx Orchestrate
 
 **Title:** Deployed on IBM watsonx Orchestrate
 
@@ -205,7 +241,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 ---
 
-## Slide 10: Demo
+## Slide 11: Demo
 
 **Title:** MCP Server Demo
 
@@ -214,8 +250,9 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 1. "How current is the data?" Dataset status, with the data date and its reconciliation with OIG's own counts.
 2. "Which offices have the most recommendations open longer than a year?" An exact table from the analysis tool.
 3. "What did facilities commit to doing about unsecured medication carts?" Search, with peer commitments and report links.
-4. "Prepare an inspection brief for a named facility." The inspection brief.
-5. "Which facility is the worst?" A declined request, with what the server can offer instead.
+4. "What has OIG found at the Columbia VA?" Three facilities match, and the server's form asks which one (Claude Code).
+5. "Prepare an inspection brief for a named facility." The inspection brief.
+6. "Which facility is the worst?" A declined request, with what the server can offer instead.
 
 **Visual:** Screenshots from the Orchestrate agent, or from Claude, for each step.
 
@@ -223,7 +260,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 ---
 
-## Slide 11: Evaluation setup
+## Slide 12: Evaluation setup
 
 **Title:** MCP Server Evaluation: Setup
 
@@ -260,7 +297,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 ---
 
-## Slide 12: Evaluation results
+## Slide 13: Evaluation results
 
 **Title:** MCP Server Evaluation: Results
 
@@ -296,7 +333,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 ---
 
-## Slide 13: Failure analysis
+## Slide 14: Failure analysis
 
 **Title:** Every Failure Traced to Its Cause, Then Fixed and Retested
 
@@ -330,7 +367,7 @@ Each failure was read against the tool results and the data service's request tr
 
 ---
 
-## Slide 14: Security considerations
+## Slide 15: Security considerations
 
 **Title:** Security Considerations
 
@@ -355,7 +392,7 @@ Each failure was read against the tool results and the data service's request tr
 
 ---
 
-## Slide 15: Lessons learned and recommendations
+## Slide 16: Lessons learned and recommendations
 
 **Title:** Lessons Learned and Recommendations
 
@@ -370,6 +407,8 @@ Each failure was read against the tool results and the data service's request tr
 4. **Put scope and guardrails in the server, not in one host's prompt.** The server's instructions and results carry citations, caveats, and refusals to every agent that connects, including one with a single instruction.
 
 5. **Read failures against request traces before assigning fault.** Trace IDs that link each tool call to the data requests behind it separated server, model, platform, and scorer failures.
+
+6. **Give every protocol feature a fallback.** Hosts support MCP features unevenly, so the facility form is backed by a next step any agent can follow. Then test in real hosts: what the model can see differs from what the user saw.
 
 **Visual:** None, or one icon per lesson.
 
