@@ -271,7 +271,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 | Llama 3.3 70B, watsonx.ai | 2 of 24 (0 of 16) | 9 of 24 (11 of 16) |
 
 **Across platforms:**
-- **Claude Opus 5.5:** 23 of 24 on every run from November 4 to 17, and 22 of 24 after the result-size changes, where the new miss was "agreed" for "concur" on a correct answer. Claude Sonnet 5.5 scored 23 of 24.
+- **Claude Opus 5.5:** 23 of 24 on every run from November 4 to 17, and 22 of 24 after the result-size changes, where the new miss was "agreed" for "concur" on a correct answer. Claude Sonnet 5.5 scored 23 of 24 on November 4 and again on the final server.
 - **GPT-OSS 120B, the Orchestrate agent, three runs:** 10, 8, and 11 of 24 on this project's scoring; IBM's engine scored 14, 14, and 13. UPDATE after the second round.
 - **Citations:** no answer from the server-backed Claude, Llama, or Orchestrate runs cited a report that does not exist.
 - **Judge agreement:** the two judges agreed on 89 of 90 harness answers.
