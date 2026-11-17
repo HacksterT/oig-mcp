@@ -1,0 +1,106 @@
+auth_config:
+  tenant_name: gsa-hackathon
+  token: REDACTED
+  url: https://api.REGION.watson-orchestrate.cloud.ibm.com/instances/REDACTED
+collection_name: default-collection
+custom_metrics_config: null
+data_annotation_run: false
+enable_fuzzy_matching: false
+enable_manual_user_input: false
+enable_recursive_search: false
+enable_verbose_logging: true
+error_keywords: []
+evaluation_config:
+  provider_config:
+    embedding_model_id: sentence-transformers/all-minilm-l6-v2
+    model_id: bedrock/openai.gpt-oss-120b-1:0
+    provider: gateway
+    provider_params: {}
+    referenceless_eval: false
+    vendor: ibm
+evaluation_model: bedrock/openai.gpt-oss-120b-1:0
+extractors_config:
+  paths: null
+is_adk: true
+is_strict: true
+langfuse_enabled: false
+llm_user_config:
+  enable_structured_output: true
+  model_id: null
+  personas: []
+  prompt_config: ~/.local/share/uv/tools/ibm-watsonx-orchestrate/lib/python3.11/site-packages/agentops/prompt/universal_user_template.jinja2
+  provider_config:
+    embedding_model_id: sentence-transformers/all-minilm-l6-v2
+    model_id: bedrock/openai.gpt-oss-120b-1:0
+    provider: gateway
+    provider_params: {}
+    referenceless_eval: false
+    vendor: ibm
+  user_response_style: []
+  version: v2
+max_interaction_steps: 10
+max_user_turns: 25
+metrics:
+- JourneySuccessMetric
+- JourneyCompletion
+- ToolCalling
+- OrchestrateAgentRoutingAccuracy
+- StepMetrics
+- AgentResponseTime
+- KnowledgeBaseAnswerRelevancy
+- DocumentRetrievalQuality
+- KnowledgeBaseFaithfulness
+- RetrievalConfidence
+- ToolParameterF1
+n_runs: 1
+num_workers: 2
+operator_configs:
+  JourneyCompletion:
+    is_strict: false
+    keyword_template_path: ~/.local/share/uv/tools/ibm-watsonx-orchestrate/lib/python3.11/site-packages/agentops/prompt/gpt/keyword_matching_prompt.jinja2
+    semantic_template_path: ~/.local/share/uv/tools/ibm-watsonx-orchestrate/lib/python3.11/site-packages/agentops/prompt/gpt/semantic_matching_prompt_v2.jinja2
+  JourneySuccessMetric:
+    is_strict: false
+    keyword_template_path: ~/.local/share/uv/tools/ibm-watsonx-orchestrate/lib/python3.11/site-packages/agentops/prompt/gpt/keyword_matching_prompt.jinja2
+    semantic_template_path: ~/.local/share/uv/tools/ibm-watsonx-orchestrate/lib/python3.11/site-packages/agentops/prompt/gpt/semantic_matching_prompt_v2.jinja2
+output_dir: eval/orchestrate/results/run-3/2026-11-17_00-21-49
+provider_config:
+  embedding_model_id: sentence-transformers/all-minilm-l6-v2
+  model_id: bedrock/openai.gpt-oss-120b-1:0
+  provider: gateway
+  provider_params: {}
+  referenceless_eval: false
+  vendor: ibm
+similarity_threshold: 0.8
+skip_available_results: false
+skip_legacy_evaluation: null
+tags: []
+test_paths:
+- eval/orchestrate/tests/01-count-open-total.json
+- eval/orchestrate/tests/02-count-hfi-2026.json
+- eval/orchestrate/tests/03-count-peak-year.json
+- eval/orchestrate/tests/04-count-two-states.json
+- eval/orchestrate/tests/05-trend-suicide.json
+- eval/orchestrate/tests/06-closure-vba-median.json
+- eval/orchestrate/tests/07-closure-vha-rate.json
+- eval/orchestrate/tests/08-aging-oit.json
+- eval/orchestrate/tests/09-list-top-offices.json
+- eval/orchestrate/tests/10-facility-el-paso-counts.json
+- eval/orchestrate/tests/11-facility-el-paso-oldest.json
+- eval/orchestrate/tests/12-facility-el-paso-next.json
+- eval/orchestrate/tests/13-facility-clean-inspection.json
+- eval/orchestrate/tests/14-list-durham-inspections.json
+- eval/orchestrate/tests/15-report-el-paso-2026.json
+- eval/orchestrate/tests/16-cluster-top-hfi.json
+- eval/orchestrate/tests/17-search-plain-language.json
+- eval/orchestrate/tests/18-search-peer-actions.json
+- eval/orchestrate/tests/19-brief-el-paso.json
+- eval/orchestrate/tests/20-behave-ambiguous-facility.json
+- eval/orchestrate/tests/21-behave-unanswerable.json
+- eval/orchestrate/tests/22-behave-on-time-rate.json
+- eval/orchestrate/tests/23-behave-no-rating.json
+- eval/orchestrate/tests/24-behave-no-prediction.json
+text_match_config:
+  keyword_template_path: null
+  semantic_template_path: null
+wxo_lite_version: 2.20.0

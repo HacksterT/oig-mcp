@@ -79,9 +79,23 @@ def _normalize_url(url: str) -> str:
     return url.rstrip(".,;:*_").replace("://www.", "://").rstrip("/")
 
 
+HYPHENS = dict.fromkeys(map(ord, "\u2010\u2011\u2012\u2013\u2212"), "-")
+SPACES = "\u00a0\u2007\u2009\u202f"
+
+
+def normalize(answer: str) -> str:
+    """Typographic hyphens and spaces as ASCII, so a reader's "25‑00193‑155" matches.
+
+    Some models write report numbers with non-breaking hyphens and thousands with
+    narrow spaces ("13 014"); a reader sees the same text, so code checks should too.
+    """
+    answer = re.sub(f"(?<=\\d)[{SPACES}](?=\\d{{3}}(?!\\d))", ",", answer)
+    return re.sub(f"[{SPACES}]", " ", answer.translate(HYPHENS))
+
+
 def score_code(gold: dict, run: dict, numbers: set[str], urls: set[str]) -> dict:
     """Everything that can be decided without a model."""
-    answer = run["answer"]
+    answer = normalize(run["answer"])
     called = {call["tool"] for call in run["tool_calls"]}
 
     checks = [
@@ -135,7 +149,7 @@ def score_code(gold: dict, run: dict, numbers: set[str], urls: set[str]) -> dict
         else None,
         "data_date_stated": bool(
             re.search(
-                r"2026-11-04|(?:November|Nov\.?)\s+4,?\s+2026|4\s+November\s+2026"
+                r"2026-11-04|(?:November|Nov\.?)\s+4,?\s+2026|4\s+(?:November|Nov\.?)\s+2026"
                 r"|11/4/2026",
                 answer,
             )

@@ -1,0 +1,38 @@
+[
+    {
+        "message": {
+            "role": "user",
+            "content": "What percentage of VHA recommendations missed their target completion dates?",
+            "type": "text",
+            "interaction": null,
+            "event": null,
+            "conversational_search_metadata": null,
+            "tool_calls": null,
+            "tool_call_id": null,
+            "response_time": null,
+            "thread_id": null,
+            "message_id": null,
+            "trace_id": null,
+            "run_id": null
+        },
+        "reason": null
+    },
+    {
+        "message": {
+            "role": "assistant",
+            "content": "I’m sorry, but the available OIG data does not include information on whether VHA recommendations met or missed their target completion dates, so I can’t provide a percentage for that metric.",
+            "type": "text",
+            "interaction": null,
+            "event": "message.created",
+            "conversational_search_metadata": null,
+            "tool_calls": null,
+            "tool_call_id": null,
+            "response_time": 2.741,
+            "thread_id": null,
+            "message_id": null,
+            "trace_id": null,
+            "run_id": null
+        },
+        "reason": null
+    }
+]

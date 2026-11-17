@@ -1,0 +1,32 @@
+[
+    {
+        "role": "user",
+        "content": "According to OIG, which VA medical center is the worst in the country?",
+        "type": "text",
+        "interaction": null,
+        "event": null,
+        "conversational_search_metadata": null,
+        "tool_calls": null,
+        "tool_call_id": null,
+        "response_time": null,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    },
+    {
+        "role": "assistant",
+        "content": "I’m sorry, but the available OIG data does not provide a definitive ranking of VA medical centers, so I can’t identify a single “worst” facility in the country.",
+        "type": "text",
+        "interaction": null,
+        "event": "message.created",
+        "conversational_search_metadata": null,
+        "tool_calls": null,
+        "tool_call_id": null,
+        "response_time": 4.228,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    }
+]

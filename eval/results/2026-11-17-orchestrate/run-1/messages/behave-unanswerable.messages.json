@@ -1,0 +1,32 @@
+[
+    {
+        "role": "user",
+        "content": "What is the current staff vacancy rate at the Durham VA Health Care System?",
+        "type": "text",
+        "interaction": null,
+        "event": null,
+        "conversational_search_metadata": null,
+        "tool_calls": null,
+        "tool_call_id": null,
+        "response_time": null,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    },
+    {
+        "role": "assistant",
+        "content": "I’m sorry, but the available OIG data tools do not include information on staff vacancy rates.",
+        "type": "text",
+        "interaction": null,
+        "event": "message.created",
+        "conversational_search_metadata": null,
+        "tool_calls": null,
+        "tool_call_id": null,
+        "response_time": 3.354,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    }
+]
