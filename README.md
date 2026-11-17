@@ -109,7 +109,7 @@ The same server runs over both MCP transports; only how a client starts it diffe
 | stdio | watsonx Orchestrate, desktop hosts (Claude Desktop, VS Code, Cursor) | The host starts the server as a local process, with no network endpoint. In Orchestrate it runs as a local toolkit, registered from an IBM-provided VM with IBM Bob, with the data API's settings passed from a connection ([deploy/ibm/local-mcp-toolkit/README.md](deploy/ibm/local-mcp-toolkit/README.md)) |
 | Streamable HTTP | Remote agents, testers, and the evaluation harness, at `https://mcp.troymd.com/mcp` with a bearer token per client ([docs/testers.md](docs/testers.md)) | The `Dockerfile` serves `/mcp`, `/health`, and `/version` on port 8080 |
 
-Over HTTP the server keeps a session per client and streams its replies, so it can ask the user a question mid-call (elicitation) on every protocol version, not only 2026-07-28. Idle sessions close after 30 minutes, and a restart drops them; clients start a new one.
+Over HTTP the server keeps a session per client and streams its replies, so it can ask the user a question mid-call (elicitation) on every protocol version, not only 2026-07-28. A call without a session is still answered, the stateless way, so a bridge that never holds a session ID keeps working; it gets the matches and a next step instead of a question. Idle sessions close after 30 minutes, and a restart drops them; a client that sends an expired session ID gets 404 and starts a new one.
 
 ## Evaluation
 

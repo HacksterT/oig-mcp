@@ -20,7 +20,7 @@ oig-mcp     -- HTTPS, Cloudflare Access service token + API key -->  OIG data AP
 |---|---|
 | Image | Root `Dockerfile`. Dependencies are installed from `uv.lock`, and it runs as non-root |
 | Port | `8080`. The image sets `PORT`, as container platforms do, which switches the server to HTTP |
-| MCP endpoint | `/mcp`. Streamable HTTP with a session per client and streamed (SSE) replies, so the server can ask the user mid-call on any protocol version. Idle sessions close after 30 minutes |
+| MCP endpoint | `/mcp`. Streamable HTTP with a session per client and streamed (SSE) replies, so the server can ask the user mid-call on any protocol version. A call without a session is answered statelessly ([`http_sessions.py`](../src/oig_mcp/http_sessions.py)). Idle sessions close after 30 minutes |
 | Health and version | `/health` and `/version`. Open, and they return no data. There is no `/ping` |
 | Rate limits | 2 requests a second per token, burst 30, counting every MCP request. Kept in memory per instance, so N instances allow up to N times that |
 
