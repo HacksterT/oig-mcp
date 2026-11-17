@@ -4,7 +4,9 @@
 
 The server is the subject of every test. The models that call it are instruments: a strong model shows what the server makes possible, and a weaker one shows where the server must carry more of the load. So most lessons below end in a server change, not a prompt change.
 
-## November 17, 2026: result sizes and citations
+## November 17, 2026: result sizes, citations, and asking the user
+
+**Let the server ask, where the client can.** When a facility name matched several, the server could only answer "several facilities match" and hope the model asked; Llama guessed a station instead. MCP's 2026-07-28 protocol lets a tool return `input_required` and be called again with the user's answer, each round a whole request, so it works on the stateless hosted endpoint as well as over stdio. Now a client that advertises elicitation shows its user the matching facilities and the tool answers for the one chosen; every other client, Orchestrate included, gets exactly the answer it got before. The answer is checked against the matches, and a live session that never answers falls back after two minutes. Seen working through the hosted endpoint with a test client; not yet in a desktop host. *Change: F06-S26.*
 
 **Find out what a failure is made of before shrinking things.** The Durham question overflowed Llama 3.3 70B's 131,072-token context twice, and trimming the profile once did not fix it. The server's traces showed why: Llama called the facility profile eight times in a row with the same arguments, a 100-item page each time, about 72,000 characters per call. The question needed the 13-report list, about 7,000 characters. A replay of every tool call from the saved runs, with no model involved ([`eval/payload_sizes.py`](../eval/payload_sizes.py)), showed the facility profile was 59 percent of all result text. *Evidence: `logs/traces`, 2026-11-17 01:13 to 01:14 UTC.*
 

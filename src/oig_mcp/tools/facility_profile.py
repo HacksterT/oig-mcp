@@ -10,9 +10,11 @@ import re
 from typing import Annotated, Any
 from urllib.parse import quote
 
-from fastmcp import FastMCP
+from fastmcp import Context, FastMCP
+from mcp_types import InputRequiredResult
 from pydantic import Field
 
+from oig_mcp.facility_choice import choose_station
 from oig_mcp.failures import UpstreamServiceError, tool_error
 from oig_mcp.guidance import CITE_TOTALS, FACILITY_VISN_NOTICE, READ_ONLY_TOOL
 from oig_mcp.models import (
@@ -107,11 +109,15 @@ def place_name(facility: str) -> str:
     return place
 
 
-async def fetch_profile(facility: str) -> dict[str, Any]:
+async def fetch_profile(
+    facility: str, ctx: Context | None = None
+) -> dict[str, Any] | InputRequiredResult:
     """Resolve a name, city, or station to its profile.
 
     Returns the profile, or a dict with `error` or `matches` for the caller to pass
-    on when no single facility can be chosen.
+    on when no single facility can be chosen. When several match and the client
+    can ask its user, returns the station they chose, or an InputRequiredResult
+    for the caller to return as is (facility_choice.py).
     """
     lookup = await fetch_object("facilities", {"q": facility, "limit": _LOOKUP_LIMIT})
     matches = lookup.get("items", [])
@@ -128,6 +134,11 @@ async def fetch_profile(facility: str) -> dict[str, Any]:
             ),
         }
     station = _pick_station(facility, matches)
+    if station is None:
+        choice = await choose_station(ctx, facility, matches)
+        if isinstance(choice, InputRequiredResult):
+            return choice
+        station = choice
     if station is None:
         return {
             "matches": matches,
@@ -175,7 +186,8 @@ def register(mcp: FastMCP) -> None:
             PageOffset,
             Field(description="Recommendations to skip; use next_offset to page."),
         ] = 0,
-    ) -> dict[str, Any]:
+        ctx: Context | None = None,
+    ) -> dict[str, Any] | InputRequiredResult:
         """Get one facility's reports, inspections, findings, and repeat findings.
 
         Use this when a question names one facility or VA location, such as "what
@@ -207,9 +219,11 @@ def register(mcp: FastMCP) -> None:
             will show.
         """
         try:
-            profile = await fetch_profile(facility)
+            profile = await fetch_profile(facility, ctx)
         except UpstreamServiceError as exc:
             raise tool_error(exc) from exc
+        if isinstance(profile, InputRequiredResult):
+            return profile
         if "error" in profile or "matches" in profile:
             return profile
 

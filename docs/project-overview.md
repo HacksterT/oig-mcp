@@ -96,6 +96,7 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 | `src/oig_mcp/auth.py` | The bearer token check for `/mcp` |
 | `src/oig_mcp/resources/` | `vaoig://about`, `vaoig://facilities`, `vaoig://taxonomy/{facet}` |
 | `src/oig_mcp/prompts/` | Two workflow prompts |
+| `src/oig_mcp/facility_choice.py` | Asking the user which facility is meant when several match, in clients that support elicitation |
 | `src/oig_mcp/completions.py` | Suggested values for the checklist's facility, the aging brief's focus, and the taxonomy facet |
 | `src/oig_mcp/routes.py` | `/health` and `/version` HTTP routes |
 | `tests/` | Security, authentication, tool, and server tests |

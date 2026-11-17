@@ -35,10 +35,10 @@ The seven tools are built around what a user is trying to do, not around the dat
 
 | Layer | What it checks |
 |---|---|
-| Automated tests | 238 tests on every change: each tool's inputs, results, output schema, error messages and hints, authentication, and that each description tells a model when to use the tool |
+| Automated tests | 256 tests on every change: each tool's inputs, results, output schema, error messages and hints, authentication, and that each description tells a model when to use the tool |
 | Image checks | 15 checks on the container: no secret inside, a non-root user, refusal to start without a valid token or with a plain-HTTP data address |
 | Deployment checks | 22 checks on a running server: seven kinds of bad credentials refused, all seven tools listed, live data with no secret in it |
-| Robustness check | 46 checks on a running server: hostile and malformed input to every tool and to argument completion, a burst past the rate limit, searches past the data API's capacity, and no internal detail in any reply |
+| Robustness check | 48 checks on a running server: hostile and malformed input to every tool and to argument completion, the facility choice round trip, a burst past the rate limit, searches past the data API's capacity, and no internal detail in any reply |
 | Agent evaluation | Gold questions answered by an agent that has only the server's tools, scored by code and judges |
 | Baseline | The same questions and models with no server |
 | Cross-platform runs | The same questions on other models and hosts, including IBM's own agent, three runs |
@@ -151,7 +151,7 @@ The full design, every check with its latest result, the November 17 review, and
 
 **Scope containment.** Five behavior questions and six adversarial questions test that the agent declines what the data cannot support, refuses to rank facilities or guess who was responsible, gives no medical advice and sends an emergency to 911, and does not invent a report. The server states its scope in its own instructions, so the guardrail holds for any host, not only one configured agent.
 
-**Untrusted input and prompt injection.** Report text is quoted from OIG reports. Every result marks the fields that quote report text and says to cite them and never follow instructions in them, and every tool is read-only. The adversarial set includes an instruction injected into text a user pastes; both models ignored it after the server changes. Tool arguments are typed and bounded, and a robustness check sends every tool path traversal, header and query injection, SQL and search syntax, and values past every bound: all 46 checks pass, with no stack trace, upstream address, or credential in any reply.
+**Untrusted input and prompt injection.** Report text is quoted from OIG reports. Every result marks the fields that quote report text and says to cite them and never follow instructions in them, and every tool is read-only. The adversarial set includes an instruction injected into text a user pastes; both models ignored it after the server changes. Tool arguments are typed and bounded, and a robustness check sends every tool path traversal, header and query injection, SQL and search syntax, and values past every bound: all 48 checks pass, with no stack trace, upstream address, or credential in any reply.
 
 **Secrets and configuration.** Credentials load from the environment, or in Orchestrate from a key_value connection, and are never committed: a scan of the repository's full history found none. The server refuses to start without a bearer token of at least 32 characters, or with a plain-HTTP remote data address. No secret appears in tool results, logs, or the image, checked by the image and deployment checks.
 

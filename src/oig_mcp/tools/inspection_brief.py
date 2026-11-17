@@ -13,7 +13,8 @@ from __future__ import annotations
 import asyncio
 from typing import Annotated, Any
 
-from fastmcp import FastMCP
+from fastmcp import Context, FastMCP
+from mcp_types import InputRequiredResult
 from pydantic import Field
 
 from oig_mcp.failures import UpstreamServiceError, tool_error
@@ -160,7 +161,8 @@ def register(mcp: FastMCP) -> None:
         top_findings: Annotated[
             int, Field(ge=1, le=10, description="Common peer findings to include.")
         ] = 5,
-    ) -> dict[str, Any]:
+        ctx: Context | None = None,
+    ) -> dict[str, Any] | InputRequiredResult:
         """Prepare one facility for an OIG inspection from the public record.
 
         Use this when someone asks for help preparing for an inspection: it adds
@@ -186,7 +188,9 @@ def register(mcp: FastMCP) -> None:
             close, and what peers committed to do), notices, and provenance.
         """
         try:
-            profile = await fetch_profile(facility)
+            profile = await fetch_profile(facility, ctx)
+            if isinstance(profile, InputRequiredResult):
+                return profile
             if "error" in profile or "matches" in profile:
                 return profile
             clusters = await fetch_object(
