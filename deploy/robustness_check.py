@@ -28,10 +28,14 @@ from typing import Any
 from urllib.parse import urlparse
 
 from fastmcp import Client
-from fastmcp.client.transports import StreamableHttpTransport
 
 sys.path.insert(0, str(Path(__file__).parent))
-from verify_deployment import Report, load_dotenv  # noqa: E402
+from verify_deployment import (  # noqa: E402
+    Report,
+    bearer_transport,
+    load_dotenv,
+    watched_secrets,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 PACE = 0.6  # seconds between hostile calls, under the 2 per second limit
@@ -44,6 +48,7 @@ ANALYZE = "vaoig_analyze_recommendations"
 PROFILE = "vaoig_get_facility_profile"
 BRIEF = "vaoig_get_inspection_brief"
 CLUSTERS = "vaoig_find_systemic_clusters"
+STATUS = "vaoig_get_dataset_status"
 
 HOSTILE: list[tuple[str, dict[str, Any], str]] = [
     (REPORT, {"report_number": "../../etc/passwd"}, "path traversal"),
@@ -121,21 +126,19 @@ def reply_text(result: Any) -> str:
 def describe(result: Any) -> str:
     """A short, safe description of a reply: answer, error, or validation refusal."""
     text = reply_text(result)
-    if not result.is_error:
-        try:
-            body = json.loads(text)
-        except json.JSONDecodeError:
-            return "answer (not JSON)"
-        if "error" in body:
-            return f"answer: {body['error'][:60]}"
-        return "answer"
-    if "validation error" in text.lower() or "input should" in text.lower():
-        return "refused: invalid input"
     try:
         body = json.loads(text)
-        return f"error: {body.get('error', '')[:60]}"
     except json.JSONDecodeError:
-        return f"error: {text[:60]}"
+        body = None
+    if not result.is_error:
+        if body is None:
+            return "answer (not JSON)"
+        return f"answer: {body['error'][:60]}" if "error" in body else "answer"
+    if "validation error" in text.lower() or "input should" in text.lower():
+        return "refused: invalid input"
+    if isinstance(body, dict):
+        return f"error: {body.get('error', '')[:60]}"
+    return f"error: {text[:60]}"
 
 
 class Checker:
@@ -170,12 +173,11 @@ async def hostile_inputs(client: Client, checker: Checker) -> None:
         try:
             contents = await client.read_resource(uri)
             text = " ".join(getattr(c, "text", "") or "" for c in contents)
-            ok, why = checker.clean(text)
             outcome = "answer"
         except Exception as exc:
             text = str(exc)
-            ok, why = checker.clean(text)
             outcome = f"refused: {type(exc).__name__}"
+        ok, why = checker.clean(text)
         checker.report.check(f"resource {uri}", ok, why or outcome)
         await asyncio.sleep(PACE)
 
@@ -183,22 +185,16 @@ async def hostile_inputs(client: Client, checker: Checker) -> None:
 async def rate_limit(client: Client, checker: Checker) -> None:
     print("\nBurst past the per-client rate limit, then recovery")
     calls = [
-        client.call_tool(
-            "vaoig_get_report", {"report_number": "26-00055-01"}, raise_on_error=False
-        )
+        client.call_tool(REPORT, {"report_number": "26-00055-01"}, raise_on_error=False)
         for _ in range(45)
     ]
     results = await asyncio.gather(*calls, return_exceptions=True)
     refused = answered = broken = 0
     for result in results:
-        if isinstance(result, Exception):
-            text = str(result)
-            limited = "rate limit" in text.lower()
-        else:
-            text = reply_text(result)
-            limited = result.is_error and "rate limit" in text.lower()
-            answered += not result.is_error
-        refused += limited
+        failed = isinstance(result, Exception) or result.is_error
+        text = str(result) if isinstance(result, Exception) else reply_text(result)
+        answered += not failed
+        refused += failed and "rate limit" in text.lower()
         broken += not checker.clean(text)[0]
     checker.report.check(
         "45 calls at once: the limit refuses some, answers the rest",
@@ -206,9 +202,7 @@ async def rate_limit(client: Client, checker: Checker) -> None:
         f"{answered} answered, {refused} refused by the limit, {broken} unclean",
     )
     await asyncio.sleep(16)  # the bucket refills at two calls a second
-    result = await client.call_tool(
-        "vaoig_get_dataset_status", {}, raise_on_error=False
-    )
+    result = await client.call_tool(STATUS, {}, raise_on_error=False)
     checker.report.check(
         "after a pause, calls succeed again", not result.is_error, describe(result)
     )
@@ -260,11 +254,11 @@ async def parallel_searches(client: Client, checker: Checker) -> None:
 async def latency(client: Client, checker: Checker) -> None:
     print("\nTen light calls at once")
     calls = [
-        ("vaoig_get_report", {"report_number": "25-00193-155"}),
-        ("vaoig_analyze_recommendations", {"group_by": "office"}),
-        ("vaoig_get_facility_profile", {"facility": "El Paso"}),
-        ("vaoig_find_systemic_clusters", {"limit": 5}),
-        ("vaoig_get_dataset_status", {}),
+        (REPORT, {"report_number": "25-00193-155"}),
+        (ANALYZE, {"group_by": "office"}),
+        (PROFILE, {"facility": "El Paso"}),
+        (CLUSTERS, {"limit": 5}),
+        (STATUS, {}),
     ] * 2
 
     async def timed(tool: str, arguments: dict) -> tuple[float, bool]:
@@ -283,10 +277,7 @@ async def latency(client: Client, checker: Checker) -> None:
 
 
 async def run(url: str, token: str, checker: Checker) -> None:
-    transport = StreamableHttpTransport(
-        f"{url.rstrip('/')}/mcp", headers={"Authorization": f"Bearer {token}"}
-    )
-    async with Client(transport, timeout=120) as client:
+    async with Client(bearer_transport(url, token), timeout=120) as client:
         await hostile_inputs(client, checker)
         await rate_limit(client, checker)
         await parallel_searches(client, checker)
@@ -302,16 +293,10 @@ def main() -> int:
     if not token:
         print("MCP_AUTH_TOKEN must be set.")
         return 2
-    secrets = [
-        token,
-        os.environ.get("CF_ACCESS_CLIENT_ID", ""),
-        os.environ.get("CF_ACCESS_CLIENT_SECRET", ""),
-        os.environ.get("OIG_DATA_API_KEY", ""),
-    ]
     upstream = urlparse(os.environ.get("OIG_DATA_API_BASE_URL", "")).hostname or ""
     if upstream in {"localhost", "127.0.0.1"}:
         upstream = ""
-    report = Report(secrets)
+    report = Report(watched_secrets())
     asyncio.run(run(args.url, token, Checker(report, upstream)))
     print(f"\n{report.passed} passed, {report.failed} failed")
     return 0 if report.failed == 0 else 1

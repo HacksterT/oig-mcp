@@ -14,7 +14,7 @@
 | Llama 3.3 70B on IBM watsonx.ai, harness | 9 of 24, before and after the November 17 server changes | Same model and settings; tool choice, citations, and data dates improved |
 | No-tool baseline | Claude Opus 5.5: 3 of 24; Llama 3.3 70B: 2 of 24 | What the models do without the server |
 | Adversarial set, 6 questions | Opus 5 of 6, then 6 of 6; Llama 0 of 6, then 4 of 6, after server changes | Not blind: questions and fixes written the same night |
-| Automated tests | 217 pass, on every change | |
+| Automated tests | 219 pass, on every change | |
 | Image and deployment checks | 15 of 15 and 22 of 22, on the Mac and on IBM's virtual machine | Not a load test |
 
 No answer from a server-backed run on Claude, Llama, or Orchestrate cited a report number that does not exist, which is the project's stated target. The only one found on any platform is in a logged answer from the Hermes agent, described below.

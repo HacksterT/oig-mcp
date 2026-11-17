@@ -11,7 +11,14 @@ from typing import Annotated, Any
 from fastmcp import FastMCP
 from pydantic import Field
 
-from oig_mcp.models import ClusterDetail, ClusterList, NotFound, output_schema
+from oig_mcp.models import (
+    ClusterDetail,
+    ClusterList,
+    NotFound,
+    PageLimit,
+    PageOffset,
+    output_schema,
+)
 from oig_mcp.utils import (
     READ_ONLY_TOOL,
     UpstreamServiceError,
@@ -95,16 +102,10 @@ def register(mcp: FastMCP) -> None:
             Field(pattern=r"^\d{4}-\d{2}-\d{2}$", description="Earliest member date."),
         ] = None,
         limit: Annotated[
-            int,
-            Field(
-                ge=1, le=100, description="Clusters, or members, to return, 1 to 100."
-            ),
+            PageLimit, Field(description="Clusters, or members, to return, 1 to 100.")
         ] = 10,
         offset: Annotated[
-            int,
-            Field(
-                ge=0, le=10_000, description="Items to skip; use next_offset to page."
-            ),
+            PageOffset, Field(description="Items to skip; use next_offset to page.")
         ] = 0,
     ) -> dict[str, Any]:
         """Find findings that recur across reports, and how common they are.

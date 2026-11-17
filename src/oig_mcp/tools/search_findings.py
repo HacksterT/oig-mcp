@@ -11,7 +11,13 @@ from typing import Annotated, Any
 from fastmcp import FastMCP
 from pydantic import Field
 
-from oig_mcp.models import RecommendationFilters, SearchResult, output_schema
+from oig_mcp.models import (
+    PageLimit,
+    PageOffset,
+    RecommendationFilters,
+    SearchResult,
+    output_schema,
+)
 from oig_mcp.utils import (
     READ_ONLY_TOOL,
     VISN_NUMBERING_NOTICE,
@@ -57,13 +63,10 @@ def register(mcp: FastMCP) -> None:
             Field(description="Narrow the search, for example by status or facility."),
         ] = None,
         limit: Annotated[
-            int, Field(ge=1, le=100, description="Results to return, 1 to 100.")
+            PageLimit, Field(description="Results to return, 1 to 100.")
         ] = 10,
         offset: Annotated[
-            int,
-            Field(
-                ge=0, le=10_000, description="Results to skip; use next_offset to page."
-            ),
+            PageOffset, Field(description="Results to skip; use next_offset to page.")
         ] = 0,
     ) -> dict[str, Any]:
         """Find OIG recommendations and corrective actions matching a question.

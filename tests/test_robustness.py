@@ -94,3 +94,40 @@ async def test_facility_paging_stops_when_the_offset_does_not_advance(
     result = await reference._all_facilities()
     assert calls == [0]
     assert result["total"] == 1
+
+
+def test_usage_log_files_stay_private_after_rotation(tmp_path: Path) -> None:
+    import logging
+
+    from oig_mcp.middleware import _PrivateRotatingFileHandler
+
+    path = tmp_path / "usage.log"
+    path.write_text("")
+    path.chmod(0o644)  # a file left from before must be tightened too
+    handler = _PrivateRotatingFileHandler(path, maxBytes=200, backupCount=2)
+    log = logging.getLogger("test.rotation")
+    log.addHandler(handler)
+    try:
+        for _ in range(20):
+            log.warning("x" * 50)
+    finally:
+        log.removeHandler(handler)
+        handler.close()
+    files = sorted(tmp_path.glob("usage.log*"))
+    assert len(files) == 3
+    assert all(stat.S_IMODE(f.stat().st_mode) == 0o600 for f in files)
+
+
+@pytest.mark.asyncio
+async def test_facet_lists_agree() -> None:
+    from fastmcp import Client
+
+    from oig_mcp.app import mcp
+    from oig_mcp.tools.dataset_status import _FILTER_FACETS
+
+    assert set(_FILTER_FACETS) <= reference.FACETS
+    # The resource's description lists the facets for clients by hand.
+    async with Client(mcp) as client:
+        templates = await client.list_resource_templates()
+    (taxonomy,) = [t for t in templates if "taxonomy" in t.uri_template]
+    assert all(facet in taxonomy.description for facet in reference.FACETS)

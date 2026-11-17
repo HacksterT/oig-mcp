@@ -6,11 +6,10 @@ Tool-only clients get the same filter values from vaoig_get_dataset_status.
 from __future__ import annotations
 
 from typing import Any
-from urllib.parse import quote
 
 from fastmcp import FastMCP
 
-from oig_mcp.utils import UNREACHABLE_HINT, UpstreamServiceError, fetch_object
+from oig_mcp.utils import UpstreamServiceError, fetch_object, hint_for
 
 _PAGE_SIZE = 100
 # The registry has about 1,500 facilities. A cap and a forward-only offset keep a
@@ -60,11 +59,9 @@ def register(mcp: FastMCP) -> None:
         if facet not in FACETS:
             return {"error": f"Unknown facet. Use one of: {', '.join(sorted(FACETS))}."}
         try:
-            return await fetch_object(f"taxonomy/{quote(facet, safe='')}")
+            return await fetch_object(f"taxonomy/{facet}")
         except UpstreamServiceError as exc:
-            if exc.status_code == 404:
-                return {"error": f"Unknown facet '{facet}'."}
-            return {"error": str(exc), "hint": UNREACHABLE_HINT}
+            return {"error": str(exc), "hint": hint_for(exc)}
 
     @mcp.resource("vaoig://facilities", mime_type="application/json")
     async def facilities() -> dict[str, Any]:
@@ -72,4 +69,4 @@ def register(mcp: FastMCP) -> None:
         try:
             return await _all_facilities()
         except UpstreamServiceError as exc:
-            return {"error": str(exc), "hint": UNREACHABLE_HINT}
+            return {"error": str(exc), "hint": hint_for(exc)}
