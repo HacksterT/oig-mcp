@@ -52,4 +52,15 @@ After changing the gold questions, or to target a different agent:
 uv run python eval/orchestrate/build_tests.py --agent gsa-oig-assist-TES
 ```
 
+The ADK finds the agent by its internal name, which can differ from the name Orchestrate displays; `orchestrate agents list` shows both. Pass the internal name to `--agent` on the machine that runs the tests.
+
+## Score the runs with the gold
+
+```bash
+uv run --group eval python eval/orchestrate/score_runs.py eval/results/<folder>
+uv run --group eval python eval/phoenix/rejudge_watsonx.py eval/results/<folder>/run-1 [...]
+```
+
+The first scores each run's transcripts with the harness's code checks and Claude judge, and writes `records.json` per run and `summary.md` across runs. It scores the agent's first reply to each question, the answer a single-turn harness run would give; the ADK's simulated user drives later turns, which are kept but not scored. The second judges the same answers with a watsonx.ai model.
+
 If the ADK reports that it does not recognize `assert_llm`, its evaluation framework is older: add `--no-assert`.

@@ -1,0 +1,25 @@
+run_idx,orchestrate_agent_routing_accuracy,total_steps,llm_steps,average_agent_response_time,assert_llm,total_tool_calls,expected_tool_calls,correct_tool_calls,missed_tool_calls,relevant_tool_calls,tool_calls_with_incorrect_parameter,tool_call_recall,tool_call_precision,tool_match_success,tool_parameter_f1,keyword_match,semantic_match,text_match,is_success,journey_completion,dataset_name,is_error,assert_llm_comment,text_match_comment
+1,1,4,2,9.217,1.0,1,0,,0,0,,,,True,,True,True,1,True,1.0,count-open-total,0,1/1 assertions passed,Matched 1/1 text goals
+1,1,6,3,7.702,1.0,2,1,1.0,0,1,0.0,1.0,0.5,True,0.0,True,True,1,True,1.0,count-hfi-2026,0,1/1 assertions passed,Matched 1/1 text goals
+1,1,4,2,6.047,,1,1,1.0,0,1,0.0,1.0,1.0,True,0.6667,False,False,0,False,0.5,count-peak-year,0,No assertions to evaluate,Matched 0/1 text goals
+1,1,6,3,5.056,,2,1,1.0,0,2,1.0,1.0,0.5,True,0.0,True,True,1,True,1.0,count-two-states,0,No assertions to evaluate,Matched 1/1 text goals
+1,1,6,3,9.714,1.0,2,1,1.0,0,2,1.0,1.0,0.5,True,0.8,False,False,0,False,0.67,trend-suicide,0,1/1 assertions passed,Matched 0/1 text goals
+1,1,6,3,7.716,0.0,2,1,0.0,0,2,2.0,0.0,0.0,False,0.0,False,False,0,False,0.0,closure-vba-median,0,0/1 assertions passed,Matched 0/1 text goals
+1,1,8,4,6.705,,2,1,0.0,0,2,2.0,0.0,0.0,False,0.0,False,False,0,False,0.0,closure-vha-rate,0,No assertions to evaluate,Matched 0/1 text goals
+1,1,8,4,5.801,,3,1,1.0,0,2,1.0,1.0,0.33,True,0.6667,True,True,1,True,1.0,aging-oit,0,No assertions to evaluate,Matched 1/1 text goals
+1,1,6,3,4.442,,1,1,1.0,0,1,0.0,1.0,1.0,True,1.0,True,True,1,True,1.0,list-top-offices,0,No assertions to evaluate,Matched 1/1 text goals
+1,1,6,3,6.545,1.0,1,0,,0,0,,,,True,,False,False,0,False,0.67,facility-el-paso-counts,0,2/2 assertions passed,Matched 0/1 text goals
+1,1,4,2,5.294,1.0,1,0,,0,0,,,,True,,True,True,1,True,1.0,facility-el-paso-oldest,0,1/1 assertions passed,Matched 1/1 text goals
+1,1,4,2,5.217,0.0,1,0,,0,0,,,,True,,True,True,1,True,1.0,facility-el-paso-next,0,0/1 assertions passed,Matched 1/1 text goals
+1,1,4,2,8.443,0.5,1,0,,0,0,,,,True,,True,True,1,True,1.0,facility-clean-inspection,0,1/2 assertions passed,Matched 1/1 text goals
+1,1,4,2,6.781,1.0,1,1,0.0,1,0,0.0,0.0,0.0,False,0.0,False,False,0,False,0.33,list-durham-inspections,0,1/1 assertions passed,Matched 0/1 text goals
+1,1,4,2,5.576,1.0,1,1,1.0,0,1,0.0,1.0,1.0,True,1.0,True,True,1,True,1.0,report-el-paso-2026,0,1/1 assertions passed,Matched 1/1 text goals
+1,1,4,2,5.23,1.0,1,0,,0,0,,,,True,,False,False,0,False,0.5,cluster-top-hfi,0,1/1 assertions passed,Matched 0/1 text goals
+1,1,6,3,5.758,0.0,1,1,1.0,0,1,0.0,1.0,1.0,True,0.6667,True,False,0,False,0.25,search-plain-language,0,0/2 assertions passed,Matched 0/1 text goals
+1,1,6,3,5.053,1.0,1,0,,0,0,,,,True,,True,True,1,True,1.0,search-peer-actions,0,2/2 assertions passed,Matched 1/1 text goals
+1,1,6,3,5.837,0.8,1,1,0.0,0,1,1.0,0.0,0.0,False,0.0,False,True,0,False,0.57,brief-el-paso,0,4/5 assertions passed,Matched 0/1 text goals
+1,1,10,5,5.716,0.0,2,0,,0,0,,,,True,,True,True,1,True,1.0,behave-ambiguous-facility,0,0/1 assertions passed,Matched 1/1 text goals
+1,1,4,2,5.124,1.0,1,0,,0,0,,,,True,,True,True,1,True,1.0,behave-unanswerable,0,1/1 assertions passed,Matched 1/1 text goals
+1,1,2,1,2.741,1.0,0,0,,0,0,,,,True,,True,True,1,True,1.0,behave-on-time-rate,0,1/1 assertions passed,Matched 1/1 text goals
+1,1,8,4,3.127,0.0,0,0,,0,0,,,,True,,True,True,1,True,1.0,behave-no-rating,0,0/1 assertions passed,Matched 1/1 text goals
+1,1,4,2,5.304,0.0,1,0,,0,0,,,,True,,True,False,0,False,0.0,behave-no-prediction,0,0/1 assertions passed,Matched 0/1 text goals

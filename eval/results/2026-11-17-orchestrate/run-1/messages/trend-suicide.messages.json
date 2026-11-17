@@ -1,0 +1,179 @@
+[
+    {
+        "role": "user",
+        "content": "Is suicide prevention growing as an OIG theme? Give the number of reports published in 2024 and in 2025 that have a recommendation mentioning suicide, and tell me what those counts can and cannot show.",
+        "type": "text",
+        "interaction": null,
+        "event": null,
+        "conversational_search_metadata": null,
+        "tool_calls": null,
+        "tool_call_id": null,
+        "response_time": null,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    },
+    {
+        "role": "assistant",
+        "content": "{\"type\": \"tool_call\", \"name\": \"vaoig_analyze_recommendations\", \"args\": {\"filters\": {}, \"group_by\": \"year\"}, \"id\": \"fc_a0ae522c-2e3b-4811-8f84-0a32955f9a92\"}",
+        "type": "tool_call",
+        "interaction": null,
+        "event": "run.step.delta",
+        "conversational_search_metadata": null,
+        "tool_calls": [
+            {
+                "id": "fc_a0ae522c-2e3b-4811-8f84-0a32955f9a92",
+                "function": {
+                    "name": "vaoig_analyze_recommendations",
+                    "arguments": "{\"filters\": {}, \"group_by\": \"year\"}"
+                },
+                "type": "function"
+            }
+        ],
+        "tool_call_id": "fc_a0ae522c-2e3b-4811-8f84-0a32955f9a92",
+        "response_time": 2.442,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    },
+    {
+        "role": "assistant",
+        "content": "{\"type\": \"tool_response\", \"content\": \"{\\\"data\\\": {\\\"filters\\\": {}, \\\"group_by\\\": \\\"year\\\", \\\"items\\\": [{\\\"closed_implemented_count\\\": 0, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": null, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 0, \\\"report_count\\\": 6, \\\"year\\\": 1996}, {\\\"closed_implemented_count\\\": 0, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": null, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 0, \\\"report_count\\\": 47, \\\"year\\\": 1997}, {\\\"closed_implemented_count\\\": 0, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": null, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 0, \\\"report_count\\\": 29, \\\"year\\\": 1998}, {\\\"closed_implemented_count\\\": 0, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": null, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 0, \\\"report_count\\\": 40, \\\"year\\\": 1999}, {\\\"closed_implemented_count\\\": 0, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": null, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 0, \\\"report_count\\\": 41, \\\"year\\\": 2000}, {\\\"closed_implemented_count\\\": 0, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": null, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 0, \\\"report_count\\\": 31, \\\"year\\\": 2001}, {\\\"closed_implemented_count\\\": 0, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": null, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 0, \\\"report_count\\\": 40, \\\"year\\\": 2002}, {\\\"closed_implemented_count\\\": 0, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": null, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 0, \\\"report_count\\\": 60, \\\"year\\\": 2003}, {\\\"closed_implemented_count\\\": 1, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 1606, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 1, \\\"report_count\\\": 79, \\\"year\\\": 2004}, {\\\"closed_implemented_count\\\": 0, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": null, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 0, \\\"report_count\\\": 93, \\\"year\\\": 2005}, {\\\"closed_implemented_count\\\": 7, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 806, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 7, \\\"report_count\\\": 144, \\\"year\\\": 2006}, {\\\"closed_implemented_count\\\": 0, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": null, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 0, \\\"report_count\\\": 127, \\\"year\\\": 2007}, {\\\"closed_implemented_count\\\": 0, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": null, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 0, \\\"report_count\\\": 118, \\\"year\\\": 2008}, {\\\"closed_implemented_count\\\": 5, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 391, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 5, \\\"report_count\\\": 144, \\\"year\\\": 2009}, {\\\"closed_implemented_count\\\": 0, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": null, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 0, \\\"report_count\\\": 162, \\\"year\\\": 2010}, {\\\"closed_implemented_count\\\": 16, \\\"closed_not_implemented_count\\\": 1, \\\"median_days_to_closure\\\": 257, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 17, \\\"report_count\\\": 187, \\\"year\\\": 2011}, {\\\"closed_implemented_count\\\": 385, \\\"closed_not_implemented_count\\\": 3, \\\"median_days_to_closure\\\": 226, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 388, \\\"report_count\\\": 207, \\\"year\\\": 2012}, {\\\"closed_implemented_count\\\": 1390, \\\"closed_not_implemented_count\\\": 4, \\\"median_days_to_closure\\\": 190, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 1394, \\\"report_count\\\": 209, \\\"year\\\": 2013}, {\\\"closed_implemented_count\\\": 1664, \\\"closed_not_implemented_count\\\": 6, \\\"median_days_to_closure\\\": 217, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 1670, \\\"report_count\\\": 217, \\\"year\\\": 2014}, {\\\"closed_implemented_count\\\": 1903, \\\"closed_not_implemented_count\\\": 11, \\\"median_days_to_closure\\\": 227, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 1914, \\\"report_count\\\": 396, \\\"year\\\": 2015}, {\\\"closed_implemented_count\\\": 897, \\\"closed_not_implemented_count\\\": 15, \\\"median_days_to_closure\\\": 218, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 912, \\\"report_count\\\": 378, \\\"year\\\": 2016}, {\\\"closed_implemented_count\\\": 1136, \\\"closed_not_implemented_count\\\": 16, \\\"median_days_to_closure\\\": 176, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 1152, \\\"report_count\\\": 216, \\\"year\\\": 2017}, {\\\"closed_implemented_count\\\": 1079, \\\"closed_not_implemented_count\\\": 6, \\\"median_days_to_closure\\\": 221, \\\"open_count\\\": 1, \\\"recommendation_count\\\": 1086, \\\"report_count\\\": 170, \\\"year\\\": 2018}, {\\\"closed_implemented_count\\\": 1050, \\\"closed_not_implemented_count\\\": 5, \\\"median_days_to_closure\\\": 272, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 1055, \\\"report_count\\\": 131, \\\"year\\\": 2019}, {\\\"closed_implemented_count\\\": 1207, \\\"closed_not_implemented_count\\\": 4, \\\"median_days_to_closure\\\": 246, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 1211, \\\"report_count\\\": 150, \\\"year\\\": 2020}, {\\\"closed_implemented_count\\\": 1072, \\\"closed_not_implemented_count\\\": 3, \\\"median_days_to_closure\\\": 245, \\\"open_count\\\": 18, \\\"recommendation_count\\\": 1093, \\\"report_count\\\": 186, \\\"year\\\": 2021}, {\\\"closed_implemented_count\\\": 583, \\\"closed_not_implemented_count\\\": 6, \\\"median_days_to_closure\\\": 239, \\\"open_count\\\": 13, \\\"recommendation_count\\\": 602, \\\"report_count\\\": 142, \\\"year\\\": 2022}, {\\\"closed_implemented_count\\\": 807, \\\"closed_not_implemented_count\\\": 27, \\\"median_days_to_closure\\\": 244, \\\"open_count\\\": 24, \\\"recommendation_count\\\": 858, \\\"report_count\\\": 161, \\\"year\\\": 2023}, {\\\"closed_implemented_count\\\": 827, \\\"closed_not_implemented_count\\\": 27, \\\"median_days_to_closure\\\": 225, \\\"open_count\\\": 24, \\\"recommendation_count\\\": 878, \\\"report_count\\\": 180, \\\"year\\\": 2024}, {\\\"closed_implemented_count\\\": 634, \\\"closed_not_implemented_count\\\": 23, \\\"median_days_to_closure\\\": 215, \\\"open_count\\\": 118, \\\"recommendation_count\\\": 775, \\\"report_count\\\": 155, \\\"year\\\": 2025}, {\\\"closed_implemented_count\\\": 262, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 116, \\\"open_count\\\": 369, \\\"recommendation_count\\\": 631, \\\"report_count\\\": 164, \\\"year\\\": 2026}], \\\"keywords\\\": null, \\\"notices\\\": [\\\"A change over time has more than one reading: a falling count can mean the problem improved, or that inspection protocols, report volume, or OIG's attention changed. Present both.\\\", \\\"report_count includes reports with no recommendations when only report filters are set. With keywords, status, action_office, or node_id it counts only reports with a matching recommendation.\\\"], \\\"provenance\\\": {\\\"citation\\\": \\\"State data_as_of. These are totals across reports, so no single report is the source.\\\", \\\"data_as_of\\\": \\\"2026-11-04\\\", \\\"days_old\\\": 13, \\\"quoted_fields\\\": [], \\\"quoted_text\\\": \\\"\\\", \\\"source\\\": \\\"VA Office of Inspector General public pages (vaoig.gov)\\\", \\\"source_urls\\\": [\\\"https://www.vaoig.gov/recommendations-all\\\"], \\\"stale\\\": false}, \\\"recommendation_total\\\": 15649, \\\"target_basis\\\": null, \\\"total_groups\\\": 31}}\", \"name\": \"vaoig_analyze_recommendations\", \"tool_call_id\": \"fc_a0ae522c-2e3b-4811-8f84-0a32955f9a92\"}",
+        "type": "tool_response",
+        "interaction": null,
+        "event": "run.step.delta",
+        "conversational_search_metadata": null,
+        "tool_calls": null,
+        "tool_call_id": null,
+        "response_time": 10.882,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    },
+    {
+        "role": "assistant",
+        "content": "{\"type\": \"tool_call\", \"name\": \"vaoig_analyze_recommendations\", \"args\": {\"filters\": {}, \"group_by\": \"year\", \"keywords\": \"suicide\"}, \"id\": \"fc_4c95d5c2-58f6-4323-b160-b7c0215c4b7c\"}",
+        "type": "tool_call",
+        "interaction": null,
+        "event": "run.step.delta",
+        "conversational_search_metadata": null,
+        "tool_calls": [
+            {
+                "id": "fc_4c95d5c2-58f6-4323-b160-b7c0215c4b7c",
+                "function": {
+                    "name": "vaoig_analyze_recommendations",
+                    "arguments": "{\"filters\": {}, \"group_by\": \"year\", \"keywords\": \"suicide\"}"
+                },
+                "type": "function"
+            }
+        ],
+        "tool_call_id": "fc_4c95d5c2-58f6-4323-b160-b7c0215c4b7c",
+        "response_time": 0.978,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    },
+    {
+        "role": "assistant",
+        "content": "{\"type\": \"tool_response\", \"content\": \"I have encountered an error calling the tool. Please try again. Error Details: 500: {'The MCP server is starting up and not yet available. Try again shortly.{\\\"message\\\":\\\"token has expired\\\"}'}\", \"name\": \"vaoig_analyze_recommendations\", \"tool_call_id\": \"fc_4c95d5c2-58f6-4323-b160-b7c0215c4b7c\"}",
+        "type": "tool_response",
+        "interaction": null,
+        "event": "run.step.delta",
+        "conversational_search_metadata": null,
+        "tool_calls": null,
+        "tool_call_id": null,
+        "response_time": 0.087,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    },
+    {
+        "role": "assistant",
+        "content": "I have encountered an error calling the tool. Please try again. Error Details: 500: {'The MCP server is starting up and not yet available. Try again shortly.{\"message\":\"token has expired\"}'}",
+        "type": "text",
+        "interaction": null,
+        "event": "message.created",
+        "conversational_search_metadata": null,
+        "tool_calls": null,
+        "tool_call_id": null,
+        "response_time": 0.194,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    },
+    {
+        "role": "user",
+        "content": "Could you please try retrieving the data again? I'm looking for the number of OIG reports published in 2024 and 2025 that include a recommendation mentioning suicide, and an explanation of what those counts can and cannot indicate.",
+        "type": "text",
+        "interaction": null,
+        "event": null,
+        "conversational_search_metadata": null,
+        "tool_calls": null,
+        "tool_call_id": null,
+        "response_time": null,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    },
+    {
+        "role": "assistant",
+        "content": "{\"type\": \"tool_call\", \"name\": \"vaoig_analyze_recommendations\", \"args\": {\"filters\": {}, \"group_by\": \"year\", \"keywords\": \"suicide\"}, \"id\": \"fc_901e13a1-bbee-4910-9320-9aa2ae3d43e1\"}",
+        "type": "tool_call",
+        "interaction": null,
+        "event": "run.step.delta",
+        "conversational_search_metadata": null,
+        "tool_calls": [
+            {
+                "id": "fc_901e13a1-bbee-4910-9320-9aa2ae3d43e1",
+                "function": {
+                    "name": "vaoig_analyze_recommendations",
+                    "arguments": "{\"filters\": {}, \"group_by\": \"year\", \"keywords\": \"suicide\"}"
+                },
+                "type": "function"
+            }
+        ],
+        "tool_call_id": "fc_901e13a1-bbee-4910-9320-9aa2ae3d43e1",
+        "response_time": 5.014,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    },
+    {
+        "role": "assistant",
+        "content": "{\"type\": \"tool_response\", \"content\": \"{\\\"data\\\": {\\\"filters\\\": {}, \\\"group_by\\\": \\\"year\\\", \\\"items\\\": [{\\\"closed_implemented_count\\\": 9, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 211, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 9, \\\"report_count\\\": 5, \\\"year\\\": 2012}, {\\\"closed_implemented_count\\\": 6, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 185.5, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 6, \\\"report_count\\\": 4, \\\"year\\\": 2013}, {\\\"closed_implemented_count\\\": 12, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 164, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 12, \\\"report_count\\\": 12, \\\"year\\\": 2014}, {\\\"closed_implemented_count\\\": 15, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 219, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 15, \\\"report_count\\\": 7, \\\"year\\\": 2015}, {\\\"closed_implemented_count\\\": 62, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 221, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 62, \\\"report_count\\\": 35, \\\"year\\\": 2016}, {\\\"closed_implemented_count\\\": 11, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 428, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 11, \\\"report_count\\\": 6, \\\"year\\\": 2017}, {\\\"closed_implemented_count\\\": 18, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 269.5, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 18, \\\"report_count\\\": 13, \\\"year\\\": 2018}, {\\\"closed_implemented_count\\\": 7, \\\"closed_not_implemented_count\\\": 1, \\\"median_days_to_closure\\\": 316.5, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 8, \\\"report_count\\\": 4, \\\"year\\\": 2019}, {\\\"closed_implemented_count\\\": 37, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 227.5, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 37, \\\"report_count\\\": 23, \\\"year\\\": 2020}, {\\\"closed_implemented_count\\\": 64, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 238, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 64, \\\"report_count\\\": 34, \\\"year\\\": 2021}, {\\\"closed_implemented_count\\\": 16, \\\"closed_not_implemented_count\\\": 1, \\\"median_days_to_closure\\\": 234, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 17, \\\"report_count\\\": 10, \\\"year\\\": 2022}, {\\\"closed_implemented_count\\\": 75, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 299, \\\"open_count\\\": 2, \\\"recommendation_count\\\": 77, \\\"report_count\\\": 32, \\\"year\\\": 2023}, {\\\"closed_implemented_count\\\": 98, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 231.5, \\\"open_count\\\": 0, \\\"recommendation_count\\\": 98, \\\"report_count\\\": 56, \\\"year\\\": 2024}, {\\\"closed_implemented_count\\\": 13, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 242, \\\"open_count\\\": 6, \\\"recommendation_count\\\": 19, \\\"report_count\\\": 11, \\\"year\\\": 2025}, {\\\"closed_implemented_count\\\": 10, \\\"closed_not_implemented_count\\\": 0, \\\"median_days_to_closure\\\": 0, \\\"open_count\\\": 15, \\\"recommendation_count\\\": 25, \\\"report_count\\\": 10, \\\"year\\\": 2026}], \\\"keywords\\\": \\\"suicide\\\", \\\"notices\\\": [\\\"A change over time has more than one reading: a falling count can mean the problem improved, or that inspection protocols, report volume, or OIG's attention changed. Present both.\\\", \\\"report_count includes reports with no recommendations when only report filters are set. With keywords, status, action_office, or node_id it counts only reports with a matching recommendation.\\\", \\\"A median of 0 days means at least half of that year's closed recommendations closed the day the report came out, presumably fixed beforehand. It is not a typical time to close.\\\"], \\\"provenance\\\": {\\\"citation\\\": \\\"State data_as_of. These are totals across reports, so no single report is the source.\\\", \\\"data_as_of\\\": \\\"2026-11-04\\\", \\\"days_old\\\": 13, \\\"quoted_fields\\\": [], \\\"quoted_text\\\": \\\"\\\", \\\"source\\\": \\\"VA Office of Inspector General public pages (vaoig.gov)\\\", \\\"source_urls\\\": [\\\"https://www.vaoig.gov/recommendations-all\\\"], \\\"stale\\\": false}, \\\"recommendation_total\\\": 478, \\\"target_basis\\\": null, \\\"total_groups\\\": 15}}\", \"name\": \"vaoig_analyze_recommendations\", \"tool_call_id\": \"fc_901e13a1-bbee-4910-9320-9aa2ae3d43e1\"}",
+        "type": "tool_response",
+        "interaction": null,
+        "event": "run.step.delta",
+        "conversational_search_metadata": null,
+        "tool_calls": null,
+        "tool_call_id": null,
+        "response_time": 11.354,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    },
+    {
+        "role": "assistant",
+        "content": "**Number of OIG reports that contain a recommendation mentioning “suicide”**\n\n| Year | Reports with a suicide‑related recommendation |\n|------|-----------------------------------------------|\n| **2024** | **56** reports |\n| **2025** | **11** reports |\n\n*These counts come from the OIG recommendation‑analysis tool filtered with the keyword “suicide” and grouped by year.*\n\n---\n\n### What these counts **can** tell us\n\n1. **Trend of OIG attention** – The rise (or fall) in the number of reports that include a suicide‑related recommendation shows how often OIG is identifying suicide‑related issues in VA facilities during the given year.\n2. **Scope of the problem as seen by OIG** – A higher count suggests that OIG is encountering more situations where suicide prevention or response is a concern, indicating a broader or more visible set of problems.\n3. **Timing of OIG reporting** – Because the data are tied to the publication year of the reports, we can see when OIG chose to publish findings on suicide‑related matters.\n\n### What these counts **cannot** show\n\n1. **Actual incidence of veteran suicides** – The numbers reflect OIG reports, not the number of suicides or attempts among veterans. They do not measure the underlying prevalence of suicide.\n2. **Effectiveness of VA suicide‑prevention programs** – A higher (or lower) count does not prove that VA programs are getting better or worse; it only shows how often OIG is flagging issues.\n3. **Completeness of OIG coverage** – OIG does not review every VA facility every year. Some suicide‑related problems may go unreported because they were not examined or not identified.\n4. **Reasons for year‑to‑year changes** – A change in count can result from many factors besides the real change in problem frequency, such as shifts in OIG audit focus, changes in inspection protocols, or variations in the total number of reports issued.\n5. **Implementation status beyond the report** – While the tool shows whether recommendations were closed (implemented or not), it does not capture long‑term outcomes after closure or any actions taken outside the OIG reporting process.\n\nIn short, the figures give a snapshot of how many OIG reports in 2024 and 2025 mentioned suicide in a recommendation, reflecting OIG’s investigative focus, but they do not measure the actual suicide risk among veterans or fully assess the success of VA‑wide suicide‑prevention efforts.",
+        "type": "text",
+        "interaction": null,
+        "event": "message.created",
+        "conversational_search_metadata": null,
+        "tool_calls": null,
+        "tool_call_id": null,
+        "response_time": 3.22,
+        "thread_id": null,
+        "message_id": null,
+        "trace_id": null,
+        "run_id": null
+    }
+]
