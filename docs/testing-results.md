@@ -15,7 +15,8 @@
 | No-tool baseline | Claude Opus 5.5: 3 of 24; Llama 3.3 70B: 2 of 24 | What the models do without the server |
 | Adversarial set, 6 questions | Opus 5 of 6, then 6 of 6; Llama 0 of 6, then 4 of 6, after server changes | Not blind: questions and fixes written the same night |
 | Automated tests | 256 pass, on every change | |
-| Image and deployment checks | 15 of 15 and 22 of 22, on the Mac and on IBM's virtual machine | Not a load test |
+| Image and deployment checks | 15 of 15 and 22 of 22, on the Mac and on IBM's virtual machine | |
+| Load test, 1 to 40 concurrent clients | All 2,059 calls answered, no errors; median 0.33 s to 1.8 s | One run, one Mac, not to failure |
 
 No answer from a server-backed run on Claude, Llama, or Orchestrate cited a report number that does not exist, which is the project's stated target. The only one found on any platform is in a logged answer from the Hermes agent, described below.
 
@@ -218,7 +219,7 @@ Measured through the server, in its container on the Mac, against the hosted dat
 | `vaoig_get_report` | 1 | about 0.24 s | about 0.24 s |
 | `vaoig_search_findings` | 4 | about 0.32 s | about 0.36 s |
 
-The status and brief tools make several API calls each, and the brief runs up to ten searches. One pooled HTTP client, and dataset status reading its five filter lists at once, cut about 30 percent from search and 50 percent from dataset status in a controlled comparison. In Orchestrate the server runs over stdio and starts afresh for each call; starting it took about two seconds in a test on the Mac. Of the 5.8 seconds measured for the New York question, the data API's part was about 0.16 seconds, and the rest was Orchestrate's model and the process start. The service has not been load tested.
+The status and brief tools make several API calls each, and the brief runs up to ten searches. One pooled HTTP client, and dataset status reading its five filter lists at once, cut about 30 percent from search and 50 percent from dataset status in a controlled comparison. In Orchestrate the server runs over stdio and starts afresh for each call; starting it took about two seconds in a test on the Mac. Of the 5.8 seconds measured for the New York question, the data API's part was about 0.16 seconds, and the rest was Orchestrate's model and the process start.
 
 ## Result size
 
@@ -236,6 +237,20 @@ What a model reads is mostly tool results, so their size decides cost and whethe
 | All | 86 | | | 933,515 (about 233,000 tokens) | 819,082 (about 205,000 tokens) |
 
 Characters per result. The facility profile now leaves out fields its report list already carries and the facility's responses, which the brief, search, and report tools carry; search, the brief, and the report grew by their new `citation` fields. A 100-item page for Durham, the question that overflowed Llama's context, went from 70,126 to 40,906 characters.
+
+## Load test
+
+On November 17, [`deploy/load_test.py`](../deploy/load_test.py) ramped from 1 to 40 concurrent clients against the hosted server through its public URL, each with its own token, for 60 seconds per stage. Each client repeated tool calls recorded in the Claude runs, about one a second, with no model involved. [Full results](../eval/results/2026-11-17-load-test/summary.md).
+
+| Clients | Calls | Per second | Answered | Median | 95th percentile |
+|---|---|---|---|---|---|
+| 1 | 42 | 0.7 | 42 | 0.33 s | 0.54 s |
+| 5 | 214 | 3.4 | 214 | 0.35 s | 0.96 s |
+| 10 | 394 | 6.1 | 394 | 0.35 s | 2.3 s |
+| 20 | 586 | 9.6 | 586 | 0.75 s | 3.2 s |
+| 40 | 823 | 13.2 | 823 | 1.8 s | 4.1 s |
+
+Every call was answered, with no rate-limit, busy, or timeout refusals, no errors, and no reply carrying a credential, address, or internal detail. The data API answered all 5,941 requests with status 200, and its median request took 7 to 13 milliseconds at every stage, so the slowdown is the server's queue ahead of it, most likely the limit of eight upstream requests in flight, which keeps quick calls waiting behind 1.5-second searches. CPU was not measured. It was one run on one Mac, with shorter pauses than a real agent's, and it stopped at 40 clients rather than running to failure.
 
 ## Security
 

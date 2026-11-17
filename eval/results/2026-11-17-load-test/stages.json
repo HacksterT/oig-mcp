@@ -1,0 +1,293 @@
+{
+ "stages": [
+  {
+   "clients": 1,
+   "seconds": 60.5,
+   "calls": 42,
+   "outcomes": {
+    "answered": 42
+   },
+   "unclean": 0,
+   "calls_per_second": 0.69,
+   "answered_ms": {
+    "p50": 326,
+    "p95": 544,
+    "p99": 918
+   },
+   "by_tool": {
+    "vaoig_analyze_recommendations": {
+     "answered": 15,
+     "p50": 216,
+     "p95": 291,
+     "max": 291
+    },
+    "vaoig_find_systemic_clusters": {
+     "answered": 3,
+     "p50": 209,
+     "p95": 222,
+     "max": 222
+    },
+    "vaoig_get_dataset_status": {
+     "answered": 14,
+     "p50": 472,
+     "p95": 918,
+     "max": 918
+    },
+    "vaoig_get_facility_profile": {
+     "answered": 6,
+     "p50": 452,
+     "p95": 739,
+     "max": 739
+    },
+    "vaoig_get_report": {
+     "answered": 2,
+     "p50": 307,
+     "p95": 307,
+     "max": 307
+    },
+    "vaoig_search_findings": {
+     "answered": 2,
+     "p50": 418,
+     "p95": 418,
+     "max": 418
+    }
+   }
+  },
+  {
+   "clients": 5,
+   "seconds": 62.5,
+   "calls": 214,
+   "outcomes": {
+    "answered": 214
+   },
+   "unclean": 0,
+   "calls_per_second": 3.42,
+   "answered_ms": {
+    "p50": 346,
+    "p95": 961,
+    "p99": 2176
+   },
+   "by_tool": {
+    "vaoig_analyze_recommendations": {
+     "answered": 63,
+     "p50": 228,
+     "p95": 315,
+     "max": 347
+    },
+    "vaoig_find_systemic_clusters": {
+     "answered": 6,
+     "p50": 199,
+     "p95": 284,
+     "max": 284
+    },
+    "vaoig_get_dataset_status": {
+     "answered": 81,
+     "p50": 361,
+     "p95": 609,
+     "max": 711
+    },
+    "vaoig_get_facility_profile": {
+     "answered": 31,
+     "p50": 439,
+     "p95": 613,
+     "max": 961
+    },
+    "vaoig_get_inspection_brief": {
+     "answered": 9,
+     "p50": 1967,
+     "p95": 2309,
+     "max": 2309
+    },
+    "vaoig_get_report": {
+     "answered": 6,
+     "p50": 318,
+     "p95": 406,
+     "max": 406
+    },
+    "vaoig_search_findings": {
+     "answered": 18,
+     "p50": 426,
+     "p95": 974,
+     "max": 974
+    }
+   }
+  },
+  {
+   "clients": 10,
+   "seconds": 64.7,
+   "calls": 394,
+   "outcomes": {
+    "answered": 394
+   },
+   "unclean": 0,
+   "calls_per_second": 6.09,
+   "answered_ms": {
+    "p50": 353,
+    "p95": 2325,
+    "p99": 4161
+   },
+   "by_tool": {
+    "vaoig_analyze_recommendations": {
+     "answered": 113,
+     "p50": 217,
+     "p95": 554,
+     "max": 1180
+    },
+    "vaoig_find_systemic_clusters": {
+     "answered": 15,
+     "p50": 235,
+     "p95": 1012,
+     "max": 1012
+    },
+    "vaoig_get_dataset_status": {
+     "answered": 140,
+     "p50": 378,
+     "p95": 1664,
+     "max": 3978
+    },
+    "vaoig_get_facility_profile": {
+     "answered": 69,
+     "p50": 387,
+     "p95": 790,
+     "max": 2246
+    },
+    "vaoig_get_inspection_brief": {
+     "answered": 18,
+     "p50": 2779,
+     "p95": 5351,
+     "max": 5351
+    },
+    "vaoig_get_report": {
+     "answered": 9,
+     "p50": 337,
+     "p95": 3755,
+     "max": 3755
+    },
+    "vaoig_search_findings": {
+     "answered": 30,
+     "p50": 443,
+     "p95": 1780,
+     "max": 2231
+    }
+   }
+  },
+  {
+   "clients": 20,
+   "seconds": 61.3,
+   "calls": 586,
+   "outcomes": {
+    "answered": 586
+   },
+   "unclean": 0,
+   "calls_per_second": 9.56,
+   "answered_ms": {
+    "p50": 752,
+    "p95": 3172,
+    "p99": 4896
+   },
+   "by_tool": {
+    "vaoig_analyze_recommendations": {
+     "answered": 165,
+     "p50": 377,
+     "p95": 1266,
+     "max": 3162
+    },
+    "vaoig_find_systemic_clusters": {
+     "answered": 22,
+     "p50": 349,
+     "p95": 1480,
+     "max": 2671
+    },
+    "vaoig_get_dataset_status": {
+     "answered": 225,
+     "p50": 924,
+     "p95": 3172,
+     "max": 4188
+    },
+    "vaoig_get_facility_profile": {
+     "answered": 91,
+     "p50": 903,
+     "p95": 2675,
+     "max": 3613
+    },
+    "vaoig_get_inspection_brief": {
+     "answered": 23,
+     "p50": 4046,
+     "p95": 6433,
+     "max": 7567
+    },
+    "vaoig_get_report": {
+     "answered": 17,
+     "p50": 785,
+     "p95": 2565,
+     "max": 2565
+    },
+    "vaoig_search_findings": {
+     "answered": 43,
+     "p50": 1182,
+     "p95": 2399,
+     "max": 2609
+    }
+   }
+  },
+  {
+   "clients": 40,
+   "seconds": 62.6,
+   "calls": 823,
+   "outcomes": {
+    "answered": 823
+   },
+   "unclean": 0,
+   "calls_per_second": 13.15,
+   "answered_ms": {
+    "p50": 1755,
+    "p95": 4071,
+    "p99": 6019
+   },
+   "by_tool": {
+    "vaoig_analyze_recommendations": {
+     "answered": 262,
+     "p50": 1197,
+     "p95": 2748,
+     "max": 3669
+    },
+    "vaoig_find_systemic_clusters": {
+     "answered": 41,
+     "p50": 959,
+     "p95": 2924,
+     "max": 3488
+    },
+    "vaoig_get_dataset_status": {
+     "answered": 317,
+     "p50": 2106,
+     "p95": 4008,
+     "max": 4748
+    },
+    "vaoig_get_facility_profile": {
+     "answered": 118,
+     "p50": 2026,
+     "p95": 4137,
+     "max": 4624
+    },
+    "vaoig_get_inspection_brief": {
+     "answered": 21,
+     "p50": 5445,
+     "p95": 7699,
+     "max": 8720
+    },
+    "vaoig_get_report": {
+     "answered": 18,
+     "p50": 2220,
+     "p95": 4602,
+     "max": 4602
+    },
+    "vaoig_search_findings": {
+     "answered": 46,
+     "p50": 1977,
+     "p95": 3593,
+     "max": 4040
+    }
+   }
+  }
+ ]
+}

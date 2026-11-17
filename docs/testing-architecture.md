@@ -128,7 +128,7 @@ Where the two judges agree and the traces support them, the result stands. Where
 
 **Some Orchestrate tests check only the answer.** Twelve gold questions accept either of two tools, or need no tool, and an Orchestrate test can name only one expected path. For those, IBM's engine does not score the tool path, and the traces show what was called.
 
-**Not tested:** sustained load, and questions about report text beyond what the tools return.
+**Load:** one ramp from 1 to 40 concurrent clients through the public URL ([`deploy/load_test.py`](../deploy/load_test.py), results in testing-results.md). **Not tested:** load to failure, and questions about report text beyond what the tools return.
 
 ## How to run it
 
