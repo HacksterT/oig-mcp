@@ -155,8 +155,13 @@ def main() -> None:
         transport="streamable-http",
         host=host,
         port=port,
-        stateless_http=True,
-        json_response=True,
+        # Sessions and streamed replies let the server ask the user mid-call
+        # (elicitation) on every protocol version: clients on 2025-11-25 and
+        # earlier receive the question on the open reply stream. Stateless
+        # JSON could ask only 2026-07-28 clients. Idle sessions close after 30
+        # minutes; a restart drops them, and clients start a new one.
+        stateless_http=False,
+        json_response=False,
         host_origin_protection=host_checks,
     )
 
