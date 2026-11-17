@@ -20,7 +20,12 @@ from oig_mcp.models import (
     SearchResult,
     output_schema,
 )
-from oig_mcp.results import build_provenance, report_urls, shorten_responses
+from oig_mcp.results import (
+    build_provenance,
+    report_urls,
+    shorten_responses,
+    with_citations,
+)
 from oig_mcp.upstream import fetch_object
 
 _SHORTLIST_NOTICE = (
@@ -110,8 +115,8 @@ def register(mcp: FastMCP) -> None:
             "offset": result.get("offset"),
             "has_more": result.get("has_more"),
             "next_offset": result.get("next_offset"),
-            "items": shorten_responses(items, _ACTION_CHARS),
-            "page_hits": page_hits,
+            "items": with_citations(shorten_responses(items, _ACTION_CHARS)),
+            "page_hits": with_citations(page_hits),
             "notices": notices,
             "provenance": build_provenance(
                 result.get("data_as_of"), report_urls(items, page_hits)

@@ -21,7 +21,7 @@ from oig_mcp.models import (
     PageOffset,
     output_schema,
 )
-from oig_mcp.results import build_provenance, paginate, report_urls
+from oig_mcp.results import build_provenance, paginate, report_urls, with_citations
 from oig_mcp.upstream import fetch_object
 
 CLUSTER_CAVEAT = (
@@ -126,7 +126,7 @@ def register(mcp: FastMCP) -> None:
                 members = cluster.get("members", [])
                 return {
                     **cluster,
-                    "members": paginate(members, limit, offset),
+                    "members": paginate(with_citations(members), limit, offset),
                     "notices": [CLUSTER_CAVEAT],
                     "provenance": build_provenance(
                         cluster.get("data_as_of"), report_urls(members)

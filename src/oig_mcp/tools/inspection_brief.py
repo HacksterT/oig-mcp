@@ -19,12 +19,10 @@ from pydantic import Field
 from oig_mcp.failures import UpstreamServiceError, tool_error
 from oig_mcp.guidance import FACILITY_VISN_NOTICE, READ_ONLY_TOOL
 from oig_mcp.models import FacilityMatches, InspectionBrief, NotFound, output_schema
-from oig_mcp.results import build_provenance, report_urls
+from oig_mcp.results import build_provenance, citation, report_urls, with_citations
 from oig_mcp.tools.facility_profile import (
-    NO_RESPONSE_NOTICE,
     PAST_WINDOW_NOTICE,
     fetch_profile,
-    lacks_response,
     window_has_passed,
 )
 from oig_mcp.tools.systemic_clusters import CLUSTER_CAVEAT
@@ -49,6 +47,11 @@ _GROUP_NOTICE = (
     "facility_in_this_group is false when none of this facility's recommendations "
     "were placed in that group. It does not mean the facility was never cited for "
     "the theme: similar findings can sit in other groups. Check own_history."
+)
+NO_RESPONSE_NOTICE = (
+    "A finding with no facility response means none was extracted from the report. "
+    "Responses are extracted mainly from inspection reports, so this does not show "
+    "that the facility failed to respond or that anything is overdue."
 )
 _FALLBACK_NOTICE = (
     "Semantic search was unavailable, so peer actions come from keyword search only."
@@ -84,6 +87,7 @@ def _peer_action(item: dict[str, Any]) -> dict[str, Any]:
         "report_number": item.get("report_number"),
         "title": item.get("title"),
         "url": item.get("url"),
+        "citation": citation(item),
         "status": item.get("status"),
         "recommendation": item.get("text"),
         "concur": response.get("concur"),
@@ -112,6 +116,7 @@ def _next_inspection(profile: dict[str, Any]) -> dict[str, Any] | None:
             "next_window_based_on": latest.get("next_window_based_on"),
             "report_number": latest.get("report_number"),
             "url": latest.get("url"),
+            "citation": citation(latest),
         },
     }
 
@@ -124,10 +129,15 @@ def _own_history(profile: dict[str, Any]) -> dict[str, Any]:
         "report_count": profile.get("report_count"),
         "recommendation_count": profile.get("recommendation_count"),
         "open_count": profile.get("open_count"),
-        "open_findings": open_findings[:_OPEN_FINDINGS_SHOWN],
+        "open_findings": with_citations(open_findings[:_OPEN_FINDINGS_SHOWN]),
         "repeat_findings": profile.get("repeat_findings", []),
         "repeat_findings_basis": profile.get("repeat_findings_basis"),
     }
+
+
+def lacks_response(recommendations: list[dict[str, Any]]) -> bool:
+    """True if any finding has no extracted corrective action."""
+    return any(not record.get("corrective_action") for record in recommendations)
 
 
 def register(mcp: FastMCP) -> None:
@@ -153,8 +163,12 @@ def register(mcp: FastMCP) -> None:
     ) -> dict[str, Any]:
         """Prepare one facility for an OIG inspection from the public record.
 
-        Use this when someone asks for help preparing for an inspection. If several
-        facilities match, returns them as matches so the user can choose.
+        Use this when someone asks for help preparing for an inspection: it adds
+        the facility's open findings with its responses and what peers were cited
+        for and committed to do. For a facility's history, counts, or list of
+        reports, use vaoig_get_facility_profile; for a topic across facilities, use
+        vaoig_search_findings. If several facilities match, returns them as
+        matches so the user can choose.
 
         Always pass on every entry in notices and each *_basis field. The next
         window is this server's estimate from past inspection dates, not OIG's:

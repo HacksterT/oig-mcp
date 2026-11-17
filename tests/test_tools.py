@@ -73,6 +73,26 @@ def _search_response(mode: str = "hybrid") -> dict[str, Any]:
     }
 
 
+async def test_search_records_carry_a_citation_only_when_complete(
+    api: FakeApi,
+) -> None:
+    api.routes["search"] = {
+        **_search_response(),
+        "items": [
+            {"report_number": "24-1", "url": "https://www.vaoig.gov/reports/a"},
+            {"report_number": "24-2", "url": None},
+        ],
+        "page_hits": [{"report_number": "24-3", "url": "https://www.vaoig.gov/b"}],
+    }
+    result = await call("vaoig_search_findings", question="carts")
+    assert result["items"][0]["citation"] == (
+        "Report 24-1, https://www.vaoig.gov/reports/a"
+    )
+    assert "citation" not in result["items"][1]
+    assert result["page_hits"][0]["citation"] == "Report 24-3, https://www.vaoig.gov/b"
+    assert "citation field" in result["provenance"]["citation"]
+
+
 async def test_search_has_no_mode_parameter() -> None:
     async with Client(mcp) as client:
         tools = {tool.name: tool for tool in await client.list_tools()}
@@ -218,8 +238,16 @@ async def test_routing_hints_reach_the_client() -> None:
     assert "vaoig_analyze_recommendations" in tools["vaoig_search_findings"]
     assert "vaoig_get_facility_profile" in tools["vaoig_search_findings"]
     assert "vaoig_get_inspection_brief" in tools["vaoig_get_facility_profile"]
-    for name in ("vaoig_search_findings", "vaoig_get_facility_profile"):
-        assert "vaoig_get_report has the full text" in tools[name], name
+    assert "vaoig_get_report on that report" in tools["vaoig_get_facility_profile"]
+    assert "keep the default for a list" in json.dumps(
+        next(
+            t for t in await mcp.list_tools() if t.name == "vaoig_get_facility_profile"
+        ).parameters
+    )
+    brief = tools["vaoig_get_inspection_brief"]
+    assert "vaoig_get_facility_profile" in brief
+    assert "vaoig_search_findings" in brief
+    assert "vaoig_get_report has the full text" in tools["vaoig_search_findings"]
 
 
 async def test_report_text_is_marked_and_totals_are_not(api: FakeApi) -> None:
@@ -410,22 +438,70 @@ async def test_profile_page_flags_do_not_conflict(api: FakeApi) -> None:
     assert "recommendations_has_more" not in result
 
 
-async def test_profile_shortens_corrective_actions(api: FakeApi) -> None:
+async def test_profile_leaves_responses_to_other_tools(api: FakeApi) -> None:
+    """The profile is history and counts. The brief, search, and vaoig_get_report
+    carry responses, so a profile page stays small enough to repeat."""
     profile = _profile()
-    profile["recommendations"][1]["corrective_action"] = "x" * 2000
+    profile["recommendations"][1] |= {
+        "corrective_action": "x" * 2000,
+        "concur": 1,
+        "target_date": "2025-01-01",
+        "domain": "Medication Management",
+    }
     api.routes["facilities"] = _lookup(_facility())
     api.routes["facilities/528A6"] = profile
     result = await call("vaoig_get_facility_profile", facility="West Haven")
-    finding = result["recommendations"]["items"][0]
-    assert len(finding["corrective_action"]) == 300
-    assert finding["corrective_action_truncated"] is True
+    assert result["recommendations"]["items"][0] == {"rec_id": "1-2", "status": "open"}
+    assert "none was extracted" not in " ".join(result["notices"])
 
 
-async def test_profile_explains_a_missing_response(api: FakeApi) -> None:
+async def test_profile_reports_carry_a_citation_and_inspections_no_repeats(
+    api: FakeApi,
+) -> None:
+    profile = _profile()
+    profile["reports"] = [
+        {
+            "report_number": "24-00586-11",
+            "url": "https://www.vaoig.gov/reports/x",
+            "path": "/reports/x",
+            "node_id": 21277,
+            "report_type": "healthcare-facility-inspection",
+        },
+        {"report_number": "13-00001-01", "url": None},
+    ]
+    profile["inspections"] = [
+        {
+            "report_number": "24-00586-11",
+            "program": "HFI",
+            "title": "Healthcare Facility Inspection of Durham",
+            "path": "/reports/x",
+            "node_id": 21277,
+            "station_number": "528A6",
+            "facility_name": "Facility 528A6",
+            "url": "https://www.vaoig.gov/reports/x",
+            "next_window_estimate": "2027-01-01",
+        }
+    ]
     api.routes["facilities"] = _lookup(_facility())
-    api.routes["facilities/528A6"] = _profile()
+    api.routes["facilities/528A6"] = profile
     result = await call("vaoig_get_facility_profile", facility="West Haven")
-    assert "does not show" in " ".join(result["notices"])
+    assert result["reports"] == [
+        {
+            "report_number": "24-00586-11",
+            "url": "https://www.vaoig.gov/reports/x",
+            "report_type": "healthcare-facility-inspection",
+            "citation": "Report 24-00586-11, https://www.vaoig.gov/reports/x",
+        },
+        {"report_number": "13-00001-01"},
+    ]
+    assert result["inspections"] == [
+        {
+            "report_number": "24-00586-11",
+            "program": "HFI",
+            "url": "https://www.vaoig.gov/reports/x",
+            "next_window_estimate": "2027-01-01",
+        }
+    ]
 
 
 async def test_profile_omits_the_notice_when_every_response_exists(
@@ -679,6 +755,7 @@ async def test_cluster_detail_paginates_members(api: FakeApi) -> None:
     assert result["status_counts"] == {"open": 1}
     assert result["members"]["total"] == 2
     assert len(result["members"]["items"]) == 1
+    assert "citation" not in result["members"]["items"][0]  # no report number
     assert "does not prove a common cause" in " ".join(result["notices"])
 
 
@@ -743,6 +820,19 @@ async def test_brief_combines_the_facility_and_its_peers(api: FakeApi) -> None:
     assert first["how_common"] == "21 of 112 reports in scope"
     assert first["median_days_to_close"] == 120
     assert first["peer_actions"][0]["corrective_action"] == "Peer plan"
+
+
+async def test_brief_explains_a_missing_response(api: FakeApi) -> None:
+    _brief_api(api)
+    result = await call("vaoig_get_inspection_brief", facility="West Haven")
+    assert "none was extracted" in " ".join(result["notices"])
+
+
+async def test_brief_peer_actions_carry_a_citation(api: FakeApi) -> None:
+    _brief_api(api)
+    result = await call("vaoig_get_inspection_brief", facility="West Haven")
+    action = result["common_peer_findings"][0]["peer_actions"][0]
+    assert action["citation"] == "Report 2, https://www.vaoig.gov/reports/peer"
 
 
 async def test_brief_marks_groups_this_facility_is_in(api: FakeApi) -> None:
@@ -895,6 +985,20 @@ async def test_prompts_arrange_existing_tools() -> None:
 
 
 # ── Report ───────────────────────────────────────────────────────────────────
+
+
+async def test_report_carries_one_citation_at_the_top(api: FakeApi) -> None:
+    api.routes["reports"] = {**AS_OF, **ENVELOPE, "items": [{"node_id": 4569}]}
+    api.routes["reports/4569"] = {
+        **AS_OF,
+        "node_id": 4569,
+        "report_number": "15-00071-158",
+        "url": "https://www.vaoig.gov/reports/a",
+        "recommendations": [{"rec_id": "4569-1"}],
+    }
+    result = await call("vaoig_get_report", report_number="15-00071-158")
+    assert result["citation"] == "Report 15-00071-158, https://www.vaoig.gov/reports/a"
+    assert result["recommendations"] == [{"rec_id": "4569-1"}]
 
 
 async def test_report_by_number_resolves_to_detail(api: FakeApi) -> None:
@@ -1094,7 +1198,7 @@ async def test_visn_filter_description_names_the_change() -> None:
 
 
 def test_profile_items_keep_what_a_citation_needs_and_drop_repeats() -> None:
-    from oig_mcp.tools.facility_profile import compact
+    from oig_mcp.tools.facility_profile import _LEFT_OUT_OF_FINDINGS, compact
 
     record = {
         "rec_id": "1-1",
@@ -1106,11 +1210,11 @@ def test_profile_items_keep_what_a_citation_needs_and_drop_repeats() -> None:
         "report_type": "healthcare-facility-inspection",
         "node_id": 21277,
         "domain": None,
+        "corrective_action": "Locked the carts.",
     }
-    assert compact(record) == {
+    assert compact(record, _LEFT_OUT_OF_FINDINGS) == {
         "rec_id": "1-1",
         "text": "Secure medication carts.",
         "report_number": "24-00586-11",
         "url": "https://www.vaoig.gov/reports/x",
-        "published_at": "2024-12-11",
     }

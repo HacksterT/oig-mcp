@@ -365,6 +365,9 @@ class Finding(_Record):
     report_number: str | None = None
     title: str | None = None
     url: str | None = None
+    citation: str | None = Field(
+        default=None, description="Report number and link, ready to copy."
+    )
     status: str | None = None
     text: str | None = Field(default=None, description="The recommendation, quoted.")
     response: dict[str, Any] | None = Field(
@@ -383,6 +386,9 @@ class PageHit(_Record):
     snippet: str | None = None
     report_number: str | None = None
     url: str | None = None
+    citation: str | None = Field(
+        default=None, description="Report number and link, ready to copy."
+    )
     pdf_url: str | None = None
 
 
@@ -412,6 +418,9 @@ class Report(_Record):
     report_number: str | None = None
     title: str | None = None
     url: str | None = None
+    citation: str | None = Field(
+        default=None, description="Report number and link, ready to copy."
+    )
     summary: str | None = None
     pdf_url: str | None = None
     recommendations: list[dict[str, Any]] | None = None
@@ -433,7 +442,10 @@ class FacilityProfile(_Record):
 
     station_number: str | None = None
     name: str | None = None
-    reports: list[dict[str, Any]] | None = None
+    reports: list[dict[str, Any]] | None = Field(
+        default=None,
+        description="Each report once: number, type, date, link, and citation.",
+    )
     inspections: list[dict[str, Any]] | None = None
     repeat_findings: list[dict[str, Any]] | None = None
     repeat_findings_basis: str | None = Field(
@@ -517,6 +529,9 @@ class PeerAction(BaseModel):
     report_number: str | None
     title: str | None
     url: str | None
+    citation: str | None = Field(
+        default=None, description="Report number and link, ready to copy."
+    )
     status: str | None
     recommendation: str | None
     concur: Any = None

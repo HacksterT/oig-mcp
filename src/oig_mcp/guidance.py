@@ -28,8 +28,9 @@ QUOTED_TEXT = (
 
 # Totals have no single report to cite.
 CITE_FINDINGS = (
-    "For each report you mention, give its report number and link (its url in "
-    "this result), and state data_as_of."
+    "For each report you mention, give its report number and link: copy the "
+    "record's citation field where it has one, or else its report_number and url. "
+    "State data_as_of."
 )
 CITE_TOTALS = (
     "State data_as_of. These are totals across reports, so no single report is the "

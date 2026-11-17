@@ -50,7 +50,7 @@ Without the server, both models mostly declined, correctly: they did not know th
 | Mean time per question | 15.3 s | 8.7 s | Code |
 | Estimated cost of the run, including the judge | $2.87 | $1.31 | List prices |
 
-Both models ran on November 4. Claude Opus 5.5 was run again on November 10, after typed results, the single `notices` field, and a tool selection guide were added, and again after the analysis changes that followed the Hermes assessment. Both reruns matched the first on every measure, with the same one failure. Answers built from the tools also matched the SQL gold answers on all 16 fact questions, so the evaluation checks the API independently on those facts.
+Both models ran on November 4. Claude Opus 5.5 was run again on November 10, after typed results, the single `notices` field, and a tool selection guide were added, and again after the analysis changes that followed the Hermes assessment. Both reruns matched the first on every measure, with the same one failure. A run on November 17, after the result-size changes, passed 22 of 24 ([folder](../eval/results/2026-11-17-opus-5-5-s22-branch/)): the Durham list as before, and report 25-00193-155, where the answer said the facility "agreed" and the code check looks for "concur". The judge agreed with the reference on all 24, and citations were given on 8 of 8. Answers built from the tools also matched the SQL gold answers on all 16 fact questions, so the evaluation checks the API independently on those facts.
 
 **The failure is kept as a failure.** The question asked for every Healthcare Facility Inspection or Comprehensive Healthcare Inspection Program report for Durham, leaving out hotline and financial reports. Both models listed all eight correctly and also named the excluded reports under a "left out" heading. The scorer counts every report number in an answer, so it marked those as extras. Claude Opus 5.5's answer is right in substance, but the scorer was not changed after seeing the result.
 
@@ -193,6 +193,8 @@ Testing changed the server, the scorer, and the data, not only the scores. Each 
 | Counting with only a facility-response or domain filter failed with a 500 | Data | Fixed in the data API (oig-data-source #38) |
 | The adversarial set: Llama guessed a station number, described another report in place of a missing one, and missed out-of-scope questions; Opus gave aspirin dosing | Server | The server's instructions state its scope; the not-found reply and the station filter say not to substitute or guess |
 | Llama 3.3 70B overflowed its 128K context on full facility profiles | Server | Profile recommendations no longer repeat their report's fields, about a quarter smaller |
+| It overflowed again: the traces show eight identical profile calls in a row, about 72,000 characters each (F06-S22) | Server | The profile carries history and counts, with responses left to the brief, search, and report tools: a 100-item Durham page went from 70,126 to 40,906 characters |
+| Weaker models dropped links from citations (F06-S22) | Server | Each record with a report number and link carries a ready-made `citation` |
 | GPT-OSS 120B writes report numbers with non-breaking hyphens | Scorer | Typographic hyphens and spaces read as plain ones; earlier runs rescored with no change |
 | One failed question stopped a whole harness run | Harness | A failed question is recorded as a failed answer and the run continues |
 | VA North Texas showed a next window of February 2025 after a report published in October 2026 | Data | Inspections with no recommendations, missing for 25 facilities, were added; a question on this case joined the gold set |
@@ -217,6 +219,23 @@ Measured through the server, in its container on the Mac, against the hosted dat
 | `vaoig_search_findings` | 4 | about 0.32 s | about 0.36 s |
 
 The status and brief tools make several API calls each, and the brief runs up to ten searches. One pooled HTTP client, and dataset status reading its five filter lists at once, cut about 30 percent from search and 50 percent from dataset status in a controlled comparison. In Orchestrate the server runs over stdio and starts afresh for each call; starting it took about two seconds in a test on the Mac. Of the 5.8 seconds measured for the New York question, the data API's part was about 0.16 seconds, and the rest was Orchestrate's model and the process start. The service has not been load tested.
+
+## Result size
+
+What a model reads is mostly tool results, so their size decides cost and whether a smaller model's context holds. [`eval/payload_sizes.py`](../eval/payload_sizes.py) replays the 86 tool calls from the November 17 Claude Opus 5.5 and Llama 3.3 70B runs against the server, with no model involved, and measures each result. Approximate tokens are characters divided by four.
+
+| Tool | Calls | Median before | Median after | Total before | Total after |
+|---|---|---|---|---|---|
+| `vaoig_get_facility_profile` | 17 | 35,426 | 26,032 | 551,156 | 418,516 |
+| `vaoig_search_findings` | 6 | 17,589 | 19,558 | 97,710 | 108,251 |
+| `vaoig_get_inspection_brief` | 3 | 30,044 | 32,401 | 90,132 | 97,203 |
+| `vaoig_analyze_recommendations` | 33 | 1,887 | 1,887 | 89,119 | 89,119 |
+| `vaoig_get_dataset_status` | 21 | 3,718 | 3,718 | 78,078 | 78,078 |
+| `vaoig_get_report` | 2 | 9,718 | 9,930 | 19,436 | 19,860 |
+| `vaoig_find_systemic_clusters` | 4 | 1,658 | 1,715 | 7,884 | 8,055 |
+| All | 86 | | | 933,515 (about 233,000 tokens) | 819,082 (about 205,000 tokens) |
+
+Characters per result. The facility profile now leaves out fields its report list already carries and the facility's responses, which the brief, search, and report tools carry; search, the brief, and the report grew by their new `citation` fields. A 100-item page for Durham, the question that overflowed Llama's context, went from 70,126 to 40,906 characters.
 
 ## Security
 
