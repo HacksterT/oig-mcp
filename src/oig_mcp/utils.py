@@ -29,9 +29,16 @@ MAX_RESPONSE_BYTES = 5_000_000
 API_BASE_URL = settings.oig_data_api_base_url
 
 UNREACHABLE_HINT = (
-    "The OIG data API is not reachable. Start the oig-data-source API locally "
-    "(docker compose up -d) or check OIG_DATA_API_BASE_URL and the Cloudflare Access "
-    "service token in the server's environment."
+    "The OIG data API did not answer. Try the same call once more; if it fails "
+    "again, tell the user the data could not be reached. For the operator: start "
+    "the oig-data-source API locally (docker compose up -d) or check "
+    "OIG_DATA_API_BASE_URL and the Cloudflare Access service token in the server's "
+    "environment."
+)
+SERVER_ERROR_HINT = (
+    "The data API failed on this request. Try it once more, then with fewer or "
+    "different filters; if it still fails, tell the user this part could not be "
+    "retrieved rather than giving a number."
 )
 # The API runs at most four searches at once and queues the rest for 10 seconds,
 # then answers 429. The assistant retries, not this server: a retry here would
@@ -65,8 +72,8 @@ QUOTED_TEXT = (
 # These travel in each result, because not every MCP host passes the server's
 # instructions to its model. Totals have no single report to cite.
 CITE_FINDINGS = (
-    "Give the report number and link for each finding you mention, and state "
-    "data_as_of."
+    "For each report you mention, give its report number and link (its url in "
+    "this result), and state data_as_of."
 )
 CITE_TOTALS = (
     "State data_as_of. These are totals across reports, so no single report is the "
@@ -271,6 +278,9 @@ def tool_error(exc: UpstreamServiceError) -> ToolFailure:
         hint = BUSY_HINT
     elif exc.status_code == 503:
         hint = TIMED_OUT_HINT
+    elif exc.status_code == 500:
+        # The API answered and failed; a gateway status (502, 504) means it did not.
+        hint = SERVER_ERROR_HINT
     else:
         hint = UNREACHABLE_HINT
     return ToolFailure(str(exc), hint)

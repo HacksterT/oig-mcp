@@ -7,6 +7,7 @@ inputs and outputs shared across tools.
 
 from __future__ import annotations
 
+import re
 from enum import Enum
 from typing import Annotated, Any, Union
 
@@ -94,6 +95,55 @@ STATE_NAMES = {
 }
 
 
+# OIG's action offices by abbreviation, named as the data names them. A model often
+# writes an office's full name ("Office of Information and Technology"), which the
+# API's substring match misses, so a known name is sent as its abbreviation.
+OFFICE_NAMES = {
+    "VHA": "Veterans Health Administration",
+    "VBA": "Veterans Benefits Administration",
+    "OIT": "Information and Technology",
+    "OALC": "Acquisitions, Logistics, and Construction",
+    "OM": "Office of Management",
+    "SVA": "Office of the Secretary",
+    "HRA": "Human Resources and Administration Office",
+    "OSP": "Operations, Security, and Preparedness",
+    "EHRM IO": "Electronic Health Record Modernization Integration Office",
+    "NCA": "National Cemetery Administration",
+    "OGC": "General Counsel",
+    "OAWP": "Accountability and Whistleblower Protection",
+    "OAEM": "Asset Enterprise Management",
+    "OEI": "Office of Enterprise Integration",
+    "OPIA": "Public and Intergovernmental Affairs",
+}
+_OFFICE_ALIASES = {"OI&T": "OIT", "EHRM": "EHRM IO", "EHRMIO": "EHRM IO"}
+_FILLER = {"office", "of", "the", "and", "va", "department", "affairs", "u"}
+
+
+def _office_key(name: str) -> tuple[str, ...]:
+    """Words that identify an office, ignoring filler, punctuation, and plurals."""
+    words = re.sub(r"[^a-z0-9]+", " ", name.casefold()).split()
+    return tuple(sorted({w.rstrip("s") for w in words if w not in _FILLER}))
+
+
+_OFFICE_KEYS = {_office_key(name): abbr for abbr, name in OFFICE_NAMES.items()}
+_OFFICE_KEYS[_office_key("Information Technology")] = "OIT"
+_OFFICE_KEYS[_office_key("Office of Acquisition, Logistics, and Construction")] = "OALC"
+
+
+def office_abbreviation(value: str) -> str | None:
+    """The abbreviation for a known office name or abbreviation, else None."""
+    text = value.strip()
+    upper = text.upper()
+    if upper in OFFICE_NAMES:
+        return upper
+    if upper in _OFFICE_ALIASES:
+        return _OFFICE_ALIASES[upper]
+    labelled = re.search(r"\(([^)]+)\)\s*$", text)
+    if labelled and labelled.group(1).upper() in OFFICE_NAMES:
+        return labelled.group(1).upper()
+    return _OFFICE_KEYS.get(_office_key(text))
+
+
 class RecommendationFilters(BaseModel):
     """Filters shared by the search and analysis tools.
 
@@ -109,7 +159,10 @@ class RecommendationFilters(BaseModel):
     action_office: str | None = Field(
         default=None,
         max_length=100,
-        description="Office abbreviation such as VHA, or part of an office name.",
+        description=(
+            "Office abbreviation such as VHA, VBA, or OIT. A full office name also "
+            "works."
+        ),
     )
     topic: str | None = Field(
         default=None,
@@ -173,6 +226,25 @@ class RecommendationFilters(BaseModel):
         default=None,
         description="Keep only findings with, or without, a facility response.",
     )
+
+    @field_validator("action_office")
+    @classmethod
+    def _office(cls, value: str | None) -> str | None:
+        """Send a known office as its abbreviation, which the API matches exactly."""
+        if value is None:
+            return None
+        return office_abbreviation(value) or value.strip()
+
+    @field_validator("domain")
+    @classmethod
+    def _domain_is_not_an_office(cls, value: str | None) -> str | None:
+        """An office in the domain filter matches nothing; say where it belongs."""
+        if value is not None and (abbr := office_abbreviation(value)):
+            raise ValueError(
+                f"'{value}' is a VA office, not an inspection domain. "
+                f"Use action_office='{abbr}' instead."
+            )
+        return value
 
     @field_validator("state")
     @classmethod
@@ -377,6 +449,12 @@ class Analysis(BaseModel):
             "Distinct recommendations in the set, the sum over years. Null for other "
             "groupings, whose groups overlap."
         )
+    )
+    peak_year: dict[str, Any] | None = Field(
+        default=None,
+        description=(
+            "By year only: the year with the most recommendations, with its counts."
+        ),
     )
     items: list[dict[str, Any]]
     notices: Notices
