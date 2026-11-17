@@ -2,7 +2,10 @@
 
     uv run --group eval python eval/phoenix/run_experiment.py --url http://127.0.0.1:8000
 
-Needs ANTHROPIC_API_KEY and MCP_AUTH_TOKEN, from the environment or `.env`. Refuses
+Needs ANTHROPIC_API_KEY and MCP_AUTH_TOKEN, from the environment or `.env`. A model
+ID with a slash, such as meta-llama/llama-3-3-70b-instruct, runs the agent on IBM
+watsonx.ai instead, as IBM's mcp-eval-wxai skill describes, and also needs
+WATSONX_URL, WATSONX_API_KEY, and WATSONX_PROJECT_ID; the judge stays Claude. Refuses
 to run if the server's data differs from the pinned snapshot. Writes records.json
 and summary.md under eval/results/, then records the run as a Phoenix experiment with
 traces. A Phoenix failure does not lose the results. `--rescore <dir>` scores saved
@@ -28,7 +31,7 @@ import anthropic
 from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).parent))
-from agent import preflight, run_question  # noqa: E402
+from agent import preflight, run_question, run_question_watsonx  # noqa: E402
 from scoring import (  # noqa: E402
     cost,
     load_index,
@@ -72,7 +75,7 @@ def start_phoenix() -> subprocess.Popen | None:
     raise RuntimeError("Phoenix did not start. See eval/.phoenix/server.log.")
 
 
-def instrument() -> None:
+def instrument():
     from openinference.instrumentation.anthropic import AnthropicInstrumentor
     from phoenix.otel import register
 
@@ -82,6 +85,12 @@ def instrument() -> None:
         verbose=False,
     )
     AnthropicInstrumentor().instrument(tracer_provider=provider)
+    return provider
+
+
+def on_watsonx(model: str) -> bool:
+    """watsonx.ai model IDs name their provider, as in meta-llama/llama-3-3-70b-instruct."""
+    return "/" in model
 
 
 def log_experiment(gold: dict, records: list[dict], args, name: str) -> None:
@@ -184,8 +193,13 @@ def write_summary(path: Path, gold: dict, records: list[dict], args) -> str:
         f"# Evaluation run: {args.model}",
         "",
         f"Data snapshot `{gold['snapshot']['sha256'][:16]}`, data as of "
-        f"{gold['snapshot']['data_as_of']}. Agent `{args.model}` at effort "
-        f"`{args.effort}`, judge `{args.judge_model}`. Run {date.today().isoformat()}.",
+        f"{gold['snapshot']['data_as_of']}. Agent `{args.model}` "
+        + (
+            "on IBM watsonx.ai at temperature 0"
+            if on_watsonx(args.model)
+            else f"at effort `{args.effort}`"
+        )
+        + f", judge `{args.judge_model}`. Run {date.today().isoformat()}.",
         "",
         "| Measure | Result | Scored by |",
         "|---|---|---|",
@@ -207,8 +221,15 @@ def write_summary(path: Path, gold: dict, records: list[dict], args) -> str:
         f"| Data date stated where required | "
         f"{share([r['score']['data_date_stated'] for r in records])} | Code |",
         "",
-        f"Questions by category: {', '.join(f'{k} {v}' for k, v in sorted(categories.items()))}. "
-        f"Estimated cost at list prices: agent ${agent_cost:.2f}, judge ${judge_cost:.2f}.",
+        f"Questions by category: "
+        f"{', '.join(f'{k} {v}' for k, v in sorted(categories.items()))}. "
+        + (
+            f"Estimated cost at list prices: agent ${agent_cost:.2f}, "
+            if not on_watsonx(args.model)
+            else "Agent usage on watsonx.ai is not priced here. Estimated cost at "
+            "list prices: "
+        )
+        + f"judge ${judge_cost:.2f}.",
         "",
         "## By question",
         "",
@@ -273,21 +294,33 @@ def write_summary(path: Path, gold: dict, records: list[dict], args) -> str:
     return text
 
 
-async def answer_all(questions, args, llm, token) -> list[dict]:
+async def answer_all(questions, args, llm, token, chat=None, tracer=None) -> list[dict]:
+    from watsonx import WatsonxError
+
     gate = asyncio.Semaphore(args.concurrency)
 
     async def one(gold: dict) -> dict:
         async with gate:
             try:
-                run = await run_question(
-                    gold["question"],
-                    llm=llm,
-                    model=args.model,
-                    effort=args.effort,
-                    url=args.url,
-                    token=token,
-                )
-            except anthropic.APIError as exc:
+                if chat is not None:
+                    run = await run_question_watsonx(
+                        gold["question"],
+                        chat=chat,
+                        model=args.model,
+                        url=args.url,
+                        token=token,
+                        tracer=tracer,
+                    )
+                else:
+                    run = await run_question(
+                        gold["question"],
+                        llm=llm,
+                        model=args.model,
+                        effort=args.effort,
+                        url=args.url,
+                        token=token,
+                    )
+            except (anthropic.APIError, WatsonxError) as exc:
                 raise SystemExit(f"{gold['id']}: {type(exc).__name__}: {exc}") from exc
         print(
             f"  answered {gold['id']}: {len(run['tool_calls'])} tool calls, "
@@ -326,11 +359,23 @@ async def main_async(args) -> int:
     ]
     llm = anthropic.AsyncAnthropic(max_retries=5)
 
+    chat = tracer = None
+    if on_watsonx(args.model) and not args.rescore:
+        from watsonx import WatsonxChat, WatsonxError
+
+        try:
+            chat = WatsonxChat()
+        except WatsonxError as exc:
+            print(exc)
+            return 2
+
     phoenix_process = None
     if not args.no_phoenix:
         try:
             phoenix_process = start_phoenix()
-            instrument()
+            provider = instrument()
+            if chat is not None:
+                tracer = provider.get_tracer("oig-mcp-eval-watsonx")
         except Exception as exc:
             print(f"Phoenix is unavailable, continuing without it: {exc}")
             args.no_phoenix = True
@@ -354,7 +399,7 @@ async def main_async(args) -> int:
             out_dir = RESULTS_DIR / name
             out_dir.mkdir(parents=True, exist_ok=True)
             print(f"Asking {len(questions)} questions of {args.model}", flush=True)
-            records = await answer_all(questions, args, llm, token)
+            records = await answer_all(questions, args, llm, token, chat, tracer)
             (out_dir / "records.json").write_text(json.dumps(records, indent=1))
 
         print(f"Scoring with {args.judge_model}", flush=True)
@@ -370,6 +415,8 @@ async def main_async(args) -> int:
             except Exception as exc:
                 print(f"Could not log to Phoenix: {type(exc).__name__}: {exc}")
     finally:
+        if chat is not None:
+            await chat.aclose()
         if phoenix_process and not args.keep_phoenix:
             time.sleep(5)  # Let trace exports finish.
             phoenix_process.terminate()

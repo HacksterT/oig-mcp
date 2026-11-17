@@ -24,12 +24,26 @@ The harness stops if the server's data differs from the pinned snapshot, because
 | Option | Default | Purpose |
 |---|---|---|
 | `--url` | `http://127.0.0.1:8000` | Server to test, including a deployed one |
-| `--model` | `AGENT_MODEL`, or `claude-opus-5-5` | Assistant under test |
+| `--model` | `AGENT_MODEL`, or `claude-opus-5-5` | Assistant under test. A watsonx.ai model ID, such as `meta-llama/llama-3-3-70b-instruct`, runs on IBM watsonx.ai (below) |
 | `--judge-model` | `JUDGE_MODEL`, or `claude-opus-5-5` | Model that scores caveats and behaviors |
 | `--effort` | `AGENT_EFFORT`, or `medium` | Assistant's effort level |
 | `--only` | all | Comma-separated question IDs |
 | `--rescore` | | Score a saved results folder again, without asking the assistant |
 | `--no-phoenix` | | Skip Phoenix |
+
+## On IBM watsonx.ai models
+
+IBM's `mcp-eval-wxai` skill runs this kind of evaluation with the agent on watsonx.ai. The harness does the same when `--model` is a watsonx.ai model ID: the agent's turns go to IBM's chat API, at temperature 0, with the server's own instructions and tools, and everything else (the questions, the code checks, the Claude judge, Phoenix) is unchanged. A Claude judge on a Llama agent also keeps the judge independent of the agent's model family.
+
+Add the skill's three values to `.env`: `WATSONX_URL` (the region's endpoint, such as `https://ca-tor.ml.cloud.ibm.com`), `WATSONX_API_KEY`, and `WATSONX_PROJECT_ID` (a project with a watsonx.ai Runtime instance). Then check the model, and run:
+
+```bash
+uv run --group eval python eval/phoenix/watsonx_smoke.py --model meta-llama/llama-3-3-70b-instruct
+uv run --group eval python eval/phoenix/run_experiment.py --url http://127.0.0.1:8000 \
+  --model meta-llama/llama-3-3-70b-instruct
+```
+
+The smoke test confirms the credentials, that the model is listed for tool calling in the region, a chat call, and a real tool call, and prints no credential. watsonx.ai usage is not priced in the summary.
 
 ## Layout
 
@@ -38,7 +52,9 @@ The harness stops if the server's data differs from the pinned snapshot, because
 | `gold/build_gold.py` | Computes answers by SQL from the pinned snapshot, opened read-only |
 | `gold/questions.json` | The questions, answers, patterns, required tools, and criteria |
 | `gold/report_index.json` | Every report number and link in the snapshot, for citation checks |
-| `phoenix/agent.py` | The assistant loop, connected to the server over authenticated HTTP |
+| `phoenix/agent.py` | The assistant loop, for Claude or a watsonx.ai model, connected to the server over authenticated HTTP |
+| `phoenix/watsonx.py` | The watsonx.ai chat client, with IAM token refresh |
+| `phoenix/watsonx_smoke.py` | Checks watsonx.ai credentials and tool calling before a run |
 | `phoenix/scoring.py` | Scoring by code, and the judge |
 | `phoenix/run_experiment.py` | The command above |
 | `phoenix/score_external.py` | Scores answers from an agent outside this harness |
