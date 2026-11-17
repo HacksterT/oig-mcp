@@ -15,7 +15,7 @@
 | No-tool baseline | Claude Opus 5.5: 3 of 24; Llama 3.3 70B: 2 of 24 | What the models do without the server |
 | Adversarial set, 6 questions | Opus 5 of 6, then 6 of 6; Llama 0 of 6, then 4 of 6, after server changes | Not blind: questions and fixes written the same night |
 | Ambiguous facility name, three hosts | After #92, Hermes Agent and Claude Desktop listed the matching facilities and asked; neither chose one itself. Names that once opened one facility silently ("California VA", "Virginia VA", "Columbia VA") now list the matches | The server's own question to the user is proven only with the MCP SDK's client; Orchestrate is untested |
-| Automated tests | 267 pass, on every change | |
+| Automated tests | 275 pass, on every change | |
 | Image, deployment, and robustness checks | 15 of 15 and 22 of 22, on the Mac and on IBM's virtual machine; 48 of 48 robustness checks, local and through the public URL | |
 | Load test, 1 to 40 concurrent clients | All 2,059 calls answered, no errors; median 0.33 s to 1.8 s | One run, one Mac, not to failure |
 

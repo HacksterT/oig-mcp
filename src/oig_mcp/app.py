@@ -30,7 +30,7 @@ from pathlib import Path
 import fastmcp
 from fastmcp import FastMCP
 
-from oig_mcp import completions
+from oig_mcp import completions, http_sessions
 from oig_mcp.auth import BearerTokenVerifier
 from oig_mcp.config import settings
 from oig_mcp.middleware import add_usage_controls, configure_usage_log
@@ -151,6 +151,7 @@ def main() -> None:
         # Local HTTP checks Host and Origin, so a web page can't reach a server
         # on this machine through DNS rebinding. The bearer token still applies.
         host, port, host_checks = settings.mcp_host, settings.mcp_port, "auto"
+    http_sessions.install()
     mcp.run(
         transport="streamable-http",
         host=host,
