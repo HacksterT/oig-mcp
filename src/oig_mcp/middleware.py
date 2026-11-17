@@ -38,6 +38,10 @@ from oig_mcp.failures import ToolFailure
 # requests a second is still far beyond a person working with an agent.
 REQUESTS_PER_SECOND = 2.0
 BURST = 30
+# Not counted by the limit: see ClientRateLimitMiddleware.
+_LISTINGS = frozenset(
+    {"tools/list", "resources/list", "resources/templates/list", "prompts/list"}
+)
 
 _TOOL_NAME = re.compile(r"[A-Za-z0-9_.-]{1,100}")
 _RESOURCE_URI = re.compile(r"vaoig://[A-Za-z0-9_./%-]{1,100}")
@@ -197,15 +201,20 @@ class ToolFailureMiddleware(Middleware):
 class ClientRateLimitMiddleware(RateLimitingMiddleware):
     """Limit callers with a token. Stdio has no token and only one local user.
 
-    It counts every MCP request a token makes, including tool listing, not only
-    tool calls. Buckets live in this process's memory, so they reset on restart
-    and each instance keeps its own: with N instances a client can reach N times
-    the limit. Everything else here is stateless; a shared store would fix this
-    and is not justified for a few trusted testers.
+    It counts the requests that do work: tool calls, resource reads, prompts, and
+    the handshake. Listings are not counted. They are answered from memory, and on
+    protocol 2026-07-28 the MCP library lists the tools itself before every tool
+    call to check its Mcp-Param headers, so counting listings made each tool call
+    cost two requests, and logged a traceback for every refused call.
+
+    Buckets live in this process's memory, so they reset on restart and each
+    instance keeps its own: with N instances a client can reach N times the limit.
+    Everything else here is stateless; a shared store would fix this and is not
+    justified for a few trusted testers.
     """
 
     async def on_request(self, context: MiddlewareContext, call_next: CallNext) -> Any:
-        if get_access_token() is None:
+        if get_access_token() is None or context.method in _LISTINGS:
             return await call_next(context)
         return await super().on_request(context, call_next)
 
