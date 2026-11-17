@@ -33,7 +33,8 @@ NAME = re.compile(r"[a-z0-9][a-z0-9_-]*")
 HEALTH_URL = "http://127.0.0.1:8000/health"
 HEALTH_TIMEOUT_SECONDS = 60
 USAGE_LINE = re.compile(
-    r"(?P<time>\S+) client=(?P<client>\S+) tool=\S+ outcome=(?P<outcome>\S+) ms=\d+$"
+    r"(?P<time>\S+) client=(?P<client>\S+) tool=\S+ outcome=(?P<outcome>\S+) ms=\d+"
+    r"(?: trace=\S+)?$"
 )
 
 

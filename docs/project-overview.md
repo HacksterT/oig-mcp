@@ -87,7 +87,7 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 | `src/oig_mcp/config.py` | Settings from environment variables; validates the data API URL |
 | `src/oig_mcp/utils.py` | The hardened HTTP client (`fetch_json`, one pooled client per server), Access headers, `ToolFailure` and `tool_error`, provenance helper |
 | `src/oig_mcp/models.py` | Pydantic models: input filters and enums, `Provenance`, and the result models each tool declares as its output schema |
-| `src/oig_mcp/middleware.py` | Usage log, per-token rate limit, tool-call traces, and turning `ToolFailure` into an `isError` result |
+| `src/oig_mcp/middleware.py` | Usage log, per-token rate limit, traces of tool calls and resource reads, and turning `ToolFailure` into an `isError` result |
 | `src/oig_mcp/tracing.py` | Trace IDs sent to the data API, and trace files when `MCP_TRACE_DIR` is set |
 | `src/oig_mcp/tools/` | One file per tool; `__init__.py` registers them |
 | `src/oig_mcp/auth.py` | The bearer token check for `/mcp` |

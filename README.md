@@ -84,7 +84,7 @@ The MCP endpoint is `http://localhost:8000/mcp`, and callers send `Authorization
 | `MCP_AUTH_TOKEN` | empty | Bearer token for `/mcp`. Required over HTTP, unused over stdio |
 | `MCP_CLIENT_TOKENS` | empty | More bearer tokens, as `name:token,name:token`, so one client can be removed alone. Managed with `deploy/mcp_clients.py` |
 | `MCP_USAGE_LOG` | empty | File for the usage log, which also goes to stderr. Records client, tool, outcome, and duration, never arguments |
-| `MCP_TRACE_DIR`, `MCP_TRACE_MAX_MB` | empty, `400` | Full tool-call traces, including arguments and results. On through the hackathon, including judging, and disclosed to users in `vaoig://about`. Read them with `deploy/traces.py` |
+| `MCP_TRACE_DIR`, `MCP_TRACE_MAX_MB` | empty, `400` | Full traces of tool calls and resource reads, including arguments and results. On through the hackathon, including judging, and disclosed to users in `vaoig://about`. Read them with `deploy/traces.py` |
 | `STALE_AFTER_DAYS` | `30` | Age at which responses flag data as stale |
 | `MCP_TRANSPORT`, `MCP_HOST`, `MCP_PORT` | `stdio`, `127.0.0.1`, `8000` | `stdio`, or `streamable-http` for Streamable HTTP, the MCP specification's HTTP transport (FastMCP calls it `http`); anything else stops startup. Host and port apply to local HTTP, which checks Host and Origin headers. A platform-injected `PORT` switches to HTTP on all interfaces |
 
