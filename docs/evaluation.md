@@ -35,7 +35,7 @@ The seven tools are built around what a user is trying to do, not around the dat
 
 | Layer | What it checks |
 |---|---|
-| Automated tests | 217 tests on every change: each tool's inputs, results, output schema, error messages and hints, authentication, and that each description tells a model when to use the tool |
+| Automated tests | 219 tests on every change: each tool's inputs, results, output schema, error messages and hints, authentication, and that each description tells a model when to use the tool |
 | Image checks | 15 checks on the container: no secret inside, a non-root user, refusal to start without a valid token or with a plain-HTTP data address |
 | Deployment checks | 22 checks on a running server: seven kinds of bad credentials refused, all seven tools listed, live data with no secret in it |
 | Robustness check | 43 checks on a running server: hostile and malformed input to every tool, a burst past the rate limit, searches past the data API's capacity, and no internal detail in any reply |

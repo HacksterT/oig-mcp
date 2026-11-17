@@ -80,6 +80,27 @@ def load_dotenv(path: Path) -> None:
             os.environ.setdefault(key, value.strip().strip("'\""))
 
 
+# Every credential a reply must never contain, checked by this script and by
+# robustness_check.py.
+SECRET_VARIABLES = (
+    "MCP_AUTH_TOKEN",
+    "CF_ACCESS_CLIENT_ID",
+    "CF_ACCESS_CLIENT_SECRET",
+    "OIG_DATA_API_KEY",
+)
+
+
+def watched_secrets() -> list[str]:
+    return [os.environ.get(name, "") for name in SECRET_VARIABLES]
+
+
+def bearer_transport(url: str, token: str) -> StreamableHttpTransport:
+    """An MCP connection to the server's /mcp endpoint with the bearer token."""
+    return StreamableHttpTransport(
+        f"{url.rstrip('/')}/mcp", headers={"Authorization": f"Bearer {token}"}
+    )
+
+
 def tool_payload(result) -> dict:
     """The tool's result, from its first text block. A failed call carries
     {"error", "hint"} there too, so a check reports it instead of crashing."""
@@ -142,11 +163,10 @@ def verify_mcp_gate(report: Report, url: str, token: str, access: dict) -> None:
 async def verify_end_to_end(report: Report, url: str, token: str) -> None:
     """Connection 2 as a client sees it: tools that succeed crossed both gates."""
     print("\nMCP server to data API, through the tools")
-    transport = StreamableHttpTransport(
-        f"{url}/mcp", headers={"Authorization": f"Bearer {token}"}
-    )
     # The older handshake, which clients built on earlier MCP SDKs still use.
-    async with Client(transport, timeout=120, mode="legacy") as client:
+    async with Client(
+        bearer_transport(url, token), timeout=120, mode="legacy"
+    ) as client:
         names = {tool.name for tool in await client.list_tools()}
         report.check("tools/list returns the seven tools", names == EXPECTED_TOOLS)
 
@@ -240,7 +260,7 @@ def main() -> int:
         else {}
     )
     api_key = os.environ.get("OIG_DATA_API_KEY", "")
-    report = Report([token, client_id, client_secret, api_key])
+    report = Report(watched_secrets())
 
     verify_mcp_gate(report, url, token, access)
     try:

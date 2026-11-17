@@ -26,7 +26,7 @@ Please report security issues privately through GitHub's "Report a vulnerability
 
 - **One origin.** The server calls only `OIG_DATA_API_BASE_URL`, set by the operator. Tool arguments never choose a host. The URL must be https unless it points at localhost, and may not carry credentials, a query, or a fragment.
 - **Two keys to the data API.** Every request carries the Cloudflare Access service token and, when `OIG_DATA_API_KEY` is set, the API's bearer key, so the API stays closed if the Access policy is ever removed. Both are applied after any other headers, so nothing can override them, and they are never logged or traced.
-- **A hardened client.** Relative paths only (absolute, encoded, and traversal paths are rejected after repeated decoding); path parameters are integers or fully escaped; query values are encoded by httpx; filter keys are fixed (`extra="forbid"`). No redirects, environment proxies ignored, identity encoding (so the 5 MB response cap measures what was received), a 30 second timeout per phase, and an overall deadline per request.
+- **A hardened client.** Relative paths only (absolute, encoded, and traversal paths are rejected after repeated decoding); path parameters are integers or fully escaped; query values are encoded by httpx; filter keys are fixed (`extra="forbid"`). No redirects, environment proxies ignored, identity encoding (httpx would expand each compressed chunk whole before the 5 MB response cap could see it), a 30 second timeout per phase, and an overall deadline per request.
 - **Bounded fan-out.** At most eight upstream requests run at once per server process, across all tool calls. The inspection brief alone runs up to ten searches, and the data API runs four at a time, so without this one burst of briefs would queue hundreds of requests upstream. The facility registry resource stops after 50 pages and only follows an offset that moves forward.
 - **No other outbound calls.** FastMCP's startup check for a newer version is turned off, since it would contact PyPI.
 
@@ -48,7 +48,7 @@ Please report security issues privately through GitHub's "Report a vulnerability
 
 ### Logs and traces
 
-- **Usage log.** One line per tool call or resource read: client name, tool or resource, outcome, and duration. Arguments and tokens are never logged; names a caller chooses are sanitized before they reach the log. The file is private (0600) and rotated at 10 MB, keeping three.
+- **Usage log.** One line per tool call or resource read: client name, tool or resource, outcome, and duration. Arguments and tokens are never logged; names a caller chooses are sanitized before they reach the log. Every file, including each new one after rotation, is private (0600); it rotates at 10 MB, keeping three.
 - **Traces.** `MCP_TRACE_DIR` writes each tool call in full: client, arguments, every data API request, and the result. The data API keeps a matching trace of each request, linked by an `X-Trace-Id` header. Traces are off unless the setting is present. They are on through the hackathon, including judging, so the builder can see what people ask, and users are told: `vaoig://about`, the tester guides, and the project overview page all say questions and answers are recorded. Tokens and Cloudflare credentials are never written. Each traced argument is cut at 2,000 characters and 100 items, and a record over 256 KB drops its result, so no caller can flush the store's 400 MB cap. Files and folders are private (0600 and 0700). In watsonx Orchestrate the server runs without `MCP_TRACE_DIR`, so the data API's traces are the record of what it was asked. After the hackathon, traces should be turned off for any general public use.
 
 ### Container and supply chain
@@ -61,7 +61,7 @@ Please report security issues privately through GitHub's "Report a vulnerability
 
 | Check | What it covers | When | Latest result |
 |---|---|---|---|
-| Automated tests ([`tests/`](tests/)) | Authentication, Host and Origin checks, outbound path validation, sanitized errors, bounded traces, private files, bounded input, every tool's error hints | Every change, in CI | 217 pass (November 17, 2026) |
+| Automated tests ([`tests/`](tests/)) | Authentication, Host and Origin checks, outbound path validation, sanitized errors, bounded traces, private files, bounded input, every tool's error hints | Every change, in CI | 219 pass (November 17, 2026) |
 | Dependency audit (`pip-audit`, in CI) | Known vulnerabilities in every runtime, dev, and evaluation dependency | Every change | No known vulnerabilities in 67 runtime packages or the other groups |
 | Dependabot alerts | Advisories against `uv.lock` | Continuously | 16 raised since the repository opened; all fixed |
 | Secret scan (`gitleaks`, redacted output) | Every commit in the repository's history, and the working tree | Before submission | History: none. Working tree: only `.env`, which is git-ignored |
@@ -84,7 +84,7 @@ A separate review agent read the code without the builder's conclusions and prob
 | Trace and log files were readable by every local user, and the usage log did not rotate | Low | Fixed: 0600 files, 0700 folders, rotation |
 | Upstream values were placed in `notices`, which the model passes on as the server's words | Low | Fixed: only integers are used there |
 | The client hint for an unreachable API named settings and how the API runs | Informational | Fixed: that detail goes to the operator's log |
-| Compressed responses were measured after decompression; the timeout was per phase | Hardening | Fixed: identity encoding; an overall deadline |
+| A compressed chunk was expanded whole before the size cap saw it; the timeout was per phase | Hardening | Fixed: identity encoding; an overall deadline |
 | No container restrictions beyond a non-root user; base image not pinned by digest | Hardening | Fixed: capabilities dropped, no-new-privileges, read-only filesystem, limits; digest pinned |
 | Quoted-text marking depends on a list of field names, and some tools pass upstream records through whole | Hardening | Accepted: the upstream is the project's own, operator-controlled API; see Known limits |
 | The Orchestrate registration script passes credentials as command-line arguments and installs dependencies without hash checks | Low | Accepted for a single-user virtual machine; see Known limits |

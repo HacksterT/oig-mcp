@@ -13,7 +13,14 @@ from urllib.parse import quote
 from fastmcp import FastMCP
 from pydantic import Field
 
-from oig_mcp.models import FacilityMatches, FacilityProfile, NotFound, output_schema
+from oig_mcp.models import (
+    FacilityMatches,
+    FacilityProfile,
+    NotFound,
+    PageLimit,
+    PageOffset,
+    output_schema,
+)
 from oig_mcp.utils import (
     CITE_TOTALS,
     FACILITY_VISN_NOTICE,
@@ -153,10 +160,8 @@ def register(mcp: FastMCP) -> None:
             ),
         ],
         limit: Annotated[
-            int,
+            PageLimit,
             Field(
-                ge=1,
-                le=100,
                 description=(
                     "Recommendations to return. Counts and the full report list come "
                     "with any limit, so raise it only to read more findings."
@@ -164,12 +169,8 @@ def register(mcp: FastMCP) -> None:
             ),
         ] = 25,
         offset: Annotated[
-            int,
-            Field(
-                ge=0,
-                le=10_000,
-                description="Recommendations to skip; use next_offset to page.",
-            ),
+            PageOffset,
+            Field(description="Recommendations to skip; use next_offset to page."),
         ] = 0,
     ) -> dict[str, Any]:
         """Get one facility's reports, inspections, findings, and repeat findings.

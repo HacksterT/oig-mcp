@@ -37,6 +37,7 @@ REQUESTS_PER_SECOND = 2.0
 BURST = 30
 
 _TOOL_NAME = re.compile(r"[A-Za-z0-9_.-]{1,100}")
+_RESOURCE_URI = re.compile(r"vaoig://[A-Za-z0-9_./%-]{1,100}")
 
 usage_log = logging.getLogger("oig_mcp.usage")
 
@@ -46,7 +47,9 @@ def _client_name(_context: MiddlewareContext | None = None) -> str:
     return token.client_id if token else "local"
 
 
-_RESOURCE_URI = re.compile(r"vaoig://[A-Za-z0-9_./%-]{1,100}")
+def _safe(name: str, pattern: re.Pattern[str]) -> str:
+    """The caller chooses this name, so don't let it write into the log."""
+    return name if pattern.fullmatch(name) else "invalid"
 
 
 class UsageLogMiddleware(Middleware):
@@ -55,27 +58,18 @@ class UsageLogMiddleware(Middleware):
     async def on_read_resource(
         self, context: MiddlewareContext, call_next: CallNext
     ) -> Any:
-        started = time.monotonic()
-        outcome = "error"
-        try:
-            result = await call_next(context)
-            outcome = "ok"
-            return result
-        except RateLimitError:
-            outcome = "rate_limited"
-            raise
-        finally:
-            uri = str(context.message.uri)
-            usage_log.info(
-                "client=%s resource=%s outcome=%s ms=%d",
-                _client_name(),
-                uri if _RESOURCE_URI.fullmatch(uri) else "invalid",
-                outcome,
-                round((time.monotonic() - started) * 1000),
-            )
+        uri = _safe(str(context.message.uri), _RESOURCE_URI)
+        return await self._logged("resource", uri, context, call_next)
 
     async def on_call_tool(
         self, context: MiddlewareContext, call_next: CallNext
+    ) -> Any:
+        tool = _safe(str(context.message.name), _TOOL_NAME)
+        return await self._logged("tool", tool, context, call_next)
+
+    @staticmethod
+    async def _logged(
+        kind: str, name: str, context: MiddlewareContext, call_next: CallNext
     ) -> Any:
         started = time.monotonic()
         outcome = "error"
@@ -87,16 +81,13 @@ class UsageLogMiddleware(Middleware):
             outcome = "rate_limited"
             raise
         finally:
-            # The caller chooses this name, so don't let it write into the log.
-            name = str(context.message.name)
-            tool = name if _TOOL_NAME.fullmatch(name) else "invalid"
-            milliseconds = round((time.monotonic() - started) * 1000)
             usage_log.info(
-                "client=%s tool=%s outcome=%s ms=%d",
+                "client=%s %s=%s outcome=%s ms=%d",
                 _client_name(),
-                tool,
+                kind,
+                name,
                 outcome,
-                milliseconds,
+                round((time.monotonic() - started) * 1000),
             )
 
 
@@ -120,10 +111,9 @@ class ToolTraceMiddleware(Middleware):
     async def on_call_tool(
         self, context: MiddlewareContext, call_next: CallNext
     ) -> Any:
-        name = str(context.message.name)
         record, token = tracing.start(
             _client_name(),
-            name if _TOOL_NAME.fullmatch(name) else "invalid",
+            _safe(str(context.message.name), _TOOL_NAME),
             context.message.arguments,
         )
         started = time.monotonic()
@@ -180,6 +170,17 @@ class ClientRateLimitMiddleware(RateLimitingMiddleware):
         return await super().on_request(context, call_next)
 
 
+class _PrivateRotatingFileHandler(RotatingFileHandler):
+    """Rotated so it cannot fill the disk; every file it opens is private, like
+    the traces, including the fresh one after each rollover."""
+
+    def _open(self) -> Any:
+        flags = os.O_WRONLY | os.O_CREAT | os.O_APPEND
+        descriptor = os.open(self.baseFilename, flags, 0o600)
+        os.fchmod(descriptor, 0o600)  # a file that already existed, too
+        return os.fdopen(descriptor, "a", encoding=self.encoding, errors=self.errors)
+
+
 def configure_usage_log(path: str = "") -> None:
     """Log to stderr, and to a file if set. A bad path must not stop the server."""
     formatter = logging.Formatter(
@@ -190,10 +191,9 @@ def configure_usage_log(path: str = "") -> None:
     failed = False
     if path:
         try:
-            # Rotated so it cannot fill the disk; private like the traces.
-            handler = RotatingFileHandler(path, maxBytes=10_000_000, backupCount=3)
-            os.chmod(path, 0o600)
-            handlers.append(handler)
+            handlers.append(
+                _PrivateRotatingFileHandler(path, maxBytes=10_000_000, backupCount=3)
+            )
         except OSError:
             failed = True
     usage_log.handlers.clear()

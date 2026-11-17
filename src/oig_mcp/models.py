@@ -22,6 +22,13 @@ class RecommendationStatus(str, Enum):
     CLOSED_NOT_IMPLEMENTED = "closed-not-implemented"
 
 
+# Paging bounds shared by every tool that pages. Each tool adds its own description
+# with Annotated[PageLimit, Field(description=...)]; Pydantic merges the two.
+MAX_OFFSET = 10_000
+PageLimit = Annotated[int, Field(ge=1, le=100)]
+PageOffset = Annotated[int, Field(ge=0, le=MAX_OFFSET)]
+
+
 class AnalysisGroup(str, Enum):
     """How the analysis tool groups a filtered set. Facilities are not a group."""
 
@@ -155,7 +162,7 @@ class RecommendationFilters(BaseModel):
 
     status: list[RecommendationStatus] | None = Field(
         default=None,
-        max_length=3,
+        max_length=len(RecommendationStatus),
         description="Keep recommendations with any of these statuses.",
     )
     action_office: str | None = Field(

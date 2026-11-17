@@ -15,6 +15,7 @@ import threading
 import uuid
 from contextvars import ContextVar, Token
 from datetime import UTC, datetime
+from itertools import islice
 from pathlib import Path
 from typing import Any
 
@@ -33,7 +34,7 @@ def bounded(value: Any) -> Any:
             return value[:MAX_TRACED_STRING] + f"...[{len(value)} chars]"
         return value
     if isinstance(value, dict):
-        items = list(value.items())[:MAX_TRACED_ITEMS]
+        items = islice(value.items(), MAX_TRACED_ITEMS)
         return {str(k)[:100]: bounded(v) for k, v in items}
     if isinstance(value, list | tuple):
         kept = [bounded(v) for v in value[:MAX_TRACED_ITEMS]]
@@ -92,6 +93,10 @@ def api_call(
         )
 
 
+def _encode(record: dict[str, Any]) -> bytes:
+    return json.dumps(record, default=str, ensure_ascii=False, indent=1).encode()
+
+
 class TraceStore:
     """One file per call in a folder per day, oldest removed past the cap."""
 
@@ -105,11 +110,11 @@ class TraceStore:
         return sorted(self.directory.glob("*/*.json"))
 
     def write(self, record: dict[str, Any]) -> None:
-        data = json.dumps(record, default=str, ensure_ascii=False, indent=1)
-        if len(data.encode()) > MAX_RECORD_BYTES:
+        data = _encode(record)
+        if len(data) > MAX_RECORD_BYTES:
             # Keep who asked what and how it went; drop the oversized result.
-            record = {**record, "result": f"[omitted: {len(data.encode())} bytes]"}
-            data = json.dumps(record, default=str, ensure_ascii=False, indent=1)
+            record = {**record, "result": f"[omitted: {len(data)} bytes]"}
+            data = _encode(record)
         day = self.directory / record["time"][:10]
         stamp = record["time"][11:23].replace(":", "").replace(".", "-")
         name = f"{stamp}-{record['trace_id']}-{record['tool']}.json"
@@ -118,12 +123,12 @@ class TraceStore:
             day.mkdir(mode=0o700, parents=True, exist_ok=True)
             flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
             descriptor = os.open(day / name, flags, 0o600)
-            with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            with os.fdopen(descriptor, "wb") as handle:
                 handle.write(data)
             if self._total is None:
                 self._total = sum(f.stat().st_size for f in self._files())
             else:
-                self._total += len(data.encode())
+                self._total += len(data)
             if self._total > self.max_bytes:
                 self._prune()
 

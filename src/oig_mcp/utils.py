@@ -45,7 +45,7 @@ UNREACHABLE_LOG = (
 # inspection brief alone runs ten searches, and the data API runs four at a time,
 # so one burst of briefs would otherwise queue hundreds of requests upstream.
 MAX_CONCURRENT_UPSTREAM = 8
-_upstream_limiter: anyio.CapacityLimiter | None = None
+_upstream_limiter = anyio.CapacityLimiter(MAX_CONCURRENT_UPSTREAM)
 SERVER_ERROR_HINT = (
     "The data API failed on this request. Try it once more, then with fewer or "
     "different filters; if it still fails, tell the user this part could not be "
@@ -199,10 +199,9 @@ async def fetch_json(
         ValueError: if path could select or escape the configured API origin.
         UpstreamServiceError: with a sanitized message for external failures.
     """
-    global _upstream_limiter
     safe_path = _validate_relative_path(path)
-    # Identity encoding: the size cap then measures what was actually received,
-    # so a small compressed body cannot expand past it.
+    # Identity encoding: httpx expands each compressed chunk whole before the size
+    # check below sees it, so one small chunk could grow to many megabytes first.
     request_headers = {
         "Accept": "application/json",
         **(headers or {}),
@@ -217,8 +216,6 @@ async def fetch_json(
     # Outside a running server (a script or a direct call), open a client for this
     # one request. Headers go on the request, never on the shared client.
     opened = nullcontext(_shared_client) if _shared_client else _new_client()
-    if _upstream_limiter is None:
-        _upstream_limiter = anyio.CapacityLimiter(MAX_CONCURRENT_UPSTREAM)
     try:
         # httpx's timeout is per phase, so a slow trickle could hold a call open;
         # fail_after bounds the whole request, including the wait for a slot.
@@ -301,20 +298,23 @@ class ToolFailure(ToolError):
         self.body = {"error": error, "hint": hint}
 
 
+def hint_for(exc: UpstreamServiceError) -> str:
+    """What the assistant should do about an upstream failure, by its status."""
+    if exc.status_code in {400, 422}:
+        return "A filter value was rejected. Check its format and try again."
+    if exc.status_code == 429:
+        return BUSY_HINT
+    if exc.status_code == 503:
+        return TIMED_OUT_HINT
+    if exc.status_code == 500:
+        # The API answered and failed; a gateway status (502, 504) means it did not.
+        return SERVER_ERROR_HINT
+    return UNREACHABLE_HINT
+
+
 def tool_error(exc: UpstreamServiceError) -> ToolFailure:
     """Turn an upstream failure into a ToolFailure for the tool to raise."""
-    if exc.status_code in {400, 422}:
-        hint = "A filter value was rejected. Check its format and try again."
-    elif exc.status_code == 429:
-        hint = BUSY_HINT
-    elif exc.status_code == 503:
-        hint = TIMED_OUT_HINT
-    elif exc.status_code == 500:
-        # The API answered and failed; a gateway status (502, 504) means it did not.
-        hint = SERVER_ERROR_HINT
-    else:
-        hint = UNREACHABLE_HINT
-    return ToolFailure(str(exc), hint)
+    return ToolFailure(str(exc), hint_for(exc))
 
 
 def shorten_responses(
