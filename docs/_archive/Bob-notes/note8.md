@@ -1,6 +1,6 @@
 # Note 8: the Orchestrate evaluation, and what it means for you
 
-Troy is evaluating the Orchestrate agent with the same 24 gold questions used for Claude. He builds the test bank in the Orchestrate UI from [`eval/orchestrate/test-bank.md`](../../../eval/orchestrate/test-bank.md) and runs it there with an AI judge. The same questions also exist as ADK test cases in [`eval/orchestrate/tests/`](../../../eval/orchestrate/tests/), with a README. On the Mac, the data API's traces record every tool call the agent makes during the run, and the answers are scored again with the project's own judge. You do not run the evaluation unless a later note asks you to.
+Troy is evaluating the Orchestrate agent with the same 24 gold questions used for Claude. He builds the test bank in the Orchestrate UI from [`eval/orchestrate/test-bank.md`](../../../eval/orchestrate/test-bank.md) and runs it there with an AI judge. The same questions also exist as ADK test cases in [`eval/orchestrate/tests/`](../../../eval/orchestrate/tests), with a README. On the Mac, the data API's traces record every tool call the agent makes during the run, and the answers are scored again with the project's own judge. You do not run the evaluation unless a later note asks you to.
 
 ## What you do
 

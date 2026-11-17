@@ -4,4 +4,4 @@ Troy and Claude Code (on Troy's Mac) leave instructions here as `note1.md`, `not
 
 The repository is public. Nothing in these notes, or in your replies, may contain a secret, a token, a password, or the data API address.
 
-Notes that have been carried out are in [`_archive/`](_archive/). Bob's phase reports are one folder up, in `docs/handoff/`.
+Notes that have been carried out, and Bob's earlier reports, are in [`docs/_archive/`](../../_archive/). Bob's next report goes in `docs/handoff/`.
