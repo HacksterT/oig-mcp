@@ -100,7 +100,7 @@ The gold answers do not come from the API being tested: [`build_gold.py`](../../
 
 ### Evaluators
 
-Code scores everything it can, so those scores repeat exactly: exact facts, list recall and precision, tool choice, whether a report number and link are given, whether the data date is stated, and whether every cited report number and link exists among the snapshot's 4,415 reports. An AI judge decides only what code cannot: whether the answer agrees with the gold reference, and whether it meets each written behavior criterion. Every answer set is judged twice, by Claude Opus 5.5 and by Llama 3.3 70B on IBM watsonx.ai, with the same prompt. Orchestrate runs are also read by IBM's own evaluation engine and checked against the data API's request traces, so each result has three independent readings.
+Code scores everything it can, so those scores repeat exactly: exact facts, list recall and precision, tool choice, whether a report number and link are given, whether the data date is stated, and whether every cited report number and link exists among the snapshot's 4,415 reports. An AI judge decides only what code cannot: whether the answer agrees with the gold reference, and whether it meets each written behavior criterion. Every answer set is judged twice, by Claude Opus 5.5 and by Llama 3.3 70B on IBM watsonx.ai, with the same prompt. Orchestrate runs are also read by IBM's own evaluation engine and checked against the data API's request traces, so each result has three independent readings. Finally, as IBM's `mcp-eval-wxai` skill specifies, every final answer set is graded again with `arize-phoenix-evals` judges on Llama 3.3 70B on watsonx.ai: correctness, scope, tool selection, tool arguments, and tool response handling.
 
 ### Test design rationale
 
@@ -136,6 +136,26 @@ Without the server, neither model could give the data's figures, beyond one by O
 **Consistency.** Claude Opus 5.5 scored the same on every rerun. On Orchestrate, 5 questions passed all three runs, 9 failed all three, and 10 varied, which is why each question runs three times.
 
 **Judge agreement.** On the harness answer sets, the Claude and watsonx.ai judges gave the same pass or fail on 89 of 90 answers; on the Orchestrate runs, 67 of 71. IBM's engine agreed with the project's scoring on 52 of 72: it scores the whole conversation and has no citation or data-date check, so it passed 16 answers the project failed.
+
+### Phoenix evaluators on watsonx.ai
+
+A second, independent grading of the saved answers, with nothing rerun: Llama 3.3 70B on watsonx.ai read each answer with the tool calls behind it and their full responses, and gave five verdicts through `arize-phoenix-evals`, as IBM's skill specifies. Each run is a Phoenix experiment on the gold dataset.
+
+| Measure | Orchestrate round 1, 24 questions (3 runs) | Orchestrate round 2, 24 questions (2 runs) | Claude Opus / Sonnet, final, 30 questions |
+|---|---|---|---|
+| Correct against the gold reference | 16, 16, 15 | **20, 20** | 30 / 29 of 30 |
+| In scope, or rightly declined | 23, 23, 23 | 24, 23 | 30 / 30 of 30 |
+| Tool selection | 15, 13, 14 | 14, 16 | 7 / 11 of 30 (see below) |
+| Tool arguments | 16, 19, 17 | 19, 17 | 26 / 27 of 30 |
+| Tool responses used faithfully | 17/20, 21/22, 22/22 | 21/23, 20/21 | 26 / 26 of 26 |
+
+- **It confirms the main result with a judge this project did not build.** With only the server changed, Orchestrate's correct answers rose from about 16 to 20 of 24, the same jump the Claude judge found.
+- **The gain came from how the agent used results, not which tool it chose.** Tool selection and tool arguments did not move between rounds; the server's changes made results clearer and harder to misread.
+- **Claude is close to perfect on what matters:** correct, in scope, and faithful to its tool responses.
+- **Claude's low tool selection score is the judge disagreeing with the server's design.** It counts two correct behaviors as wrong: calling the dataset status tool first, which the server instructs and five questions require, and refusing a question such as "Which VA facility is the worst?" without a tool. These account for every Opus failure and 18 of Sonnet's 19; Llama and Orchestrate also had 6 to 9 genuine wrong-tool choices per run.
+- **The weaker agents' real failures showed clearly:** answers that ignored a tool error, or misread which open recommendation was oldest in a long result.
+
+Response handling is judged once per answer, with all its tool calls together: a first pass judged each call alone, which made data from an answer's other calls look invented. Per-run results with every judge's reasoning: [Results](../evaluation/results.md#phoenix-evaluators-on-watsonxai), and each run's `phoenix_evals.md`.
 
 ### Failure analysis
 
