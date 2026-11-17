@@ -6,13 +6,19 @@ Keep this file THIN. It only:
   3. decides which transport to run (stdio locally vs. HTTP when deployed).
 
 All real logic lives in the submodules:
-  - tools/      one file per tool (each exposes `register(mcp)`)
-  - prompts/    reusable conversation starters
-  - resources/  static/semi-static data the client can read directly
-  - routes.py   HTTP-only infrastructure (health check, etc.)
-  - config.py   settings loaded from env vars / .env
-  - models.py   Pydantic models & enums for tool parameters
-  - utils.py    shared helpers (HTTP client, formatting, pagination)
+  - tools/         one file per tool (each exposes `register(mcp)`)
+  - prompts/       reusable conversation starters
+  - resources/     static/semi-static data the client can read directly
+  - routes.py      HTTP-only infrastructure (health check, etc.)
+  - config.py      settings loaded from env vars / .env
+  - models.py      Pydantic models & enums for tool inputs and outputs
+  - upstream.py    the hardened HTTP client for the data API
+  - failures.py    tool failures and the hints that go with them
+  - guidance.py    fixed texts that travel in results, tool annotations
+  - results.py     provenance, paging, and size shaping
+  - auth.py        bearer tokens for the hosted endpoint
+  - middleware.py  usage log, per-client rate limit, traces, failure results
+  - tracing.py     per-call trace records
 """
 
 from __future__ import annotations
@@ -31,7 +37,7 @@ from oig_mcp.resources import register_resources
 from oig_mcp.routes import register_routes
 from oig_mcp.tools import register_tools
 from oig_mcp.tracing import TraceStore
-from oig_mcp.utils import http_client_lifespan
+from oig_mcp.upstream import http_client_lifespan
 
 # The startup banner checks PyPI for a newer FastMCP. Turn it off, so the data API
 # really is the only origin this server contacts.

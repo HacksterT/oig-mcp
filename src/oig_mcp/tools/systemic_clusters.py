@@ -11,6 +11,8 @@ from typing import Annotated, Any
 from fastmcp import FastMCP
 from pydantic import Field
 
+from oig_mcp.failures import UpstreamServiceError, tool_error
+from oig_mcp.guidance import READ_ONLY_TOOL
 from oig_mcp.models import (
     ClusterDetail,
     ClusterList,
@@ -19,15 +21,8 @@ from oig_mcp.models import (
     PageOffset,
     output_schema,
 )
-from oig_mcp.utils import (
-    READ_ONLY_TOOL,
-    UpstreamServiceError,
-    build_provenance,
-    fetch_object,
-    paginate,
-    report_urls,
-    tool_error,
-)
+from oig_mcp.results import build_provenance, paginate, report_urls
+from oig_mcp.upstream import fetch_object
 
 CLUSTER_CAVEAT = (
     "A cluster groups recommendations with matching wording or similar meaning, as "

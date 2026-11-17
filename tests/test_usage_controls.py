@@ -14,8 +14,8 @@ import pytest
 from fastmcp import FastMCP
 
 from oig_mcp.auth import BearerTokenVerifier
+from oig_mcp.failures import ToolFailure
 from oig_mcp.middleware import add_usage_controls, configure_usage_log, usage_log
-from oig_mcp.utils import ToolFailure
 
 ALICE = "a" * 64
 BOB = "b" * 64

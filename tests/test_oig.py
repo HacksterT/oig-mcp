@@ -9,7 +9,7 @@ import httpx
 import pytest
 from pydantic import ValidationError
 
-from oig_mcp import utils
+from oig_mcp import failures, results, upstream
 from oig_mcp.config import Settings
 
 
@@ -66,45 +66,45 @@ class _CaptureClient:
 
 @pytest.mark.asyncio
 async def test_access_headers_sent_when_configured(monkeypatch) -> None:
-    monkeypatch.setattr(utils.httpx, "AsyncClient", _CaptureClient)
-    monkeypatch.setattr(utils.settings, "cf_access_client_id", "id-123")
-    monkeypatch.setattr(utils.settings, "cf_access_client_secret", "secret-456")
-    await utils.fetch_json("meta")
+    monkeypatch.setattr(upstream.httpx, "AsyncClient", _CaptureClient)
+    monkeypatch.setattr(upstream.settings, "cf_access_client_id", "id-123")
+    monkeypatch.setattr(upstream.settings, "cf_access_client_secret", "secret-456")
+    await upstream.fetch_json("meta")
     assert _CaptureClient.headers["CF-Access-Client-Id"] == "id-123"
     assert _CaptureClient.headers["CF-Access-Client-Secret"] == "secret-456"
 
 
 @pytest.mark.asyncio
 async def test_access_headers_cannot_be_overridden_by_caller(monkeypatch) -> None:
-    monkeypatch.setattr(utils.httpx, "AsyncClient", _CaptureClient)
-    monkeypatch.setattr(utils.settings, "cf_access_client_id", "id-123")
-    monkeypatch.setattr(utils.settings, "cf_access_client_secret", "secret-456")
-    await utils.fetch_json("meta", headers={"CF-Access-Client-Id": "spoofed"})
+    monkeypatch.setattr(upstream.httpx, "AsyncClient", _CaptureClient)
+    monkeypatch.setattr(upstream.settings, "cf_access_client_id", "id-123")
+    monkeypatch.setattr(upstream.settings, "cf_access_client_secret", "secret-456")
+    await upstream.fetch_json("meta", headers={"CF-Access-Client-Id": "spoofed"})
     assert _CaptureClient.headers["CF-Access-Client-Id"] == "id-123"
 
 
 @pytest.mark.asyncio
 async def test_no_access_headers_when_unconfigured(monkeypatch) -> None:
-    monkeypatch.setattr(utils.httpx, "AsyncClient", _CaptureClient)
-    monkeypatch.setattr(utils.settings, "cf_access_client_id", "")
-    monkeypatch.setattr(utils.settings, "cf_access_client_secret", "")
-    await utils.fetch_json("meta")
+    monkeypatch.setattr(upstream.httpx, "AsyncClient", _CaptureClient)
+    monkeypatch.setattr(upstream.settings, "cf_access_client_id", "")
+    monkeypatch.setattr(upstream.settings, "cf_access_client_secret", "")
+    await upstream.fetch_json("meta")
     assert "CF-Access-Client-Id" not in _CaptureClient.headers
 
 
 @pytest.mark.asyncio
 async def test_data_api_key_sent_when_configured(monkeypatch) -> None:
-    monkeypatch.setattr(utils.httpx, "AsyncClient", _CaptureClient)
-    monkeypatch.setattr(utils.settings, "oig_data_api_key", "k" * 40)
-    await utils.fetch_json("meta", headers={"Authorization": "Bearer spoofed"})
+    monkeypatch.setattr(upstream.httpx, "AsyncClient", _CaptureClient)
+    monkeypatch.setattr(upstream.settings, "oig_data_api_key", "k" * 40)
+    await upstream.fetch_json("meta", headers={"Authorization": "Bearer spoofed"})
     assert _CaptureClient.headers["Authorization"] == "Bearer " + "k" * 40
 
 
 @pytest.mark.asyncio
 async def test_no_data_api_key_when_unconfigured(monkeypatch) -> None:
-    monkeypatch.setattr(utils.httpx, "AsyncClient", _CaptureClient)
-    monkeypatch.setattr(utils.settings, "oig_data_api_key", "")
-    await utils.fetch_json("meta")
+    monkeypatch.setattr(upstream.httpx, "AsyncClient", _CaptureClient)
+    monkeypatch.setattr(upstream.settings, "oig_data_api_key", "")
+    await upstream.fetch_json("meta")
     assert "Authorization" not in _CaptureClient.headers
 
 
@@ -118,13 +118,13 @@ def test_data_api_key_too_short_is_refused_without_echo() -> None:
 
 def test_provenance_flags_stale_data() -> None:
     old = (date.today() - timedelta(days=45)).isoformat()
-    p = utils.build_provenance(old)
+    p = results.build_provenance(old)
     assert p["days_old"] == 45 and p["stale"] is True
 
 
 def test_provenance_fresh_and_unknown() -> None:
-    assert utils.build_provenance(date.today().isoformat())["stale"] is False
-    unknown = utils.build_provenance(None)
+    assert results.build_provenance(date.today().isoformat())["stale"] is False
+    unknown = results.build_provenance(None)
     assert unknown["stale"] is None and unknown["days_old"] is None
 
 
@@ -133,14 +133,14 @@ async def test_dataset_status_returns_hint_when_api_unreachable(monkeypatch) -> 
     from oig_mcp.app import mcp
 
     async def boom(*args: Any, **kwargs: Any) -> Any:
-        raise utils.UpstreamServiceError("Upstream service request failed.")
+        raise failures.UpstreamServiceError("Upstream service request failed.")
 
     monkeypatch.setattr("oig_mcp.tools.dataset_status.fetch_json", boom)
     result = await mcp.call_tool("vaoig_get_dataset_status", {})
     assert result.is_error
     payload = result.structured_content
     assert payload["error"] == "Upstream service request failed."
-    assert payload["hint"] == utils.UNREACHABLE_HINT
+    assert payload["hint"] == failures.UNREACHABLE_HINT
     # How the API runs and which settings to check go to the operator's log only.
     assert "OIG_DATA_API_BASE_URL" not in payload["hint"]
 

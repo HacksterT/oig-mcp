@@ -7,16 +7,11 @@ from typing import Annotated, Any
 from fastmcp import FastMCP
 from pydantic import Field
 
+from oig_mcp.failures import ToolFailure, UpstreamServiceError, tool_error
+from oig_mcp.guidance import READ_ONLY_TOOL
 from oig_mcp.models import NotFound, Report, output_schema
-from oig_mcp.utils import (
-    READ_ONLY_TOOL,
-    ToolFailure,
-    UpstreamServiceError,
-    build_provenance,
-    fetch_object,
-    report_urls,
-    tool_error,
-)
+from oig_mcp.results import build_provenance, report_urls
+from oig_mcp.upstream import fetch_object
 
 _NO_NODE_NOTE = (
     "vaoig.gov exposes no node id for this report, which means it has no "

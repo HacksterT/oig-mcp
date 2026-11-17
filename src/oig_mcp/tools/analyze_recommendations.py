@@ -13,16 +13,11 @@ from typing import Annotated, Any
 from fastmcp import FastMCP
 from pydantic import Field
 
+from oig_mcp.failures import UpstreamServiceError, tool_error
+from oig_mcp.guidance import CITE_TOTALS, READ_ONLY_TOOL, VISN_NUMBERING_NOTICE
 from oig_mcp.models import Analysis, AnalysisGroup, RecommendationFilters, output_schema
-from oig_mcp.utils import (
-    CITE_TOTALS,
-    READ_ONLY_TOOL,
-    VISN_NUMBERING_NOTICE,
-    UpstreamServiceError,
-    build_provenance,
-    fetch_object,
-    tool_error,
-)
+from oig_mcp.results import build_provenance
+from oig_mcp.upstream import fetch_object
 
 _SOURCE_URLS = ["https://www.vaoig.gov/recommendations-all"]
 

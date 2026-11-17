@@ -16,7 +16,10 @@ from typing import Annotated, Any
 from fastmcp import FastMCP
 from pydantic import Field
 
+from oig_mcp.failures import UpstreamServiceError, tool_error
+from oig_mcp.guidance import FACILITY_VISN_NOTICE, READ_ONLY_TOOL
 from oig_mcp.models import FacilityMatches, InspectionBrief, NotFound, output_schema
+from oig_mcp.results import build_provenance, report_urls
 from oig_mcp.tools.facility_profile import (
     NO_RESPONSE_NOTICE,
     PAST_WINDOW_NOTICE,
@@ -25,15 +28,7 @@ from oig_mcp.tools.facility_profile import (
     window_has_passed,
 )
 from oig_mcp.tools.systemic_clusters import CLUSTER_CAVEAT
-from oig_mcp.utils import (
-    FACILITY_VISN_NOTICE,
-    READ_ONLY_TOOL,
-    UpstreamServiceError,
-    build_provenance,
-    fetch_object,
-    report_urls,
-    tool_error,
-)
+from oig_mcp.upstream import fetch_object
 
 _CURRENT_PROGRAM = "healthcare-facility-inspection"
 _OPEN_FINDINGS_SHOWN = 10
