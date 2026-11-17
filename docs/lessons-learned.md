@@ -4,6 +4,14 @@
 
 The server is the subject of every test. The models that call it are instruments: a strong model shows what the server makes possible, and a weaker one shows where the server must carry more of the load. So most lessons below end in a server change, not a prompt change.
 
+## November 17, 2026: result sizes and citations
+
+**Find out what a failure is made of before shrinking things.** The Durham question overflowed Llama 3.3 70B's 131,072-token context twice, and trimming the profile once did not fix it. The server's traces showed why: Llama called the facility profile eight times in a row with the same arguments, a 100-item page each time, about 72,000 characters per call. The question needed the 13-report list, about 7,000 characters. A replay of every tool call from the saved runs, with no model involved ([`eval/payload_sizes.py`](../eval/payload_sizes.py)), showed the facility profile was 59 percent of all result text. *Evidence: `logs/traces`, 2026-11-17 01:13 to 01:14 UTC.*
+
+**Give each tool one job, and each fact one place.** The profile now carries a facility's history and counts: each recommendation names its report instead of repeating the report's fields, and facility responses are left to the brief, search, and `vaoig_get_report`. The same 86 replayed calls went from 933,515 to 819,082 characters, and profiles alone fell 24 percent; a 100-item Durham page fell from 70,126 to 40,906, so eight repeats would now total about 82,000 tokens. The descriptions say which tool answers which question. *Change: F06-S22.*
+
+**Make the right citation the easy one to copy.** Llama gave a link where one was required on 3 of 8 questions, and Orchestrate's agent often gave report numbers without links. Each record with a report number and link now carries a ready-made `citation` field, built by one helper, and the citation guidance points to it. It went on records in search, the brief, clusters, and a report, and on the profile's report list rather than on every recommendation, where 100 copies would have given back much of the saving. *Change: F06-S22.*
+
 ## November 17, 2026: security review and robustness
 
 **Ask for a review that is not anchored on your own.** A separate review agent read the code without the builder's conclusions. It found what the builder's own tests had missed: tool arguments were traced before validation, so one client could send oversized calls and push every earlier trace out of the store, and nothing limited how many upstream requests a burst of tool calls could start. Both are fixed, each with a test. *Record: [SECURITY.md](../SECURITY.md).*

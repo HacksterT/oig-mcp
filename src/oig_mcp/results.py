@@ -1,9 +1,9 @@
-"""Shaping tool results: provenance, paging, and size.
+"""Shaping tool results: provenance, citations, paging, and size.
 
 Pure functions over data already fetched: the provenance block every result
-carries, the standard pagination envelope, clipping long narratives, and
-collecting report links. No I/O here; fetching is upstream.py, and fixed texts
-are guidance.py.
+carries, ready-made citations, the standard pagination envelope, clipping long
+narratives, and collecting report links. No I/O here; fetching is upstream.py,
+and fixed texts are guidance.py.
 """
 
 from __future__ import annotations
@@ -39,6 +39,22 @@ def shorten_responses(
             record = {**record, "response": holder} if nested else holder
         shortened.append(record)
     return shortened
+
+
+def citation(record: dict[str, Any]) -> str | None:
+    """A record's report number and link as one string to copy, or None when it
+    lacks either, rather than a partial citation."""
+    number, url = record.get("report_number"), record.get("url")
+    return f"Report {number}, {url}" if number and url else None
+
+
+def with_citations(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Add a ready-made `citation` to each record that has a number and a link.
+
+    Weaker models often drop the link when they assemble a citation from two
+    fields; one field to copy is easier to get right.
+    """
+    return [{**r, "citation": cited} if (cited := citation(r)) else r for r in records]
 
 
 def report_urls(*record_lists: list[dict[str, Any]]) -> list[str]:

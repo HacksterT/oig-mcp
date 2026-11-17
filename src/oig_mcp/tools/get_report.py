@@ -10,13 +10,20 @@ from pydantic import Field
 from oig_mcp.failures import ToolFailure, UpstreamServiceError, tool_error
 from oig_mcp.guidance import READ_ONLY_TOOL
 from oig_mcp.models import NotFound, Report, output_schema
-from oig_mcp.results import build_provenance, report_urls
+from oig_mcp.results import build_provenance, citation, report_urls
 from oig_mcp.upstream import fetch_object
 
 _NO_NODE_NOTE = (
     "vaoig.gov exposes no node id for this report, which means it has no "
     "recommendations. This is its listing record."
 )
+
+
+def _citation(report: dict[str, Any]) -> dict[str, str]:
+    """The report's ready-made citation, once at the top; its recommendations all
+    share it."""
+    cited = citation(report)
+    return {"citation": cited} if cited else {}
 
 
 def register(mcp: FastMCP) -> None:
@@ -76,6 +83,7 @@ def register(mcp: FastMCP) -> None:
                 if node_id is None:
                     return {
                         **matches[0],
+                        **_citation(matches[0]),
                         "notices": [_NO_NODE_NOTE],
                         "provenance": build_provenance(
                             listing.get("data_as_of"), report_urls(matches)
@@ -92,6 +100,7 @@ def register(mcp: FastMCP) -> None:
 
         return {
             **report,
+            **_citation(report),
             "notices": [],
             "provenance": build_provenance(
                 report.get("data_as_of"), report_urls([report])

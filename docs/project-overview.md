@@ -116,7 +116,7 @@ If Bob changes code, these rules apply. Troy does most development on his Mac, s
 - **One tool per file** in `src/oig_mcp/tools/`, each exposing `register(mcp)` and added to `tools/__init__.py`.
 - **Tool names** use the `vaoig_` prefix and a verb: `vaoig_get_...`, `vaoig_find_...`, `vaoig_search_...`.
 - **Typed inputs** with Pydantic models or enums; read-only annotations on every tool.
-- **Every response** includes a `provenance` block built with `build_provenance()` (`results.py`) and a `notices` list, and every record carries a report number and a vaoig.gov URL. Each tool declares its result shape with `output_schema=` from `models.py`.
+- **Every response** includes a `provenance` block built with `build_provenance()` (`results.py`) and a `notices` list, and every record carries a report number and a vaoig.gov URL, plus a ready-made `citation` from `with_citations()` where it is a top-level record (the facility profile puts it on its report list). Each tool declares its result shape with `output_schema=` from `models.py`.
 - **Failures** raise `ToolFailure` (usually through `tool_error()`, both in `failures.py`), which reaches the client as an `isError` result with `{"error", "hint"}`. "Not found" and "several match" are answers, not failures, and return normally. Never return upstream response bodies, URLs, headers, or stack traces.
 - **Outbound calls** go only through `fetch_json()` (`upstream.py`) with a relative path. Never add another HTTP client, and never accept a URL from a tool argument.
 - **Before any commit:** `uv run ruff check .`, `uv run ruff format --check .`, and `uv run pytest tests/` must pass.

@@ -23,7 +23,7 @@ from oig_mcp.models import (
     PageOffset,
     output_schema,
 )
-from oig_mcp.results import build_provenance, paginate, report_urls, shorten_responses
+from oig_mcp.results import build_provenance, paginate, report_urls, with_citations
 from oig_mcp.upstream import fetch_object
 
 _LOOKUP_LIMIT = 10
@@ -36,18 +36,32 @@ _GENERIC_WORDS = re.compile(
     re.IGNORECASE,
 )
 _MAX_RECOMMENDATIONS = 100  # the API returns only the newest 25 unless asked
-_ACTION_CHARS = 300
-# Fields each recommendation repeats from its report, which `reports` already lists
-# once. Leaving them out keeps a 100-item page within a smaller model's context:
-# Llama 3.3 70B overflowed 128K tokens on repeated full pages.
-_REPEATED_REPORT_FIELDS = frozenset(
-    {"title", "report_type", "node_id", "path", "response_page_no"}
+# The profile is the facility's history and counts. Llama 3.3 70B overflowed its
+# 128K context by calling it eight times in a row with a 100-item page, about
+# 72,000 characters each (eval/payload_sizes.py), so it carries each fact once.
+# Each recommendation leaves out what its report already lists once in `reports`,
+# and the facility's response, which the brief, search, and vaoig_get_report carry.
+_LEFT_OUT_OF_FINDINGS = frozenset(
+    {
+        "title",
+        "report_type",
+        "node_id",
+        "path",
+        "published_at",
+        "response_page_no",
+        "domain",
+        "concur",
+        "target_date",
+        "target_date_precision",
+        "corrective_action",
+    }
 )
-
-NO_RESPONSE_NOTICE = (
-    "A finding with no facility response means none was extracted from the report. "
-    "Responses are extracted mainly from inspection reports, so this does not show "
-    "that the facility failed to respond or that anything is overdue."
+# `url` already holds the path, and node_id is the data API's own key.
+_LEFT_OUT_OF_REPORTS = frozenset({"path", "node_id"})
+# Each inspection names its report; `reports` has the title, and the facility
+# fields are the profile's own.
+_LEFT_OUT_OF_INSPECTIONS = frozenset(
+    {"path", "node_id", "title", "station_number", "facility_name"}
 )
 
 
@@ -67,18 +81,13 @@ def window_has_passed(profile: dict[str, Any]) -> bool:
     return bool(estimate and data_as_of and estimate < data_as_of)
 
 
-def compact(record: dict[str, Any]) -> dict[str, Any]:
-    """A recommendation without its report's repeated fields or empty values."""
+def compact(record: dict[str, Any], left_out: frozenset[str]) -> dict[str, Any]:
+    """A record without the left-out fields or empty values."""
     return {
         key: value
         for key, value in record.items()
-        if key not in _REPEATED_REPORT_FIELDS and value is not None
+        if key not in left_out and value is not None
     }
-
-
-def lacks_response(recommendations: list[dict[str, Any]]) -> bool:
-    """True if any finding has no extracted corrective action."""
-    return any(not record.get("corrective_action") for record in recommendations)
 
 
 def _pick_station(facility: str, matches: list[dict[str, Any]]) -> str | None:
@@ -155,8 +164,10 @@ def register(mcp: FastMCP) -> None:
             PageLimit,
             Field(
                 description=(
-                    "Recommendations to return. Counts and the full report list come "
-                    "with any limit, so raise it only to read more findings."
+                    "Recommendations to return. Counts, the full report list, and "
+                    "inspections come with any limit, so keep the default for a list "
+                    "of reports or inspections and raise it only to read more "
+                    "findings."
                 ),
             ),
         ] = 25,
@@ -169,12 +180,14 @@ def register(mcp: FastMCP) -> None:
 
         Use this when a question names one facility or VA location, such as "what
         has OIG found at the El Paso VA", how many recommendations it has and how
-        many are open, its oldest open item, or a list of its reports. Each
-        report has its number, type, publication date, and link. To prepare the
-        facility for an inspection, use vaoig_get_inspection_brief instead. If
-        several facilities match, returns them as matches so the user can choose.
-        This server reports records and does not rate facilities. Long corrective
-        actions are shortened and marked; vaoig_get_report has the full text.
+        many are open, its oldest open item, or a list of its reports or
+        inspections. Each report has its number, type, publication date, link,
+        and a ready-made citation. Findings come with their status, not the
+        facility's responses: to prepare the facility for an inspection, use
+        vaoig_get_inspection_brief; for what it committed to do about a finding,
+        use vaoig_get_report on that report. If several facilities match, returns
+        them as matches so the user can choose. This server reports records and
+        does not rate facilities.
 
         Always pass on every entry in notices and each *_basis field. The next
         window is this server's estimate from past inspection dates, not OIG's:
@@ -187,11 +200,11 @@ def register(mcp: FastMCP) -> None:
 
         Returns:
             Facility fields, reports, inspections, repeat_findings, the basis text,
-            recommendations (the newest 100, open first, paginated), notices, and
+            recommendations (the newest 100, open first, paginated; each names its
+            report_number, which reports lists with its citation), notices, and
             provenance. Within recommendations, has_more means another page is
             available, and has_older_beyond_100 means older ones exist that no page
-            will show. Long corrective actions are shortened and marked;
-            vaoig_get_report has the full text.
+            will show.
         """
         try:
             profile = await fetch_profile(facility)
@@ -204,19 +217,23 @@ def register(mcp: FastMCP) -> None:
             profile.get("recommendations", []),
             key=lambda record: record.get("status") != "open",
         )
-        reports = profile.get("reports", [])
-        page = paginate(recommendations, limit, offset)
-        page["items"] = shorten_responses(
-            [compact(record) for record in page["items"]], _ACTION_CHARS
+        reports = with_citations(
+            [compact(r, _LEFT_OUT_OF_REPORTS) for r in profile.get("reports", [])]
         )
+        page = paginate(recommendations, limit, offset)
+        page["items"] = [compact(r, _LEFT_OUT_OF_FINDINGS) for r in page["items"]]
         page["has_older_beyond_100"] = bool(profile.get("recommendations_has_more"))
         rest = {k: v for k, v in profile.items() if k != "recommendations_has_more"}
         return {
             **rest,
+            "reports": reports,
+            "inspections": [
+                compact(i, _LEFT_OUT_OF_INSPECTIONS)
+                for i in profile.get("inspections", [])
+            ],
             "recommendations": page,
             "notices": [
                 *([FACILITY_VISN_NOTICE] if profile.get("visn") else []),
-                *([NO_RESPONSE_NOTICE] if lacks_response(page["items"]) else []),
                 *([PAST_WINDOW_NOTICE] if window_has_passed(profile) else []),
             ],
             "provenance": build_provenance(
