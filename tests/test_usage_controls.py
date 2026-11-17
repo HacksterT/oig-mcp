@@ -51,19 +51,35 @@ async def mcp_client(burst: int = 100):
             yield client
 
 
-async def call(client: httpx.AsyncClient, token: str, tool: str = "echo") -> dict:
+# A 2026-07-28 request carries its protocol version in _meta and, with its method
+# and tool name, in headers, with no initialize handshake first.
+MODERN = "2026-07-28"
+MODERN_META = {
+    "io.modelcontextprotocol/protocolVersion": MODERN,
+    "io.modelcontextprotocol/clientCapabilities": {},
+    "io.modelcontextprotocol/clientInfo": {"name": "test", "version": "1"},
+}
+
+
+async def call(
+    client: httpx.AsyncClient, token: str, tool: str = "echo", modern: bool = False
+) -> dict:
+    params = {"name": tool, "arguments": {"query": PRIVATE_QUERY}}
+    headers = {
+        "Accept": "application/json, text/event-stream",
+        "Authorization": f"Bearer {token}",
+    }
+    if modern:
+        params["_meta"] = MODERN_META
+        headers |= {
+            "MCP-Protocol-Version": MODERN,
+            "Mcp-Method": "tools/call",
+            "Mcp-Name": tool,
+        }
     response = await client.post(
         "/mcp",
-        json={
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "tools/call",
-            "params": {"name": tool, "arguments": {"query": PRIVATE_QUERY}},
-        },
-        headers={
-            "Accept": "application/json, text/event-stream",
-            "Authorization": f"Bearer {token}",
-        },
+        json={"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": params},
+        headers=headers,
     )
     assert response.status_code == 200
     return response.json()
@@ -134,6 +150,21 @@ async def test_limit_applies_to_each_client_alone(usage_lines) -> None:
         assert "result" in await call(client, BOB)
     assert "client=alice tool=echo outcome=rate_limited" in usage_lines[2]
     assert "client=bob tool=echo outcome=ok" in usage_lines[3]
+
+
+async def test_limit_counts_each_modern_tool_call_once(usage_lines) -> None:
+    """The bug this guards: on protocol 2026-07-28 the MCP library lists the tools
+    before each call to check its headers, and the limit counted that listing too,
+    so every tool call cost two requests."""
+    async with mcp_client(burst=2) as client:
+        assert "result" in await call(client, ALICE, modern=True)
+        assert "result" in await call(client, ALICE, modern=True)
+        assert "error" in await call(client, ALICE, modern=True)
+    assert [line.split(" ms=")[0] for line in usage_lines] == [
+        "client=alice tool=echo outcome=ok",
+        "client=alice tool=echo outcome=ok",
+        "client=alice tool=echo outcome=rate_limited",
+    ]
 
 
 def test_unwritable_log_file_does_not_stop_the_server(tmp_path: Path) -> None:
