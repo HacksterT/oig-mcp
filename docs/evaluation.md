@@ -123,8 +123,8 @@ Without the server, neither model could give the data's figures, beyond one by O
 
 | Platform | Questions passing every check | Notes |
 |---|---|---|
-| Claude Opus 5.5, harness | 23 of 24 on every run from November 4 to 17; 22 of 24 after the November 17 result-size changes | Each failure is a scoring call on a correct answer, kept as a failure |
-| Claude Sonnet 5.5, harness | 23 of 24 on November 4 and again on November 17, after every server change | Citations where required rose from 7 of 8 to 8 of 8 |
+| Claude Opus 5.5, harness | 23 of 24 on every run from November 4 to 17; 22 of 24 after the November 17 result-size changes; 29 of 30 on the final server (tag `eval-final-1`), with the 6 adversarial questions | Each failure is a scoring call on a correct answer, kept as a failure |
+| Claude Sonnet 5.5, harness | 23 of 24 on November 4 and again on November 17; 28 of 30 on the final server, with the 6 adversarial questions | Citations where required rose from 7 of 8 to 8 of 8; the new final-round miss gave a link pattern instead of each link |
 | Llama 3.3 70B, harness on watsonx.ai | 9 of 24, before and after the November 17 server changes | Tool choice, citations, and data dates improved; one question overflows the model's context |
 | GPT-OSS 120B, the Orchestrate agent, three runs | 10, 8, and 11 of 24 on the project's scoring; IBM's engine: 14, 14, and 13 | Server changes from these runs are deployed; a second round, with the adversarial questions, is planned for November 17 |
 | DeepSeek V4 Pro, Hermes Agent | All 18 answers agree with the gold reference | Not a blind run |
@@ -156,11 +156,14 @@ Each failure was read against the tool results and the data API's traces and sor
 | 24 questions, Llama 3.3 70B: passing every check | 9 of 24 | 9 of 24 |
 | 24 questions, Llama 3.3 70B: right tool, citation, data date | 17 of 20, 1 of 8, 1 of 5 | 19 of 20, 3 of 8, 3 of 5 |
 | 24 questions, Claude Opus 5.5 (regression check) | 23 of 24 | 23 of 24, every measure unchanged |
+| 30 questions, Claude Opus 5.5 and Sonnet 5.5, final server (tag `eval-final-1`) | Opus 22 of 24; Sonnet 23 of 24 | Opus 29 of 30, Sonnet 28 of 30; the judge agrees on 30 of 30 for both. Durham fails as on every run; nothing regressed |
 | 24 questions, Claude Opus 5.5, after the result-size changes (F06-S22) | 23 of 24, about 25,300 input tokens a question | 22 of 24, about 26,100; the judge agrees on 24 of 24. The new miss is wording on a correct answer* |
 
 \* In report 25-00193-155 the answer said the facility "agreed", and the code check looks for "concur". The answer is right and the judge agreed, but the check was not changed after the fact, so it counts as a miss. The other failure is the Durham list, unchanged. Tool results the model read fell from 545,074 to 525,629 characters; input tokens rose slightly because Opus made more calls on one open search question (2.42 calls a question, from 2.29).
 
 The model and its settings were the same before and after; only the server changed. On the 24 questions, Llama's total did not move: two questions it had failed now pass, two it had passed now fail, and the Durham question still overflows its 128K-token context. The traces show why: Llama called the facility profile eight times in a row with the same arguments, about 72,000 characters each. After the result-size changes (F06-S22) the same eight calls come to about 82,000 tokens; Llama has not been rerun since. These retests are not blind: the adversarial questions and the fixes were written the same night.
+
+The whole sequence, round by round, with what each found, changed, and measured, is in [testing-results.md](testing-results.md#the-improvement-journey).
 
 ### Operational metrics
 

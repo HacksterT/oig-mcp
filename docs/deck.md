@@ -272,7 +272,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 | Llama 3.3 70B, watsonx.ai | 2 of 24 (0 of 16) | 9 of 24 (11 of 16) |
 
 **Across platforms:**
-- **Claude Opus 5.5:** 23 of 24 on every run from November 4 to 17, and 22 of 24 after the result-size changes, where the new miss was "agreed" for "concur" on a correct answer. Claude Sonnet 5.5 scored 23 of 24 on November 4 and again on the final server.
+- **Claude Opus 5.5:** 23 of 24 on every run from November 4 to 17, and 22 of 24 after the result-size changes, where the new miss was "agreed" for "concur" on a correct answer. Claude Sonnet 5.5 scored 23 of 24 on November 4 and on November 17. On the final server, with the 6 adversarial questions, Opus passed 29 of 30 and Sonnet 28 of 30.
 - **GPT-OSS 120B, the Orchestrate agent, three runs:** 10, 8, and 11 of 24 on this project's scoring; IBM's engine scored 14, 14, and 13. UPDATE after the second round.
 - **Citations:** no answer from the server-backed Claude, Llama, or Orchestrate runs cited a report that does not exist.
 - **Judge agreement:** the two judges agreed on 89 of 90 harness answers.
@@ -314,7 +314,8 @@ Each failure was read against the tool results and the data service's request tr
   - right tool: 17 of 20 to 19 of 20
   - citation: 1 of 8 to 3 of 8
   - data date: 1 of 5 to 3 of 5
-- **Claude Opus 5.5 regression checks:** 23 of 24 after the scope changes, every measure unchanged; 22 of 24 after the result-size changes, with the judge agreeing on all 24.
+- **Claude Opus 5.5 regression checks:** 23 of 24 after the scope changes, every measure unchanged; 22 of 24 after the result-size changes, with the judge agreeing on all 24; 29 of 30 on the final server.
+- **Beyond the pass rate:** the Durham page 42 percent smaller; a burst of 45 calls answered 29 instead of 0; 2,059 of 2,059 calls answered at 40 clients; two real hosts that guessed a facility now ask.
 
 **Visual:** The cause table, with before-and-after bars.
 
