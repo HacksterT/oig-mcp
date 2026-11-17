@@ -204,7 +204,11 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 **The finding:** hosts implement MCP unevenly. VS Code, Cursor, Claude Code, and Grok declare form support; Claude Desktop accepts URL mode only; Hermes can only approve or deny; Orchestrate declared none. A safety behavior cannot depend on one protocol feature, so the server degrades to the next step.
 
-**Visual:** The Claude Code form for "the Columbia VA" (from the demo recording) beside a host asking in chat, under this flow:
+**What the form saves:** measured over five runs each, the form halves the round trips against asking in chat (2 model requests instead of 4, 1 call to the server instead of 2) and cuts tokens 39 percent, and the user's choice reaches the server without passing through the model.
+
+![The server's form halves the round trips for an ambiguous facility name and cuts tokens 39 percent](images/elicitation-savings.png)
+
+**Visual:** The chart above, and the Claude Code form for "the Columbia VA" (from the demo recording) beside a host asking in chat, under this flow:
 
 ```
 "What has OIG found at the Columbia VA?"
@@ -219,7 +223,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
    call again with the station number ──> the agent asks in chat
 ```
 
-**Speaker notes:** Elicitation is the MCP feature that lets a server ask the user a question in the middle of a tool call. The model is not in the loop, so the user's choice reaches the server unchanged, and the server accepts only a station that matched. Before the next step existed, Hermes with DeepSeek and Claude Desktop each chose VA NY Harbor for "the New York VA"; after it, both asked, with no change to either host's prompt. Testing the form in Claude Code taught two more lessons. The model cannot see the form, so it read the user's pick as the server's guess: in one take it called the chosen facility "the wrong place" and asked again, in another it looked up the other facility and answered for both. The result now says the user chose. And "Columbia SC" matched nothing until the lookup read a trailing state. Same question, before and after: three or four calls to the server became one, five or six model requests became three, and the tokens processed fell from 316,000 and 431,000 to 171,000. One take each, so that is an illustration, not a measurement. The limit: the form has been shown in one real host, Claude Code, a terminal application, and in no desktop app yet. Claude Desktop accepts URL mode only.
+**Speaker notes:** Elicitation is the MCP feature that lets a server ask the user a question in the middle of a tool call. The model is not in the loop, so the user's choice reaches the server unchanged, and the server accepts only a station that matched. Before the next step existed, Hermes with DeepSeek and Claude Desktop each chose VA NY Harbor for "the New York VA"; after it, both asked, with no change to either host's prompt. Testing the form in Claude Code taught two more lessons. The model cannot see the form, so it read the user's pick as the server's guess: in one take it called the chosen facility "the wrong place" and asked again, in another it looked up the other facility and answered for both. The result now says the user chose. And "Columbia SC" matched nothing until the lookup read a trailing state. Same question in Claude Code, before and after: three or four calls to the server became one, and the tokens processed fell from 316,000 and 431,000 to 171,000, one take each. Then we measured it: five runs per arm through the API, the form against asking in chat. The form halved the model's requests and the calls to the server and cut tokens 39 percent; before the notice, every answer pointed the user to the other Columbia, and after it, every answer said the user chose. Every ambiguous name a form resolves saves a full round trip, and in a host with a large context, each round trip re-reads all of it. The limit: the form has been shown in one real host, Claude Code, a terminal application, and in no desktop app yet. Claude Desktop accepts URL mode only.
 
 ---
 

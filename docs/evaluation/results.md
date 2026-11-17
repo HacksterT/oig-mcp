@@ -18,7 +18,7 @@
 | Llama 3.3 70B on IBM watsonx.ai, harness | 9 of 24, before and after the November 17 scope changes | Same model and settings; tool choice, citations, and data dates improved. Not rerun since the result-size changes |
 | No-tool baseline | Claude Opus 5.5: 3 of 24; Llama 3.3 70B: 2 of 24 | What the models do without the server |
 | Adversarial set, 6 questions | Opus 5 of 6, then 6 of 6; Llama 0 of 6, then 4 of 6, after server changes; Orchestrate 4 and 4 of 6, in round 2 | Not blind: questions and fixes written the same night |
-| Ambiguous facility name, four hosts | After #92, Hermes Agent, Claude Desktop, and the Orchestrate agent listed the matching facilities and asked; none chose one itself. In Claude Code the server's own form asked, and after #114 the same question took one call to the server instead of three or four ([the takes](#the-form-in-claude-code)) | One trial per host; the form has been shown in Claude Code, a terminal host, and in no desktop app |
+| Ambiguous facility name, four hosts | After #92, Hermes Agent, Claude Desktop, and the Orchestrate agent listed the matching facilities and asked; none chose one itself. In Claude Code the server's own form asked. Measured over five runs each, the form halved the round trips against asking in chat and cut tokens 39 percent ([what the form saves](#what-the-form-saves)) | One trial per host; the form has been shown in Claude Code, a terminal host, and in no desktop app |
 | Automated tests | 313 pass, on every change | |
 | Image, deployment, and robustness checks | 15 of 15 and 22 of 22, on the Mac and on IBM's virtual machine; 48 of 48 robustness checks, local and through the public URL | |
 | Load test, 1 to 40 concurrent clients | All 2,059 calls answered, no errors; median 0.33 s to 1.8 s | One run, one Mac, not to failure |
@@ -333,7 +333,26 @@ The server's own form was first shown in a real host in Claude Code, on November
 | 2 | Before #114 | 4 | 5 | 61,867 characters | 316,094 | The user picked Missouri. The model said the search "returned only the Missouri facility", tried "Columbia South Carolina" (no match), opened 544 by station, and answered for both |
 | 3 | After #114 | 1 | 3 | 30,452 characters | 171,280 | The user picked Missouri. The result said so, and the answer covered "the facility you picked from the three that match" |
 
-With the server's two changes, the same question took one call to the server instead of three or four, three model requests instead of five or six, half the tool results, and 46 to 60 percent fewer tokens. Read the token figures with their limits: one take each; most of each total is Claude Code's own context, read again on every model request and mostly from cache, so the cost saving is smaller than the token count; and take 1 also included the user's second turn. The direction is clear, the size is an illustration rather than a measurement.
+With the server's two changes, the same question took one call to the server instead of three or four, three model requests instead of five or six, half the tool results, and 46 to 60 percent fewer tokens. Read the token figures with their limits: one take each; most of each total is Claude Code's own context, read again on every model request and mostly from cache, so the cost saving is smaller than the token count; and take 1 also included the user's second turn. The direction is clear, the size is an illustration rather than a measurement; the next section measures it.
+
+### What the form saves
+
+To measure elicitation itself, the same question ran five times in each of three arms through Anthropic's API, Claude Opus 5.5 at medium effort, with only the server's instructions as the system prompt and a scripted user who always chose Missouri: the current server with a client that cannot show forms (the model asks in chat and the user answers "The one in Missouri"), and a client that shows the form, against the server before and after #114. Every run in an arm gave the same counts. [Full results and every answer](../../eval/results/2026-11-17-elicitation-ab/summary.md), from [`eval/elicitation/ab_run.py`](../../eval/elicitation/ab_run.py).
+
+![The server's form halves the round trips for an ambiguous facility name and cuts tokens 39 percent](../submission/images/elicitation-savings.png)
+
+| Five runs each, medians | No form: the model asks in chat | Form, before #114 | Form, after #114 |
+|---|---|---|---|
+| Calls to the server | 2 | 1 | 1 |
+| Model requests | 4 | 2 | 2 |
+| User turns | 2 | 1 | 1 |
+| Tokens processed | 47,607 | 28,733 | 29,046 |
+| Answer pointed the user to another facility | 0 of 5 | 5 of 5 | 0 of 5 |
+| Answer said the user chose this facility | n/a | 0 of 5 | 5 of 5 |
+
+**The form halves the round trips.** Against the fallback every host can use, the form took one call instead of two, two model requests instead of four, one user turn instead of two, and 39 percent fewer tokens, for the same facility. Each request avoided re-reads the whole conversation, so the saving grows with the host's context, as the Claude Code takes show. The fallback held too: with no form, the model asked in all five runs and never chose. And with the form, the user's choice goes to the server unchanged rather than through the model.
+
+**The choice notice changed the answer, not the cost.** Before #114, all five answers told the user about the South Carolina facility as if the server had guessed ("There's also a VA in Columbia, South Carolina... if you meant that one"); after it, all five said the user had picked this facility and covered only it. This harness, without Claude Code's context, did not reproduce the extra calls seen in Claude Code.
 
 ## Load test
 
