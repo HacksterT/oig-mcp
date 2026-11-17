@@ -79,3 +79,19 @@ def choose_facility_step(facility: str, shown: int, total: int) -> str:
         "meant. List these facilities with their station numbers, ask which one "
         "they mean, and call again with that station number."
     )
+
+
+# A state filter pools its facilities. Asked about "the Tennessee VA", a model
+# filtered by state and answered for three facilities as one, so a result that
+# pools several says which, and what to do if the user meant one of them.
+def pooled_state_notice(state: str, names: list[str], total: int) -> str:
+    """Name the facilities a state-filtered result pools together."""
+    listed = ", ".join(names)
+    if total > len(names):
+        listed += f", and {total - len(names)} more"
+    return (
+        f"A state filter pools every facility in {state} ({listed}), so this result "
+        "covers them together, not one facility. If the user meant one VA, ask "
+        "which, then use vaoig_get_facility_profile or vaoig_get_inspection_brief "
+        "with its station number."
+    )

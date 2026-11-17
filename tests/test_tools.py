@@ -1282,3 +1282,78 @@ def test_profile_items_keep_what_a_citation_needs_and_drop_repeats() -> None:
         "report_number": "24-00586-11",
         "url": "https://www.vaoig.gov/reports/x",
     }
+
+
+TENNESSEE = [
+    {"station_number": "614", "name": "VA Memphis Healthcare System"},
+    {"station_number": "621", "name": "James H. Quillen VA Medical Center"},
+    {"station_number": "626", "name": "VA Tennessee Valley Healthcare System"},
+]
+
+
+def _pooled(result: dict[str, Any]) -> list[str]:
+    return [n for n in result["notices"] if n.startswith("A state filter pools")]
+
+
+async def test_a_state_analysis_names_the_facilities_it_pools(api: FakeApi) -> None:
+    # Asked about "the Tennessee VA", a model filtered by state and answered for
+    # three facilities as one; the result now says which it pooled.
+    api.routes["metrics/counts"] = {**AS_OF, **ENVELOPE, "items": []}
+    api.routes["facilities"] = {**AS_OF, "total": 3, "items": TENNESSEE}
+    result = await call(
+        "vaoig_analyze_recommendations", group_by="year", filters={"state": "TN"}
+    )
+    [notice] = _pooled(result)
+    assert "Tennessee (VA Memphis Healthcare System (614), James H. Quillen" in notice
+    assert "If the user meant one VA, ask which" in notice
+    lookup = [r for r in api.requests if r.url.path == "/v1/facilities"]
+    assert lookup[0].url.params["state"] == "Tennessee"
+
+
+async def test_a_state_search_names_the_facilities_it_pools(api: FakeApi) -> None:
+    api.routes["search"] = _search_response()
+    api.routes["facilities"] = {**AS_OF, "total": 12, "items": TENNESSEE}
+    result = await call(
+        "vaoig_search_findings", question="carts", filters={"state": "Tennessee"}
+    )
+    [notice] = _pooled(result)
+    assert "(626), and 9 more)" in notice
+
+
+async def test_a_state_with_one_facility_gets_no_pooling_notice(api: FakeApi) -> None:
+    api.routes["metrics/counts"] = {**AS_OF, **ENVELOPE, "items": []}
+    api.routes["facilities"] = {**AS_OF, "total": 1, "items": TENNESSEE[:1]}
+    result = await call(
+        "vaoig_analyze_recommendations", group_by="year", filters={"state": "TN"}
+    )
+    assert _pooled(result) == []
+
+
+async def test_a_failed_facility_lookup_leaves_the_answer_intact(api: FakeApi) -> None:
+    api.routes["search"] = _search_response()
+    api.routes["facilities"] = 503
+    result = await call(
+        "vaoig_search_findings", question="carts", filters={"state": "Tennessee"}
+    )
+    assert _pooled(result) == []
+    assert result["search_mode"] == "hybrid"
+
+
+async def test_no_state_filter_makes_no_facility_lookup(api: FakeApi) -> None:
+    api.routes["search"] = _search_response()
+    await call("vaoig_search_findings", question="carts")
+    assert "/v1/facilities" not in [r.url.path for r in api.requests]
+
+
+@pytest.mark.parametrize(
+    "tool", ["vaoig_analyze_recommendations", "vaoig_search_findings"]
+)
+async def test_state_tools_route_one_named_va_to_the_facility_tools(tool: str) -> None:
+    from fastmcp import Client
+
+    from oig_mcp.app import mcp
+
+    async with Client(mcp) as client:
+        tools = {t.name: t for t in await client.list_tools()}
+    description = " ".join(tools[tool].description.split())
+    assert 'If the user names one VA, such as "the Tennessee VA"' in description

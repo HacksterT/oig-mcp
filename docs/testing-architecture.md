@@ -14,7 +14,7 @@ The automated tests and deployment checks make sure the server behaves as design
 
 | Layer | What it checks | When | Where |
 |---|---|---|---|
-| Automated tests | 260 tests: every tool's inputs, results, and output schema; error messages and hints; authentication; that each tool description says what a model needs to choose it | Every change, in GitHub Actions | [`tests/`](../tests/) |
+| Automated tests | 267 tests: every tool's inputs, results, and output schema; error messages and hints; authentication; that each tool description says what a model needs to choose it | Every change, in GitHub Actions | [`tests/`](../tests/) |
 | Image checks | 15 checks on the container image: no secret inside it, a non-root user, refusal to start without a valid token or with a plain-HTTP data address, clean refusals when the data API credentials are wrong | Before each deployment | [`deploy/verify_image.sh`](../deploy/verify_image.sh) |
 | Deployment checks | 22 checks on a running server: seven kinds of bad credentials refused and the right token accepted, no session state, all seven tools listed, live data with no secret in it, and the data API refusing four kinds of wrong credentials | Against every deployment | [`deploy/verify_deployment.py`](../deploy/verify_deployment.py) |
 | Robustness check | 48 checks on a running server: hostile and malformed input to every tool (traversal, injection, every bound exceeded, wrong types) and to argument completion, the facility choice round trip, a burst past the rate limit and recovery, searches past the data API's capacity, and no stack trace, address, or credential in any reply | Against every deployment | [`deploy/robustness_check.py`](../deploy/robustness_check.py) |

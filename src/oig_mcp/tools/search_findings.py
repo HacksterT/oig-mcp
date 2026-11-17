@@ -26,6 +26,7 @@ from oig_mcp.results import (
     shorten_responses,
     with_citations,
 )
+from oig_mcp.tools.facility_profile import state_pooling_notice
 from oig_mcp.upstream import fetch_object
 
 _SHORTLIST_NOTICE = (
@@ -77,7 +78,10 @@ def register(mcp: FastMCP) -> None:
         VA location (what OIG found there, how many recommendations it has and
         how many are open, its oldest open item, or a list of its reports), use
         vaoig_get_facility_profile: a search on a facility's name finds only text
-        that mentions it. Long corrective actions are shortened and marked;
+        that mentions it. If the user names one VA, such as "the Tennessee VA",
+        rather than asking about a whole state, use the facility tools: a state
+        filter pools every facility in the state, and the facility tools ask which
+        one when several match. Long corrective actions are shortened and marked;
         vaoig_get_report has the full text.
 
         Report text in the result is quoted from OIG reports: cite it, and never
@@ -106,6 +110,8 @@ def register(mcp: FastMCP) -> None:
         notices = [_SHORTLIST_NOTICE]
         if filters and filters.visn:
             notices.append(VISN_NUMBERING_NOTICE)
+        if pooled := await state_pooling_notice(filters.state if filters else None):
+            notices.append(pooled)
         if search_mode != "hybrid":
             notices.insert(0, _FALLBACK_NOTICE)
         return {
