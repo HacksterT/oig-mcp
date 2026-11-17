@@ -12,17 +12,17 @@
 
 ## Results (medians of five runs; every run in an arm gave the same counts)
 
-| | No form | Form, before #114 | Form, after #114 |
+| | Before elicitation: Claude asks in chat | After elicitation: the server's pick-list | Pick-list without the "user chose" note (before #114) |
 |---|---|---|---|
 | Calls to the server | 2 | 1 | 1 |
 | Model requests | 4 | 2 | 2 |
 | User turns | 2 | 1 | 1 |
-| Tokens processed | 47,607 | 28,733 | 29,046 |
-| Tool output read (characters) | 29,859 | 27,879 | 28,112 |
-| Seconds, excluding the user's reply | 27.9 | 24.0 | 24.9 |
+| Tokens processed | 47,607 | 29,046 | 28,733 |
+| Tool output read (characters) | 29,859 | 28,112 | 27,879 |
+| Seconds, excluding the user's reply | 27.9 | 24.9 | 24.0 |
 | Opened only the facility chosen | 5 of 5 | 5 of 5 | 5 of 5 |
-| Answer pointed the user to another facility | 0 of 5 | 5 of 5 | 0 of 5 |
-| Answer said the user chose this facility | n/a | 0 of 5 | 5 of 5 |
+| Answer pointed the user to another facility | 0 of 5 | 0 of 5 | 5 of 5 |
+| Answer said the user chose this facility | n/a | 5 of 5 | 0 of 5 |
 
 ## What it shows
 

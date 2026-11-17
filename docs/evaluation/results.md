@@ -339,16 +339,16 @@ With the server's two changes, the same question took one call to the server ins
 
 To measure elicitation itself, the same question ran five times in each of three arms through Anthropic's API, Claude Opus 5.5 at medium effort, with only the server's instructions as the system prompt and a scripted user who always chose Missouri: the current server with a client that cannot show forms (the model asks in chat and the user answers "The one in Missouri"), and a client that shows the form, against the server before and after #114. Every run in an arm gave the same counts. [Full results and every answer](../../eval/results/2026-11-17-elicitation-ab/summary.md), from [`eval/elicitation/ab_run.py`](../../eval/elicitation/ab_run.py).
 
-![The server's form halves the round trips for an ambiguous facility name and cuts tokens 39 percent](../submission/images/elicitation-savings.png)
+![Elicitation: half the back-and-forth and 39 percent fewer tokens for an ambiguous facility name](../submission/images/elicitation-savings.png)
 
-| Five runs each, medians | No form: the model asks in chat | Form, before #114 | Form, after #114 |
+| Five runs each, medians | Before elicitation: Claude asks in chat | After elicitation: the server's pick-list | Pick-list without the "user chose" note (before #114) |
 |---|---|---|---|
 | Calls to the server | 2 | 1 | 1 |
 | Model requests | 4 | 2 | 2 |
 | User turns | 2 | 1 | 1 |
-| Tokens processed | 47,607 | 28,733 | 29,046 |
-| Answer pointed the user to another facility | 0 of 5 | 5 of 5 | 0 of 5 |
-| Answer said the user chose this facility | n/a | 0 of 5 | 5 of 5 |
+| Tokens processed | 47,607 | 29,046 | 28,733 |
+| Answer pointed the user to another facility | 0 of 5 | 0 of 5 | 5 of 5 |
+| Answer said the user chose this facility | n/a | 5 of 5 | 0 of 5 |
 
 **The form halves the round trips.** Against the fallback every host can use, the form took one call instead of two, two model requests instead of four, one user turn instead of two, and 39 percent fewer tokens, for the same facility. Each request avoided re-reads the whole conversation, so the saving grows with the host's context, as the Claude Code takes show. The fallback held too: with no form, the model asked in all five runs and never chose. And with the form, the user's choice goes to the server unchanged rather than through the model.
 
