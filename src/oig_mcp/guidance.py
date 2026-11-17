@@ -81,6 +81,17 @@ def choose_facility_step(facility: str, shown: int, total: int) -> str:
     )
 
 
+def user_choice_notice(facility: str, name: str, station: str, shown: int) -> str:
+    """Said first when the user chose the facility in the server's form. The model
+    never sees the form, so without this a single profile reads as a guess, and a
+    model second-guesses the user or looks up the others anyway."""
+    return (
+        f"The user chose {name} ({station}) from {shown} facilities that match "
+        f'"{facility}", in a form the server showed them. Answer for this facility '
+        "only: do not look up the others or ask again unless the user asks."
+    )
+
+
 # A state filter pools its facilities. Asked about "the Tennessee VA", a model
 # filtered by state and answered for three facilities as one, so a result that
 # pools several says which, and what to do if the user meant one of them.

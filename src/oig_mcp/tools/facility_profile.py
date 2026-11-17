@@ -22,6 +22,7 @@ from oig_mcp.guidance import (
     READ_ONLY_TOOL,
     choose_facility_step,
     pooled_state_notice,
+    user_choice_notice,
 )
 from oig_mcp.models import (
     STATE_NAMES,
@@ -38,6 +39,11 @@ from oig_mcp.upstream import fetch_object
 _LOOKUP_LIMIT = 10
 # Full state names, for a facility question that names only a state.
 _STATES = {name.casefold(): name for name in STATE_NAMES.values()}
+# Longest first, so "Columbia West Virginia" is read as West Virginia.
+_STATES_LONGEST_FIRST = sorted(STATE_NAMES.values(), key=len, reverse=True)
+# The key under which fetch_profile marks a facility the user chose in the form.
+# Each tool removes it and leads its notices with the text.
+USER_CHOICE = "_user_choice"
 
 # Words people put around a place that OIG's facility names do not carry in that
 # order: "the New York VA", "Durham VAMC", "El Paso VA hospital".
@@ -152,6 +158,39 @@ def place_name(facility: str) -> str:
     return place
 
 
+def split_state(place: str) -> tuple[str, str] | None:
+    """A name that ends in a state, as the name before it and the state's full
+    name: "Columbia SC" and "Columbia, South Carolina" give ("Columbia", "South
+    Carolina"). "VA" never arrives here to be read as Virginia: place_name removes
+    it as a generic word."""
+    words = place.replace(",", " ").split()
+    if len(words) < 2:
+        return None
+    if state := STATE_NAMES.get(words[-1].upper()):
+        return " ".join(words[:-1]), state
+    text = " ".join(words)
+    if text.casefold() in _STATES:  # "West Virginia" is a state, not West, Virginia
+        return None
+    for state in _STATES_LONGEST_FIRST:
+        if text.casefold().endswith(" " + state.casefold()):
+            name = text[: -len(state)].strip()
+            return (name, state) if len(name) >= 2 else None
+    return None
+
+
+async def _in_named_state(place: str) -> dict[str, Any] | None:
+    """The facilities named `place` in the state it ends with, if any. Nothing
+    found means the name was not a state-qualified one, and the lookup goes on
+    as if this were never tried."""
+    if not (qualified := split_state(place)):
+        return None
+    name, state = qualified
+    found = await fetch_object(
+        "facilities", {"q": name, "state": state, "limit": _LOOKUP_LIMIT}
+    )
+    return found if found.get("items") else None
+
+
 async def fetch_profile(
     facility: str, ctx: Context | None = None
 ) -> dict[str, Any] | InputRequiredResult:
@@ -171,15 +210,21 @@ async def fetch_profile(
         # the state, and "Columbia VA" is in South Carolina and in Missouri. So
         # unless the name is exact, look up the place on its own and as a state,
         # and treat the name as ambiguous if those find other facilities.
+        # A name that ends in a state, "Columbia SC", is looked up in that state.
         place = place_name(facility) or facility.strip()
-        lookups = [lookup]
-        if place != facility.strip() and len(matches) <= 1:
-            lookups.append(
-                await fetch_object("facilities", {"q": place, "limit": _LOOKUP_LIMIT})
-            )
-        if state := _STATES.get(place.casefold()):
-            in_state = {"state": state, "limit": _LOOKUP_LIMIT}
-            lookups.insert(0, await fetch_object("facilities", in_state))
+        if in_state := await _in_named_state(place):
+            lookups = [in_state]
+        else:
+            lookups = [lookup]
+            if place != facility.strip() and len(matches) <= 1:
+                lookups.append(
+                    await fetch_object(
+                        "facilities", {"q": place, "limit": _LOOKUP_LIMIT}
+                    )
+                )
+            if state := _STATES.get(place.casefold()):
+                statewide = {"state": state, "limit": _LOOKUP_LIMIT}
+                lookups.insert(0, await fetch_object("facilities", statewide))
         matches, total = _merged(lookups)
         if len(matches) == 1:
             station = matches[0].get("station_number")
@@ -192,11 +237,12 @@ async def fetch_profile(
                 "may be empty."
             ),
         }
+    chosen = False
     if station is None:
         choice = await choose_station(ctx, facility, matches)
         if isinstance(choice, InputRequiredResult):
             return choice
-        station = choice
+        station, chosen = choice, choice is not None
     if station is None:
         return {
             "matches": matches,
@@ -206,10 +252,14 @@ async def fetch_profile(
                 lookup.get("data_as_of"), citation=CITE_TOTALS
             ),
         }
-    return await fetch_object(
+    profile = await fetch_object(
         f"facilities/{quote(str(station), safe='')}",
         {"recommendations_limit": _MAX_RECOMMENDATIONS},
     )
+    if chosen:
+        name = str(profile.get("name") or station)
+        profile[USER_CHOICE] = user_choice_notice(facility, name, station, len(matches))
+    return profile
 
 
 def register(mcp: FastMCP) -> None:
@@ -300,6 +350,7 @@ def register(mcp: FastMCP) -> None:
         page = paginate(recommendations, limit, offset)
         page["items"] = [compact(r, _LEFT_OUT_OF_FINDINGS) for r in page["items"]]
         page["has_older_beyond_100"] = bool(profile.get("recommendations_has_more"))
+        user_choice = profile.pop(USER_CHOICE, None)
         rest = {k: v for k, v in profile.items() if k != "recommendations_has_more"}
         return {
             **rest,
@@ -310,6 +361,7 @@ def register(mcp: FastMCP) -> None:
             ],
             "recommendations": page,
             "notices": [
+                *([user_choice] if user_choice else []),
                 *([FACILITY_VISN_NOTICE] if profile.get("visn") else []),
                 *([PAST_WINDOW_NOTICE] if window_has_passed(profile) else []),
             ],

@@ -45,7 +45,7 @@ MCP host ──> transport (stdio, or Streamable HTTP with a bearer token)
 | `src/oig_mcp/results.py` | Result shaping: provenance, paging, citations, shortened responses |
 | `src/oig_mcp/middleware.py`, `tracing.py`, `auth.py` | The middleware above, trace storage, and the bearer token check |
 | `src/oig_mcp/facility_choice.py`, `completions.py`, `http_sessions.py` | Elicitation, argument completions, and optional HTTP sessions ([MCP features](mcp-features.md)) |
-| `tests/` | 300 tests: every tool's inputs, results, and schema; errors and hints; authentication; security boundaries |
+| `tests/` | 313 tests: every tool's inputs, results, and schema; errors and hints; authentication; security boundaries |
 
 ## Design rules
 

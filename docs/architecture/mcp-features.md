@@ -8,7 +8,7 @@
 
 **What it is.** Elicitation lets a server pause a tool call and ask the user a question directly, through the host. The server sends a message and a small schema for the answer; the host shows it, usually as a form; the user accepts with an answer, declines, or cancels; and the answer goes straight back to the server, which checks it and finishes the same call. The model is not in the loop, so the user's choice reaches the server unchanged.
 
-**How the server uses it.** When a facility name matches several facilities, such as "Columbia VA" (South Carolina and Missouri) or "Tennessee VA" (Memphis, Mountain Home, and Tennessee Valley), the server asks which one is meant, as a single choice listing each match by name and station number. It accepts only one of the matching stations; any other answer, a malformed one, a decline, or no answer within two minutes returns the matches instead. A host that declares URL mode only, which cannot show a form, is never asked.
+**How the server uses it.** When a facility name matches several facilities, such as "Columbia VA" (South Carolina, Missouri, and the District of Columbia) or "Tennessee VA" (Memphis, Mountain Home, and Tennessee Valley), the server asks which one is meant, as a single choice listing each match by name and station number. It accepts only one of the matching stations; any other answer, a malformed one, a decline, or no answer within two minutes returns the matches instead. A host that declares URL mode only, which cannot show a form, is never asked. When the user chooses, the result opens with a notice that the user chose this facility from the matches and that the answer covers it alone: the model never sees the form, so without the notice it reads one profile as the server's guess, and in testing it second-guessed the user or looked up the others anyway.
 
 **Two protocol paths.** On protocol 2026-07-28 the tool returns an `input_required` result carrying the question, and the client calls again with the answer, so each round is a self-contained request. On 2025-11-25 and earlier the server asks within the call, over the open connection. Over stdio both always work. Over HTTP the hosted endpoint keeps a session per client and streams its replies, so it can ask on every protocol version.
 
@@ -21,7 +21,7 @@
 | MCP Python SDK client | Form | Yes | The tests and the robustness check: asked, answered, and invalid or malformed answers ignored, on both protocol versions over HTTP; a URL-only declaration is never asked |
 | VS Code 1.145 (Copilot chat) | Form and URL | Expected, over stdio or HTTP | Not yet tried |
 | Cursor 3.26 | Form | Expected, over stdio or HTTP | Not yet tried |
-| Claude Code 2.1 | Form | Expected | Not yet tried |
+| Claude Code 2.1 | Form | Yes, over stdio | "Columbia VA": the form listed three facilities and the answer covered the one chosen. Before the choice notice, the model doubted the choice or looked up the others too |
 | Grok (xAI) | Form and URL | Expected | Grok Bot over HTTP: the matches and the next step; its form not yet seen |
 | Claude Desktop 5.11 | URL only | No | The matches; after the next step was added, it asked in chat |
 | Hermes Agent | Approve or deny only | No | Before the next step, it chose a facility; after, it offered the matches with its own `clarify` tool |
