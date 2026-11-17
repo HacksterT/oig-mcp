@@ -143,6 +143,37 @@ Measured through the server against the hosted data API: median tool latency fro
 
 Every tool reports a failure as an MCP error result with a hint the agent can act on, distinguished by cause: a rejected filter, a busy search queue, a slow search, a data API failure, or an unreachable API. A filter value the data does not use is refused with the fix where it can be (an office in the domain filter names the office filter), and an empty result says to check the filter values before concluding there is nothing. "Not found" and "several facilities match" are answers, not errors. Each behavior is covered by automated tests.
 
+### Measured against IBM's MCP design guide
+
+IBM's guide for MCP tools in watsonx Orchestrate, "[MCP tools & integration considerations](https://developer.watson-orchestrate.ibm.com/agents/agent_design/mcp_integration.md)" (read November 17, 2026), lists ten anti-patterns, three marked as the most common (★), with a fix for each. This table holds the server to that standard. "Partial" means the fix is in place but not complete; the last column says what is missing. In all: four fully met, two mostly met, four partly met.
+
+| Anti-pattern | IBM's fix | This server | Evidence |
+|---|---|---|---|
+| ★ The glorified API wrapper | Business capability tools | Mostly avoided. The tools answer goals, such as an inspection brief, a facility profile, and recurring findings, and compose the data API's generic endpoints behind them. `vaoig_get_report` and `vaoig_search_findings` sit closer to single endpoints. | The brief makes up to 14 data API calls per call ([`inspection_brief.py`](../src/oig_mcp/tools/inspection_brief.py)); [`data-api.md`](data-api.md) treats an endpoint that mirrors one tool as a design smell |
+| Raw schema leakage | Business-level abstractions | Partial. Results add business fields (citations, a peak year, estimates labeled as estimates, quoted fields, notices), but records otherwise pass through with the data API's field names, such as `rec_id` and `node_id`. | `with_citations`, `peak_year`, and the `*_basis` fields; the profile drops internal fields (#84) |
+| Wishful delegation | Encode complexity in tools | Mostly. Done for the steps that failed in testing: facility resolution with retries, office names turned into abbreviations, the peak year named, peer actions gathered for the brief, and a choice of facility put to the user. Some reasoning is still left to the model, such as filtering a facility's reports by type. | `test_office_filter_sends_a_known_office_as_its_abbreviation`, `test_year_analysis_names_the_peak_year`, [`facility_choice.py`](../src/oig_mcp/facility_choice.py); GPT-OSS 120B passed 8 to 11 of 24 in the first Orchestrate round, before the latest changes |
+| Anything-in, garbage-out | Strong contracts | Done. Every argument is typed and bounded, unknown filter names are refused (`extra="forbid"`), facets come from a fixed list, and an empty result says to check the filter values. | `test_unknown_filter_is_rejected_not_ignored`, `test_unknown_facet_is_refused_without_a_request`; 48 robustness checks |
+| The god-mode tool | Constrained capabilities | Done. Seven read-only tools, no URL arguments, one fixed upstream origin, and a per-client rate limit. | `readOnlyHint` on every tool; `test_fetch_json_uses_fixed_origin_and_safe_client_policy` |
+| ★ The data firehose | Bounded outputs | Partial, and the main exposure found in testing. Every list is paged and capped, search returns a shortlist, and long narratives are shortened. Llama 3.3 70B still overflowed its context on one question, by calling the facility profile eight times. A 100-item profile page went from 70,126 to 40,906 characters; Llama has not been rerun since. | [Result size](testing-results.md#result-size); [`eval/payload_sizes.py`](../eval/payload_sizes.py) |
+| The trusted output trap | Sanitize outputs | Partial, by design. Report text is quoted verbatim, because it is the evidence, so it is marked rather than rewritten: every result names its quoted fields and says never to follow instructions in them. Server notices use only integers from upstream. | `test_tools_that_return_report_text_say_it_is_quoted`; the injected-text adversarial question passed for Claude Opus 5.5 throughout, and for Llama 3.3 70B after the server changes |
+| ★ The "kitchen sink" server | Contextual discovery | Avoided. Seven tools; the server's instructions map each user goal to one tool; descriptions say when to use a different tool; filter values come from `vaoig_get_dataset_status`. | `test_routing_hints_reach_the_client`; tool choice 20 of 20 (Claude) and 19 of 20 (Llama) |
+| The useless error | Structured errors | Partial. Failures are MCP error results with `{error, hint}`: no stack trace or internal detail, and a hint chosen by the cause. They carry no machine-readable `error_code` or `field`, as IBM's format suggests. | `test_upstream_failures_get_a_hint_for_their_cause`; robustness checks inspect every reply for internal detail |
+| The stateful tool trap | Stateless design | Done. No tool keeps state between calls; the hosted endpoint is stateless HTTP, and the facility choice on protocol 2026-07-28 carries everything in each request. Only the rate limit's counters live in memory. | `test_platform_port_serves_stateless_http_with_token`; the deployment checks confirm no session state |
+
+**The agent-ready checklist.** IBM's seven questions, answered for each tool. Reasoning is what the model must still do with the result.
+
+| Tool | Business action? | Constrained inputs? | Non-expert friendly? | Safe by default? | Logic location | Reasoning required | Designed for agents? |
+|---|---|---|---|---|---|---|---|
+| `vaoig_get_dataset_status` | Yes: how current is the data | No inputs | Yes | Read-only | Server: reconciliation notices | Low | Yes: lists the valid filter values |
+| `vaoig_search_findings` | Yes: find what OIG cited | Typed, bounded filters | Plain-language question | Read-only | Server: hybrid search, shortlist notice | Medium: pick what is relevant | Yes: citation per record |
+| `vaoig_get_report` | Partly: look up one report | One of two typed identifiers | Needs a report number | Read-only | Server: number to record | Low | Yes: not-found says not to substitute |
+| `vaoig_get_facility_profile` | Yes: a facility's history | Name, city, or station; bounded paging | Yes: plain names work | Read-only | Server: resolution, choice, repeats | Medium: filter reports by type | Yes |
+| `vaoig_analyze_recommendations` | Yes: counts and time to close | Enumerated groupings, typed filters | Mostly: office names accepted | Read-only | Server: peak year, notices on target dates | Medium: read a table | Yes |
+| `vaoig_find_systemic_clusters` | Yes: what recurs | Typed, bounded | Mostly | Read-only | Server: prevalence wording, caveats | Medium | Yes |
+| `vaoig_get_inspection_brief` | Yes: prepare for an inspection | Name, city, or station | Yes | Read-only | Server: up to 14 calls composed | Low | Yes: one call for the whole task |
+
+IBM's guide also describes two patterns: tools that are business capabilities, exposed to the agent directly, or an "agent-ready facade" built over generic tools. This server is the first pattern, over a data API that plays the generic layer.
+
 ## 4. Security considerations
 
 The full design, every check with its latest result, the November 17 review, and the accepted risks are in [SECURITY.md](../SECURITY.md).

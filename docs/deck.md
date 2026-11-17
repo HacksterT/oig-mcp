@@ -144,7 +144,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 **Visual:** The inspection brief as one call fanning out to the facility's history, peer findings, and peer commitments.
 
-**Speaker notes:** Routing hints in each description tell a model when to use the tool and when to use another, and tests check that every description says so.
+**Speaker notes:** Routing hints in each description tell a model when to use the tool and when to use another, and tests check that every description says so. In IBM's MCP design guide for Orchestrate, this answers the two most common anti-patterns: the glorified API wrapper (tools are goals, not endpoints) and the kitchen-sink server (seven tools, each saying when to use another).
 
 ---
 
@@ -163,7 +163,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 **Visual:** One tool's input schema beside its output schema, with an error result and its hint.
 
-**Speaker notes:** The last point came from evaluation. The Orchestrate agent wrote an office's full name in the domain filter, matched nothing, and told the user there was no data. The server now catches that.
+**Speaker notes:** The last point came from evaluation. The Orchestrate agent wrote an office's full name in the domain filter, matched nothing, and told the user there was no data. The server now catches that. IBM's guide calls the opposite "anything-in, garbage-out" and "the data firehose". The firehose was our real exposure: Llama overflowed its context on one question, and the facility profile was cut by about 40 percent per page in response.
 
 ---
 
@@ -182,7 +182,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 **Visual:** A result with its provenance block, notices, and quoted fields highlighted.
 
-**Speaker notes:** This is why the Orchestrate agent needs only one instruction: answer only from what the tools return.
+**Speaker notes:** This is why the Orchestrate agent needs only one instruction: answer only from what the tools return. Measured against all ten anti-patterns in IBM's guide, the server fully meets four, mostly meets two, and partly meets four; the table, with evidence for each row, is in docs/evaluation.md.
 
 ---
 
