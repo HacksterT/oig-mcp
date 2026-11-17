@@ -1,6 +1,6 @@
 # OIG Data API contract
 
-This server reads all of its data from one HTTP API, built and hosted by the `oig-data-source` repository (a Python API over a SQLite database, run in a container on Troy's Mac and exposed through Cloudflare Tunnel with Access service tokens). This file records what the MCP server expects from that API. The endpoints below are implemented in `oig-data-source`, not here.
+This server reads all of its data from one HTTP API, built and hosted by the `oig-data-source` repository (a Python API over a SQLite database, run in a container on Troy's Mac and exposed through Cloudflare Tunnel with Access service tokens). This file records what the MCP server expects from that API. The endpoints below are implemented in `oig-data-source`, not here; how that pipeline builds and checks the data is in [data-pipeline.md](data-pipeline.md).
 
 The API is deliberately generic: filter, paginate, and aggregate over reports, recommendations, facilities, clusters, and facility responses. The MCP tools compose these calls into goal-level answers. An endpoint that mirrors one tool is a sign that logic has leaked from the server into the API.
 
