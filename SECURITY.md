@@ -55,7 +55,7 @@ Please report security issues privately through GitHub's "Report a vulnerability
 
 - **Container.** Runs as an unprivileged user (uid 10001), with code owned by root. Compose drops every Linux capability, sets `no-new-privileges`, mounts the filesystem read-only except the log volume and `/tmp`, and limits memory to 1 GB and processes to 256. No secret is baked into the image; `.env` and `logs/` are excluded from the build.
 - **Pinned and audited dependencies.** The base image is pinned by digest, uv by version, and every Python dependency by `uv.lock` with hashes, installed with `uv sync --frozen` and no dev dependencies. CI fails if the lock is out of date, and audits every dependency group with `pip-audit` on every change. GitHub Actions are pinned to commits, and CI's token is read-only.
-- **Repository.** `main` is protected: every change needs a pull request and a passing CI run, for administrators too, and force pushes and deletion are blocked. GitHub secret scanning and push protection are on, and Dependabot opens security updates as advisories appear and version updates monthly for Python, Actions, and the base image.
+- **Repository.** `main` is protected: every change needs a pull request and a passing CI run, for administrators too, and force pushes and deletion are blocked. GitHub secret scanning and push protection are on, and Dependabot opens security updates as advisories appear and version updates monthly for Python packages, Actions, and the base image. Major version jumps and changes to the Python version are left for a deliberate upgrade; versions are frozen through judging.
 
 ## How security is checked
 
