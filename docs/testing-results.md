@@ -6,16 +6,17 @@
 
 | Platform | Result | Read it with |
 |---|---|---|
-| Claude Opus 5.5, harness | 23 of 24 questions pass every check; matched on reruns on November 10 | The same builder wrote the questions; the failure is a scoring call on a correct answer |
-| Claude Sonnet 5.5, harness | 23 of 24 | Its answer to the failed question also miscounted |
+| Claude Opus 5.5, harness | 23 of 24 questions pass every check on every run from November 4 to 17; 22 of 24 after the November 17 result-size changes | The same builder wrote the questions and tuned the server after earlier runs. Both misses are scoring calls on correct answers, kept as failures: the Durham list, and "agreed" where the check looks for "concur" (the judge agreed on 24 of 24) |
+| Claude Sonnet 5.5, harness | 23 of 24 on November 4, and again on the final server on November 17; report number and link where required 8 of 8, up from 7 | Its answer to the failed question also miscounted |
 | DeepSeek V4 Pro 0813, Hermes Agent | All 18 answers agree with the gold reference; all 11 exact facts present | Not a blind run; answers rarely gave links |
 | IBM agent in watsonx Orchestrate, first six questions | 5 of 6 correct at first; the sixth fixed in the server and confirmed in Orchestrate | Read against the gold answers and the data API's traces, not yet by a judge |
-| IBM agent in watsonx Orchestrate (GPT-OSS 120B), 24 questions, three runs | 10, 8, and 11 of 24 on the project's scoring; 14, 14, and 13 by IBM's engine | First round; the server fixes it led to are deployed, and a second round, with the adversarial questions, is planned for November 17 |
-| Llama 3.3 70B on IBM watsonx.ai, harness | 9 of 24, before and after the November 17 server changes | Same model and settings; tool choice, citations, and data dates improved |
+| IBM agent in watsonx Orchestrate (GPT-OSS 120B), 24 questions, three runs | 10, 8, and 11 of 24 on the project's scoring; 14, 14, and 13 by IBM's engine | First round; the server fixes it led to are deployed, and a second round, with the adversarial questions, follows |
+| Llama 3.3 70B on IBM watsonx.ai, harness | 9 of 24, before and after the November 17 scope changes | Same model and settings; tool choice, citations, and data dates improved. Not rerun since the result-size changes |
 | No-tool baseline | Claude Opus 5.5: 3 of 24; Llama 3.3 70B: 2 of 24 | What the models do without the server |
 | Adversarial set, 6 questions | Opus 5 of 6, then 6 of 6; Llama 0 of 6, then 4 of 6, after server changes | Not blind: questions and fixes written the same night |
-| Automated tests | 256 pass, on every change | |
-| Image and deployment checks | 15 of 15 and 22 of 22, on the Mac and on IBM's virtual machine | |
+| Ambiguous facility name, three hosts | After #92, Hermes Agent and Claude Desktop listed the matching facilities and asked; neither chose one itself | The server's own question to the user is proven only with the MCP SDK's client; Orchestrate is untested |
+| Automated tests | 260 pass, on every change | |
+| Image, deployment, and robustness checks | 15 of 15 and 22 of 22, on the Mac and on IBM's virtual machine; 48 of 48 robustness checks, local and through the public URL | |
 | Load test, 1 to 40 concurrent clients | All 2,059 calls answered, no errors; median 0.33 s to 1.8 s | One run, one Mac, not to failure |
 
 No answer from a server-backed run on Claude, Llama, or Orchestrate cited a report number that does not exist, which is the project's stated target. The only one found on any platform is in a logged answer from the Hermes agent, described below.

@@ -61,7 +61,7 @@ Please report security issues privately through GitHub's "Report a vulnerability
 
 | Check | What it covers | When | Latest result |
 |---|---|---|---|
-| Automated tests ([`tests/`](tests/)) | Authentication, Host and Origin checks, outbound path validation, sanitized errors, bounded traces, private files, bounded input, every tool's error hints | Every change, in CI | 256 pass (November 17, 2026) |
+| Automated tests ([`tests/`](tests/)) | Authentication, Host and Origin checks, outbound path validation, sanitized errors, bounded traces, private files, bounded input, every tool's error hints | Every change, in CI | 260 pass (November 17, 2026) |
 | Dependency audit (`pip-audit`, in CI) | Known vulnerabilities in every runtime, dev, and evaluation dependency | Every change | No known vulnerabilities in 67 runtime packages or the other groups |
 | Dependabot alerts | Advisories against `uv.lock` | Continuously | 16 raised since the repository opened; all fixed |
 | Secret scan (`gitleaks`, redacted output) | Every commit in the repository's history, and the working tree | Before submission | History: none. Working tree: only `.env`, which is git-ignored |
