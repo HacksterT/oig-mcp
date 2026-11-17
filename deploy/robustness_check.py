@@ -28,6 +28,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from fastmcp import Client
+from mcp_types import PromptReference
 
 sys.path.insert(0, str(Path(__file__).parent))
 from verify_deployment import (  # noqa: E402
@@ -117,6 +118,14 @@ RESOURCES = [
     "vaoig://taxonomy/..%2F..%2Fmeta",
     "vaoig://taxonomy/does-not-exist",
 ]
+# Argument completion takes text as a person types it. These must yield a clean,
+# bounded answer: a few suggestions or none, never an error or internal detail.
+CHECKLIST = PromptReference(type="ref/prompt", name="inspection_readiness_checklist")
+COMPLETIONS = [
+    (CHECKLIST, "../../meta?q=1#x", "traversal and query syntax"),
+    (CHECKLIST, "x" * 5000, "oversized partial value"),
+    (CHECKLIST, "' OR 1=1 --", "SQL syntax"),
+]
 
 
 def reply_text(result: Any) -> str:
@@ -179,6 +188,18 @@ async def hostile_inputs(client: Client, checker: Checker) -> None:
             outcome = f"refused: {type(exc).__name__}"
         ok, why = checker.clean(text)
         checker.report.check(f"resource {uri}", ok, why or outcome)
+        await asyncio.sleep(PACE)
+    for ref, value, case in COMPLETIONS:
+        try:
+            argument = {"name": "facility", "value": value}
+            completion = await client.complete(ref, argument)
+            text = " ".join(completion.values)
+            ok, why = checker.clean(text)
+            ok = ok and len(completion.values) <= 10
+            outcome = f"{len(completion.values)} suggestions"
+        except Exception as exc:
+            ok, why, outcome = False, f"client raised {type(exc).__name__}", ""
+        checker.report.check(f"completion: {case}", ok, why or outcome)
         await asyncio.sleep(PACE)
 
 

@@ -331,7 +331,7 @@ Each failure was read against the tool results and the data service's request tr
 | Surface | Mitigation | Checked by |
 |---|---|---|
 | MCP endpoint | A bearer token compared in constant time; a per-client rate limit; Host and Origin checks for local HTTP | 22 deployment checks |
-| Tool input | Typed and bounded; path traversal, injection, and search syntax refused cleanly | 43 robustness checks |
+| Tool input | Typed and bounded; path traversal, injection, and search syntax refused cleanly | 46 robustness checks |
 | Outbound requests | One fixed origin, no redirects or proxies, bounded responses, at most eight requests at once | Automated tests |
 | Prompt injection | Report text marked as quotation; read-only tools; scope in the server's instructions | 6 adversarial questions |
 | Secrets | From the environment or an Orchestrate connection; never in results, logs, or the image | 15 image checks, history scan |
