@@ -21,6 +21,7 @@ from oig_mcp.guidance import (
     FACILITY_VISN_NOTICE,
     READ_ONLY_TOOL,
     choose_facility_step,
+    pooled_state_notice,
 )
 from oig_mcp.models import (
     STATE_NAMES,
@@ -98,6 +99,25 @@ def compact(record: dict[str, Any], left_out: frozenset[str]) -> dict[str, Any]:
         for key, value in record.items()
         if key not in left_out and value is not None
     }
+
+
+async def state_pooling_notice(state: str | None) -> str | None:
+    """The facilities a state filter pools, when it pools more than one. A failed
+    lookup gives no notice rather than failing the tool it supports."""
+    if not state:
+        return None
+    try:
+        lookup = await fetch_object(
+            "facilities", {"state": state, "limit": _LOOKUP_LIMIT}
+        )
+    except UpstreamServiceError:
+        return None
+    items = lookup.get("items", [])
+    total = max(lookup.get("total") or 0, len(items))
+    if total < 2:
+        return None
+    names = [f"{m.get('name')} ({m.get('station_number')})" for m in items]
+    return pooled_state_notice(state, names, total)
 
 
 def _named_exactly(facility: str, matches: list[dict[str, Any]]) -> str | None:

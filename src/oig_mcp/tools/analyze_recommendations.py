@@ -17,6 +17,7 @@ from oig_mcp.failures import UpstreamServiceError, tool_error
 from oig_mcp.guidance import CITE_TOTALS, READ_ONLY_TOOL, VISN_NUMBERING_NOTICE
 from oig_mcp.models import Analysis, AnalysisGroup, RecommendationFilters, output_schema
 from oig_mcp.results import build_provenance
+from oig_mcp.tools.facility_profile import state_pooling_notice
 from oig_mcp.upstream import fetch_object
 
 _SOURCE_URLS = ["https://www.vaoig.gov/recommendations-all"]
@@ -186,7 +187,10 @@ def register(mcp: FastMCP) -> None:
         measures. Facilities cannot be a grouping, because this server reports
         records and does not rate or rank facilities. To compare places, filter by
         one state at a time; VISN labels changed meaning in August 2026. Each result
-        names the filters it used.
+        names the filters it used. If the user names one VA, such as "the Tennessee
+        VA", rather than asking about a whole state, use vaoig_get_facility_profile
+        or vaoig_get_inspection_brief instead: a state filter pools every facility
+        in the state, and the facility tools ask which one when several match.
 
         Always pass on every entry in notices, and target_basis when discussing
         target dates.
@@ -213,6 +217,8 @@ def register(mcp: FastMCP) -> None:
         except UpstreamServiceError as exc:
             raise tool_error(exc) from exc
 
+        notice = await state_pooling_notice(filters.state if filters else None)
+        pooled = [notice] if notice else []
         items = [
             {key: value for key, value in item.items() if key not in _TARGET_FIELDS}
             for item in result.get("items", [])
@@ -229,7 +235,7 @@ def register(mcp: FastMCP) -> None:
             ),
             "peak_year": _peak_year(items) if group_by is AnalysisGroup.YEAR else None,
             "items": items,
-            "notices": _notices(group_by, filters, items),
+            "notices": _notices(group_by, filters, items) + pooled,
             "target_basis": result.get("target_basis"),
             "provenance": build_provenance(
                 result.get("data_as_of"),
