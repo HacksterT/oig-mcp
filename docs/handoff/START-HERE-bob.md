@@ -6,7 +6,7 @@ Repository: https://github.com/HacksterT/oig-mcp (branch `main`, public).
 
 ## How work reaches you now
 
-Troy leaves numbered notes in [`Bob-communication/`](Bob-communication/). When he says "read note N", run `git pull --no-rebase origin main`, then read and follow it. A newer note wins over anything older. Notes already carried out are in [`docs/_archive/Bob-notes/`](../_archive/Bob-notes/).
+Troy leaves numbered notes in [`Bob-communication/`](Bob-communication/). When he says "read note N", run `git pull --no-rebase origin main`, then read and follow it. A newer note wins over anything older. While you carry out a note, report each step in `Bob-communication/bob-status.md` on `ibm/deploy` and put questions for Claude there; Claude watches that branch and answers with a `reply` file on `main` (note 14 gives the details). Ask Troy directly only for what needs him, such as the Orchestrate interface. Notes already carried out are in [`docs/_archive/Bob-notes/`](../_archive/Bob-notes/).
 
 Background and the rules for working here are in [`../project-overview.md`](../project-overview.md). Where your own skills differ from it on something specific to this project, it wins. The original Code Engine plan, [`2026-11-04-troy-bob-deployment-handoff.md`](../_archive/handoff/2026-11-04-troy-bob-deployment-handoff.md), is kept as a record and no longer describes the deployment.
 
