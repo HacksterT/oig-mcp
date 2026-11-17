@@ -38,6 +38,12 @@ _GENERIC_WORDS = re.compile(
 )
 _MAX_RECOMMENDATIONS = 100  # the API returns only the newest 25 unless asked
 _ACTION_CHARS = 300
+# Fields each recommendation repeats from its report, which `reports` already lists
+# once. Leaving them out keeps a 100-item page within a smaller model's context:
+# Llama 3.3 70B overflowed 128K tokens on repeated full pages.
+_REPEATED_REPORT_FIELDS = frozenset(
+    {"title", "report_type", "node_id", "path", "response_page_no"}
+)
 
 NO_RESPONSE_NOTICE = (
     "A finding with no facility response means none was extracted from the report. "
@@ -60,6 +66,15 @@ def window_has_passed(profile: dict[str, Any]) -> bool:
     estimate = (latest or {}).get("next_window_estimate")
     data_as_of = profile.get("data_as_of")
     return bool(estimate and data_as_of and estimate < data_as_of)
+
+
+def compact(record: dict[str, Any]) -> dict[str, Any]:
+    """A recommendation without its report's repeated fields or empty values."""
+    return {
+        key: value
+        for key, value in record.items()
+        if key not in _REPEATED_REPORT_FIELDS and value is not None
+    }
 
 
 def lacks_response(recommendations: list[dict[str, Any]]) -> bool:
@@ -138,7 +153,15 @@ def register(mcp: FastMCP) -> None:
             ),
         ],
         limit: Annotated[
-            int, Field(ge=1, le=100, description="Recommendations to return.")
+            int,
+            Field(
+                ge=1,
+                le=100,
+                description=(
+                    "Recommendations to return. Counts and the full report list come "
+                    "with any limit, so raise it only to read more findings."
+                ),
+            ),
         ] = 25,
         offset: Annotated[
             int,
@@ -188,7 +211,9 @@ def register(mcp: FastMCP) -> None:
         )
         reports = profile.get("reports", [])
         page = paginate(recommendations, limit, offset)
-        page["items"] = shorten_responses(page["items"], _ACTION_CHARS)
+        page["items"] = shorten_responses(
+            [compact(record) for record in page["items"]], _ACTION_CHARS
+        )
         page["has_older_beyond_100"] = bool(profile.get("recommendations_has_more"))
         rest = {k: v for k, v in profile.items() if k != "recommendations_has_more"}
         return {

@@ -22,8 +22,30 @@ from fastmcp import Client
 from fastmcp.client.transports import StreamableHttpTransport
 
 MAX_TURNS = 15
+# The no-tool baseline: the same model and question, with no server. It measures
+# what the server adds, as the hackathon's sample evaluation recommends.
+BASELINE_SYSTEM = (
+    "You answer questions about VA Office of Inspector General (OIG) reports and "
+    "recommendations. You have no tools or data access: answer from what you know, "
+    "and say so when you do not know."
+)
 MAX_TOKENS = 16000
 PREVIEW_CHARS = 1500
+
+
+class _NoServer:
+    """Stands in for the MCP client in a no-tool baseline run."""
+
+    instructions = BASELINE_SYSTEM
+
+    async def __aenter__(self) -> _NoServer:
+        return self
+
+    async def __aexit__(self, *exc: object) -> None:
+        return None
+
+    async def list_tools(self) -> list:
+        return []
 
 
 def mcp_client(url: str, token: str) -> Client:
@@ -72,6 +94,7 @@ async def run_question(
     effort: str,
     url: str,
     token: str,
+    use_tools: bool = True,
 ) -> dict:
     """Answer one question and return the answer, tool calls, and usage."""
     usage = {"input": 0, "output": 0, "cache_write": 0, "cache_read": 0}
@@ -80,7 +103,7 @@ async def run_question(
     stop_reason = None
     answer = ""
 
-    async with mcp_client(url, token) as client:
+    async with mcp_client(url, token) if use_tools else _NoServer() as client:
         instructions = client.instructions or ""
         tools = [
             {
@@ -96,7 +119,7 @@ async def run_question(
                 model=model,
                 max_tokens=MAX_TOKENS,
                 system=instructions,
-                tools=tools,
+                **({"tools": tools} if tools else {}),
                 messages=messages,
                 output_config={"effort": effort},
                 cache_control={"type": "ephemeral"},
@@ -155,6 +178,7 @@ async def run_question_watsonx(
     url: str,
     token: str,
     tracer: Any = None,
+    use_tools: bool = True,
 ) -> dict:
     """Answer one question with a watsonx.ai model, the same way as run_question.
 
@@ -171,7 +195,7 @@ async def run_question_watsonx(
     answer = ""
 
     with _span(tracer, "question", "AGENT", **{"input.value": question}) as root:
-        async with mcp_client(url, token) as client:
+        async with mcp_client(url, token) if use_tools else _NoServer() as client:
             instructions = client.instructions or ""
             tools = function_tools(await client.list_tools())
             messages: list[dict] = [

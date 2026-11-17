@@ -22,8 +22,8 @@ import anthropic
 from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).parent))
-from run_experiment import GOLD_PATH, REPO_ROOT, RESULTS_DIR, metrics_for  # noqa: E402
-from scoring import load_index, score_code, score_judge  # noqa: E402
+from run_experiment import REPO_ROOT, RESULTS_DIR, metrics_for  # noqa: E402
+from scoring import load_gold, load_index, score_code, score_judge  # noqa: E402
 
 QNA_ORDER = [
     "count-open-total",
@@ -91,7 +91,7 @@ def parse(path: Path, native: bool = False) -> list[dict]:
 
 async def main_async(args) -> None:
     load_dotenv(REPO_ROOT / ".env")
-    gold = {q["id"]: q for q in json.loads(GOLD_PATH.read_text())["questions"]}
+    gold = {q["id"]: q for q in load_gold("all")["questions"]}
     numbers, urls = load_index()
     llm = anthropic.AsyncAnthropic(max_retries=5)
     records = []
