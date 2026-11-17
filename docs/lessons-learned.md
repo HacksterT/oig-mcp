@@ -6,6 +6,8 @@ The server is the subject of every test. The models that call it are instruments
 
 ## November 17, 2026: the Orchestrate second round and the last server changes
 
+*The closing assessment of whether the changes helped, and how much weight the evidence bears, is in [testing-debrief.md](testing-debrief.md).*
+
 **Only the server changed, and the weaker model moved.** The Orchestrate agent kept its instruction and model (GPT-OSS 120B) and ran on the fixed server: 12 and 12 of 24 against 10, 8, and 11 in round 1, with the judge agreeing on 19 of 24 instead of about 15, and IBM's own engine scoring 16 and 18 against 14, 14, and 13. The three questions the fixes targeted most directly, the peak year among them, went from failing every run to passing both. Links stayed low, 3 of 8: a ready-made citation helps a model that copies it, not one that leaves links out. *Evidence: [`eval/results/2026-11-17-orchestrate-round-2/`](../eval/results/2026-11-17-orchestrate-round-2/).*
 
 **A result that matches the last one exactly is a reason to check the files.** The first scoring of round 2 matched round 1's first two runs on every one of 24 questions, which two runs of a sampled model do not do. Note 14 had given the new runs the same dated folder as round 1, and a merge kept round 1's transcripts at the top level; the new ones were in the ADK's dated subfolders. Scored from the right files, round 2 improved. Each round now has its own folder.
