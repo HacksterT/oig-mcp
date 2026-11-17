@@ -4,7 +4,8 @@
 # HTTP because PORT is set below, and refuses to start without MCP_AUTH_TOKEN.
 # Supply secrets at run time. None are baked into the image.
 
-FROM docker.io/library/python:3.11-slim
+# Pinned by digest so a rebuild uses the same base; Dependabot proposes updates.
+FROM docker.io/library/python:3.11-slim@sha256:07d4824036af339fa1b6ef769cc99d9c10a141769538b52b3b597c84f7a7b535
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \

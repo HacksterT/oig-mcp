@@ -49,6 +49,14 @@ uv run python deploy/verify_deployment.py --url https://<APP_URL>
 
 This tests both connections from outside: who may reach `/mcp`, and whether tools get live data through the API. It needs `MCP_AUTH_TOKEN`. With the API URL and Cloudflare token set too, it also tests the API directly. Without them, it skips that part and says so.
 
+Then check how it holds up under hostile and heavy input:
+
+```bash
+uv run python deploy/robustness_check.py --url https://<APP_URL>
+```
+
+It sends every tool path traversal, header and query injection, SQL and search syntax, and values past every bound, then bursts past the rate limit and the data API's search slots, and checks that every reply is a clean answer or error with no stack trace, upstream address, or credential. No model is involved. It needs `MCP_AUTH_TOKEN`, and takes about a minute.
+
 ## Add or remove a tester
 
 Each tester gets a named token, so one can be removed without affecting the rest. Run these on the machine serving `/mcp`, from this repo. `add` creates the token, writes it to `MCP_CLIENT_TOKENS` in `.env`, restarts the server, and prints only the token, so pipe it to the clipboard rather than the screen:

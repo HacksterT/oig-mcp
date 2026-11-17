@@ -7,17 +7,21 @@ I/O and formatting here keeps each tool file focused on its own logic.
 from __future__ import annotations
 
 import json
+import logging
 import time
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager, nullcontext
 from typing import Any
 from urllib.parse import unquote, urlsplit
 
+import anyio
 import httpx
 from fastmcp.exceptions import ToolError
 
 from oig_mcp import tracing
 from oig_mcp.config import settings
+
+_log = logging.getLogger("oig_mcp.usage")
 
 # Federal APIs can be slow or intermittently unresponsive — always use an
 # explicit timeout. Bump this for large exports.
@@ -30,11 +34,18 @@ API_BASE_URL = settings.oig_data_api_base_url
 
 UNREACHABLE_HINT = (
     "The OIG data API did not answer. Try the same call once more; if it fails "
-    "again, tell the user the data could not be reached. For the operator: start "
-    "the oig-data-source API locally (docker compose up -d) or check "
-    "OIG_DATA_API_BASE_URL and the Cloudflare Access service token in the server's "
-    "environment."
+    "again, tell the user the data could not be reached."
 )
+# For the operator's log, not the client: it names settings and how the API runs.
+UNREACHABLE_LOG = (
+    "data API unreachable (%s): start the oig-data-source API (docker compose up -d) "
+    "or check OIG_DATA_API_BASE_URL and the Cloudflare Access service token"
+)
+# Upstream requests in flight at once, across all tool calls in this process. The
+# inspection brief alone runs ten searches, and the data API runs four at a time,
+# so one burst of briefs would otherwise queue hundreds of requests upstream.
+MAX_CONCURRENT_UPSTREAM = 8
+_upstream_limiter: anyio.CapacityLimiter | None = None
 SERVER_ERROR_HINT = (
     "The data API failed on this request. Try it once more, then with fewer or "
     "different filters; if it still fails, tell the user this part could not be "
@@ -188,8 +199,15 @@ async def fetch_json(
         ValueError: if path could select or escape the configured API origin.
         UpstreamServiceError: with a sanitized message for external failures.
     """
+    global _upstream_limiter
     safe_path = _validate_relative_path(path)
-    request_headers = {"Accept": "application/json", **(headers or {})}
+    # Identity encoding: the size cap then measures what was actually received,
+    # so a small compressed body cannot expand past it.
+    request_headers = {
+        "Accept": "application/json",
+        **(headers or {}),
+        "Accept-Encoding": "identity",
+    }
     request_headers.update(tracing.headers())
     request_headers.update(_access_headers())
     started = time.monotonic()
@@ -199,26 +217,32 @@ async def fetch_json(
     # Outside a running server (a script or a direct call), open a client for this
     # one request. Headers go on the request, never on the shared client.
     opened = nullcontext(_shared_client) if _shared_client else _new_client()
+    if _upstream_limiter is None:
+        _upstream_limiter = anyio.CapacityLimiter(MAX_CONCURRENT_UPSTREAM)
     try:
-        async with (
-            opened as client,
-            client.stream(
-                "GET",
-                safe_path,
-                params=params,
-                headers=request_headers,
-                timeout=timeout,
-            ) as response,
-        ):
-            status = response.status_code
-            response.raise_for_status()
-            async for chunk in response.aiter_bytes():
-                content.extend(chunk)
-                if len(content) > MAX_RESPONSE_BYTES:
-                    raise UpstreamServiceError(
-                        "Upstream response exceeded the size limit."
-                    )
-            return json.loads(content)
+        # httpx's timeout is per phase, so a slow trickle could hold a call open;
+        # fail_after bounds the whole request, including the wait for a slot.
+        with anyio.fail_after(timeout * 2):
+            async with (
+                _upstream_limiter,
+                opened as client,
+                client.stream(
+                    "GET",
+                    safe_path,
+                    params=params,
+                    headers=request_headers,
+                    timeout=timeout,
+                ) as response,
+            ):
+                status = response.status_code
+                response.raise_for_status()
+                async for chunk in response.aiter_bytes():
+                    content.extend(chunk)
+                    if len(content) > MAX_RESPONSE_BYTES:
+                        raise UpstreamServiceError(
+                            "Upstream response exceeded the size limit."
+                        )
+                return json.loads(content)
     except UpstreamServiceError as exc:
         error = str(exc)
         raise
@@ -231,8 +255,15 @@ async def fetch_json(
     except (httpx.DecodingError, json.JSONDecodeError, UnicodeDecodeError):
         error = "invalid JSON"
         raise UpstreamServiceError("Upstream service returned invalid JSON.") from None
-    except httpx.RequestError as exc:
+    except httpx.InvalidURL:
+        # Arguments that make the request itself invalid, such as an over-long query.
+        error = "invalid request"
+        raise UpstreamServiceError(
+            "The request was too large or malformed.", status_code=400
+        ) from None
+    except (httpx.RequestError, TimeoutError) as exc:
         error = type(exc).__name__
+        _log.warning(UNREACHABLE_LOG, error)
         raise UpstreamServiceError("Upstream service request failed.") from None
     finally:
         tracing.api_call(

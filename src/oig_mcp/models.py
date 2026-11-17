@@ -154,7 +154,9 @@ class RecommendationFilters(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     status: list[RecommendationStatus] | None = Field(
-        default=None, description="Keep recommendations with any of these statuses."
+        default=None,
+        max_length=3,
+        description="Keep recommendations with any of these statuses.",
     )
     action_office: str | None = Field(
         default=None,

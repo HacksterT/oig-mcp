@@ -140,7 +140,9 @@ async def test_dataset_status_returns_hint_when_api_unreachable(monkeypatch) -> 
     assert result.is_error
     payload = result.structured_content
     assert payload["error"] == "Upstream service request failed."
-    assert "oig-data-source" in payload["hint"]
+    assert payload["hint"] == utils.UNREACHABLE_HINT
+    # How the API runs and which settings to check go to the operator's log only.
+    assert "OIG_DATA_API_BASE_URL" not in payload["hint"]
 
 
 @pytest.mark.asyncio

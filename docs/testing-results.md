@@ -14,7 +14,7 @@
 | Llama 3.3 70B on IBM watsonx.ai, harness | 9 of 24, before and after the November 17 server changes | Same model and settings; tool choice, citations, and data dates improved |
 | No-tool baseline | Claude Opus 5.5: 3 of 24; Llama 3.3 70B: 2 of 24 | What the models do without the server |
 | Adversarial set, 6 questions | Opus 5 of 6, then 6 of 6; Llama 0 of 6, then 4 of 6, after server changes | Not blind: questions and fixes written the same night |
-| Automated tests | 210 pass, on every change | |
+| Automated tests | 217 pass, on every change | |
 | Image and deployment checks | 15 of 15 and 22 of 22, on the Mac and on IBM's virtual machine | Not a load test |
 
 No answer from a server-backed run on Claude, Llama, or Orchestrate cited a report number that does not exist, which is the project's stated target. The only one found on any platform is in a logged answer from the Hermes agent, described below.
@@ -219,6 +219,8 @@ Measured through the server, in its container on the Mac, against the hosted dat
 The status and brief tools make several API calls each, and the brief runs up to ten searches. One pooled HTTP client, and dataset status reading its five filter lists at once, cut about 30 percent from search and 50 percent from dataset status in a controlled comparison. In Orchestrate the server runs over stdio and starts afresh for each call; starting it took about two seconds in a test on the Mac. Of the 5.8 seconds measured for the New York question, the data API's part was about 0.16 seconds, and the rest was Orchestrate's model and the process start. The service has not been load tested.
 
 ## Security
+
+The full record, with every check and the November 17 review, is in [SECURITY.md](../SECURITY.md). On November 17: 15 of 15 image checks, 22 of 22 deployment checks, 43 of 43 robustness checks (hostile and malformed input to every tool, a burst past the rate limit, searches past the data API's capacity), no known vulnerable dependency, and no secret in the repository's history. An independent review found no high-severity issues; its findings are fixed or documented as accepted risks.
 
 All authentication checks passed against the container, through a public HTTPS tunnel, and on IBM's virtual machine, where the image built there passed all 15 image checks, including the 22 deployment checks run against it. That run also confirmed IBM's network reaches the data API through Cloudflare with no proxy.
 

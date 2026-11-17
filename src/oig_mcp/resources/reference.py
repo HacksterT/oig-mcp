@@ -13,18 +13,37 @@ from fastmcp import FastMCP
 from oig_mcp.utils import UNREACHABLE_HINT, UpstreamServiceError, fetch_object
 
 _PAGE_SIZE = 100
+# The registry has about 1,500 facilities. A cap and a forward-only offset keep a
+# misbehaving upstream from looping this resource forever.
+_MAX_PAGES = 50
+FACETS = frozenset(
+    {
+        "topic",
+        "state",
+        "visn",
+        "district",
+        "mmc",
+        "author_office",
+        "special_project",
+        "action_office",
+        "report_type",
+    }
+)
 
 
 async def _all_facilities() -> dict[str, Any]:
     """Read every page of the facility registry."""
     facilities: list[dict[str, Any]] = []
-    offset: int | None = 0
+    offset = 0
     data_as_of = None
-    while offset is not None:
+    for _ in range(_MAX_PAGES):
         page = await fetch_object("facilities", {"limit": _PAGE_SIZE, "offset": offset})
         facilities.extend(page.get("items", []))
         data_as_of = page.get("data_as_of")
-        offset = page.get("next_offset") if page.get("has_more") else None
+        following = page.get("next_offset") if page.get("has_more") else None
+        if not isinstance(following, int) or following <= offset:
+            break
+        offset = following
     return {"data_as_of": data_as_of, "total": len(facilities), "items": facilities}
 
 
@@ -38,6 +57,8 @@ def register(mcp: FastMCP) -> None:
         Facets: topic, state, visn, district, mmc, author_office, special_project,
         action_office, report_type.
         """
+        if facet not in FACETS:
+            return {"error": f"Unknown facet. Use one of: {', '.join(sorted(FACETS))}."}
         try:
             return await fetch_object(f"taxonomy/{quote(facet, safe='')}")
         except UpstreamServiceError as exc:

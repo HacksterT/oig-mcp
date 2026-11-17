@@ -10,9 +10,11 @@ including judging, to see what people ask; users are told in vaoig://about.
 from __future__ import annotations
 
 import logging
+import os
 import re
 import sys
 import time
+from logging.handlers import RotatingFileHandler
 from typing import Any
 
 import anyio
@@ -44,8 +46,33 @@ def _client_name(_context: MiddlewareContext | None = None) -> str:
     return token.client_id if token else "local"
 
 
+_RESOURCE_URI = re.compile(r"vaoig://[A-Za-z0-9_./%-]{1,100}")
+
+
 class UsageLogMiddleware(Middleware):
-    """Log one line per tool call: client, tool, outcome, and duration."""
+    """Log one line per tool call or resource read: client, name, outcome, time."""
+
+    async def on_read_resource(
+        self, context: MiddlewareContext, call_next: CallNext
+    ) -> Any:
+        started = time.monotonic()
+        outcome = "error"
+        try:
+            result = await call_next(context)
+            outcome = "ok"
+            return result
+        except RateLimitError:
+            outcome = "rate_limited"
+            raise
+        finally:
+            uri = str(context.message.uri)
+            usage_log.info(
+                "client=%s resource=%s outcome=%s ms=%d",
+                _client_name(),
+                uri if _RESOURCE_URI.fullmatch(uri) else "invalid",
+                outcome,
+                round((time.monotonic() - started) * 1000),
+            )
 
     async def on_call_tool(
         self, context: MiddlewareContext, call_next: CallNext
@@ -163,7 +190,10 @@ def configure_usage_log(path: str = "") -> None:
     failed = False
     if path:
         try:
-            handlers.append(logging.FileHandler(path))
+            # Rotated so it cannot fill the disk; private like the traces.
+            handler = RotatingFileHandler(path, maxBytes=10_000_000, backupCount=3)
+            os.chmod(path, 0o600)
+            handlers.append(handler)
         except OSError:
             failed = True
     usage_log.handlers.clear()

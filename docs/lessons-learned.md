@@ -4,6 +4,20 @@
 
 The server is the subject of every test. The models that call it are instruments: a strong model shows what the server makes possible, and a weaker one shows where the server must carry more of the load. So most lessons below end in a server change, not a prompt change.
 
+## November 17, 2026: security review and robustness
+
+**Ask for a review that is not anchored on your own.** A separate review agent read the code without the builder's conclusions. It found what the builder's own tests had missed: tool arguments were traced before validation, so one client could send oversized calls and push every earlier trace out of the store, and nothing limited how many upstream requests a burst of tool calls could start. Both are fixed, each with a test. *Record: [SECURITY.md](../SECURITY.md).*
+
+**Bound what a caller can make the server do, not only what it can ask.** The rate limit counted requests, but one inspection brief starts up to fourteen upstream requests. A limit on upstream requests in flight, eight per process, now caps the work behind any burst.
+
+**An error a caller can trigger must stay clean.** An 8,000-item status list made a request too long to send; the client got a raw message and the log got a long stack trace. Lists, offsets, and resource names are now bounded, and an unsendable request is a clean error with a hint.
+
+**Tell the client what to do and the operator why.** The hint for an unreachable data API named settings and how the API runs. The client now gets "retry once, then say the data could not be reached"; the setup detail goes to the operator's log.
+
+**Test hostile input against the running server, not only in unit tests.** A robustness check sends every tool traversal, injection, and out-of-bounds values, then bursts past the rate limit and the data API's search slots, and inspects every reply for stack traces, addresses, and credentials. It passed 43 of 43 before and after the hardening, and runs against every deployment.
+
+**Least privilege costs little in a container.** Dropping every Linux capability, a read-only filesystem, and memory and process limits needed no code change, and every check still passed.
+
 ## November 17, 2026: the Orchestrate runs, the baseline, and the adversarial set
 
 **A weaker model is the better test of a server.** IBM's agent in watsonx Orchestrate runs GPT-OSS 120B. Across 72 answers (24 questions, three runs) it passed 8 to 11 of 24 per run on the project's scoring, where Claude Opus 5.5 passes 23. Reading every failure against the tool results sorted them by cause. Some were the model's alone: it read 2024 as the peak year from a table that showed 2015, and it rarely gave a report number with its link. Others were the server's, exposed only because this model used the tools differently, and those are the ones worth fixing. *Evidence: `2026-11-17-orchestrate/summary.md`.*

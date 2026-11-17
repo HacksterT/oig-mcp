@@ -166,7 +166,9 @@ def register(mcp: FastMCP) -> None:
         offset: Annotated[
             int,
             Field(
-                ge=0, description="Recommendations to skip; use next_offset to page."
+                ge=0,
+                le=10_000,
+                description="Recommendations to skip; use next_offset to page.",
             ),
         ] = 0,
     ) -> dict[str, Any]:
