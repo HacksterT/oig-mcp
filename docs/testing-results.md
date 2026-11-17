@@ -4,6 +4,8 @@
 
 ## Summary
 
+**Did the changes help?** Yes, where there was room. With only the server changed, the Orchestrate agent (GPT-OSS 120B) rose from 10, 8, and 11 to 12 and 12 of 24 questions, its agreement with the gold reference from about 15 to 19 of 24, and IBM's own score from 14, 14, and 13 to 16 and 18: every round-2 run beat every round-1 run on all three measures, and the gains fell on the questions the fixes targeted. Reliability gains were large: a 45-call burst went from 0 to 29 answered, all 2,059 calls were answered at 40 clients, and 49 of 49 hostile inputs are handled. Claude was at its ceiling, so its reruns show only that nothing broke. Links in GPT-OSS answers did not improve, Llama was not rerun, and the test is not blind. The full assessment is in [testing-debrief.md](testing-debrief.md).
+
 | Platform | Result | Read it with |
 |---|---|---|
 | Claude Opus 5.5, harness | 23 of 24 questions pass every check on every run from November 4 to 17; 22 of 24 after the November 17 result-size changes; on the final server (tag `eval-final-1`), 29 of 30: 23 of 24 plus 6 of 6 adversarial | The same builder wrote the questions and tuned the server after earlier runs. Both misses are scoring calls on correct answers, kept as failures: the Durham list, and "agreed" where the check looks for "concur" (the judge agreed on 24 of 24) |
