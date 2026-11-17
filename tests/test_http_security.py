@@ -7,7 +7,7 @@ from typing import Any
 import httpx
 import pytest
 
-from oig_mcp import utils
+from oig_mcp import failures, upstream
 
 
 @pytest.mark.parametrize(
@@ -30,11 +30,11 @@ from oig_mcp import utils
 )
 def test_validate_relative_path_rejects_destination_override(path: str) -> None:
     with pytest.raises(ValueError, match="relative API path"):
-        utils._validate_relative_path(path)
+        upstream._validate_relative_path(path)
 
 
 def test_validate_relative_path_accepts_expected_api_path() -> None:
-    assert utils._validate_relative_path("datasets/search") == "datasets/search"
+    assert upstream._validate_relative_path("datasets/search") == "datasets/search"
 
 
 class _FakeClient:
@@ -71,10 +71,11 @@ class _FakeClient:
 
 @pytest.mark.asyncio
 async def test_fetch_json_uses_fixed_origin_and_safe_client_policy(monkeypatch) -> None:
-    monkeypatch.setattr(utils.httpx, "AsyncClient", _FakeClient)
+    monkeypatch.setattr(upstream.httpx, "AsyncClient", _FakeClient)
 
-    assert await utils.fetch_json("datasets", params={"q": "health"}) == {"results": []}
-    assert _FakeClient.init_kwargs["base_url"] == utils.API_BASE_URL
+    result = await upstream.fetch_json("datasets", params={"q": "health"})
+    assert result == {"results": []}
+    assert _FakeClient.init_kwargs["base_url"] == upstream.API_BASE_URL
     assert _FakeClient.init_kwargs["follow_redirects"] is False
     assert _FakeClient.init_kwargs["trust_env"] is False
 
@@ -85,10 +86,10 @@ async def test_fetch_json_does_not_send_rejected_path(monkeypatch) -> None:
         def __init__(self, **kwargs: Any) -> None:
             raise AssertionError("HTTP client must not be created for rejected input")
 
-    monkeypatch.setattr(utils.httpx, "AsyncClient", UnexpectedClient)
+    monkeypatch.setattr(upstream.httpx, "AsyncClient", UnexpectedClient)
 
     with pytest.raises(ValueError, match="relative API path"):
-        await utils.fetch_json("http://169.254.169.254/latest/meta-data")
+        await upstream.fetch_json("http://169.254.169.254/latest/meta-data")
 
 
 @pytest.mark.asyncio
@@ -97,10 +98,10 @@ async def test_upstream_error_does_not_expose_sensitive_response(
 ) -> None:
     sensitive = "SSN 123-45-6789 DOB 1940-01-01 token=secret"
     _FakeClient.response = httpx.Response(500, text=sensitive)
-    monkeypatch.setattr(utils.httpx, "AsyncClient", _FakeClient)
+    monkeypatch.setattr(upstream.httpx, "AsyncClient", _FakeClient)
 
-    with pytest.raises(utils.UpstreamServiceError) as captured:
-        await utils.fetch_json("datasets")
+    with pytest.raises(failures.UpstreamServiceError) as captured:
+        await upstream.fetch_json("datasets")
 
     message = str(captured.value)
     assert message == "Upstream service returned status 500."
@@ -112,10 +113,10 @@ async def test_upstream_error_does_not_expose_sensitive_response(
 async def test_invalid_json_is_sanitized(monkeypatch) -> None:
     sensitive = "not-json SSN 123-45-6789"
     _FakeClient.response = httpx.Response(200, content=sensitive)
-    monkeypatch.setattr(utils.httpx, "AsyncClient", _FakeClient)
+    monkeypatch.setattr(upstream.httpx, "AsyncClient", _FakeClient)
 
-    with pytest.raises(utils.UpstreamServiceError) as captured:
-        await utils.fetch_json("datasets")
+    with pytest.raises(failures.UpstreamServiceError) as captured:
+        await upstream.fetch_json("datasets")
 
     assert str(captured.value) == "Upstream service returned invalid JSON."
     assert sensitive not in str(captured.value)

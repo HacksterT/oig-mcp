@@ -13,6 +13,8 @@ from urllib.parse import quote
 from fastmcp import FastMCP
 from pydantic import Field
 
+from oig_mcp.failures import UpstreamServiceError, tool_error
+from oig_mcp.guidance import CITE_TOTALS, FACILITY_VISN_NOTICE, READ_ONLY_TOOL
 from oig_mcp.models import (
     FacilityMatches,
     FacilityProfile,
@@ -21,18 +23,8 @@ from oig_mcp.models import (
     PageOffset,
     output_schema,
 )
-from oig_mcp.utils import (
-    CITE_TOTALS,
-    FACILITY_VISN_NOTICE,
-    READ_ONLY_TOOL,
-    UpstreamServiceError,
-    build_provenance,
-    fetch_object,
-    paginate,
-    report_urls,
-    shorten_responses,
-    tool_error,
-)
+from oig_mcp.results import build_provenance, paginate, report_urls, shorten_responses
+from oig_mcp.upstream import fetch_object
 
 _LOOKUP_LIMIT = 10
 

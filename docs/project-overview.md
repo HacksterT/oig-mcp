@@ -85,7 +85,10 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 |---|---|
 | `src/oig_mcp/app.py` | Creates the FastMCP server, registers everything, chooses the transport |
 | `src/oig_mcp/config.py` | Settings from environment variables; validates the data API URL |
-| `src/oig_mcp/utils.py` | The hardened HTTP client (`fetch_json`, one pooled client per server), Access headers, `ToolFailure` and `tool_error`, provenance helper |
+| `src/oig_mcp/upstream.py` | The hardened HTTP client: `fetch_json` and `fetch_object`, one pooled client per server, the concurrency limit, Access headers |
+| `src/oig_mcp/failures.py` | `UpstreamServiceError`, `ToolFailure`, `tool_error`, and the hints chosen by the data API's status |
+| `src/oig_mcp/guidance.py` | Fixed texts that travel in results (citation, quoted fields, VISN notices) and the read-only tool annotations |
+| `src/oig_mcp/results.py` | Result shaping: `build_provenance`, `paginate`, `shorten_responses`, `report_urls` |
 | `src/oig_mcp/models.py` | Pydantic models: input filters and enums, `Provenance`, and the result models each tool declares as its output schema |
 | `src/oig_mcp/middleware.py` | Usage log, per-token rate limit, traces of tool calls and resource reads, and turning `ToolFailure` into an `isError` result |
 | `src/oig_mcp/tracing.py` | Trace IDs sent to the data API, and trace files when `MCP_TRACE_DIR` is set |
@@ -112,9 +115,9 @@ If Bob changes code, these rules apply. Troy does most development on his Mac, s
 - **One tool per file** in `src/oig_mcp/tools/`, each exposing `register(mcp)` and added to `tools/__init__.py`.
 - **Tool names** use the `vaoig_` prefix and a verb: `vaoig_get_...`, `vaoig_find_...`, `vaoig_search_...`.
 - **Typed inputs** with Pydantic models or enums; read-only annotations on every tool.
-- **Every response** includes a `provenance` block built with `build_provenance()` and a `notices` list, and every record carries a report number and a vaoig.gov URL. Each tool declares its result shape with `output_schema=` from `models.py`.
-- **Failures** raise `ToolFailure` (usually through `tool_error()`), which reaches the client as an `isError` result with `{"error", "hint"}`. "Not found" and "several match" are answers, not failures, and return normally. Never return upstream response bodies, URLs, headers, or stack traces.
-- **Outbound calls** go only through `fetch_json()` with a relative path. Never add another HTTP client, and never accept a URL from a tool argument.
+- **Every response** includes a `provenance` block built with `build_provenance()` (`results.py`) and a `notices` list, and every record carries a report number and a vaoig.gov URL. Each tool declares its result shape with `output_schema=` from `models.py`.
+- **Failures** raise `ToolFailure` (usually through `tool_error()`, both in `failures.py`), which reaches the client as an `isError` result with `{"error", "hint"}`. "Not found" and "several match" are answers, not failures, and return normally. Never return upstream response bodies, URLs, headers, or stack traces.
+- **Outbound calls** go only through `fetch_json()` (`upstream.py`) with a relative path. Never add another HTTP client, and never accept a URL from a tool argument.
 - **Before any commit:** `uv run ruff check .`, `uv run ruff format --check .`, and `uv run pytest tests/` must pass.
 - **Planning** documents are kept outside this repository. Record what was done in a handoff report under `docs/handoff/`.
 
@@ -157,7 +160,7 @@ When Bob receives a secret, confirm receipt without repeating its value anywhere
 ## 9. Rules for the IBM side
 
 - **Never commit secrets.** No API keys, Access tokens, or Orchestrate keys in files, commits, or logs. Use the Orchestrate connection and local `.env` (git-ignored).
-- **Do not change the security boundary** in `utils.py` or `config.py` to make a deployment work. If the server cannot reach the data API, report it; do not add proxies, alternate clients, or URL arguments.
+- **Do not change the security boundary** in `upstream.py` or `config.py` to make a deployment work. If the server cannot reach the data API, report it; do not add proxies, alternate clients, or URL arguments.
 - **Do not point the server at vaoig.gov** or any other origin. The data API is the only source.
 - **Do not delete or rename shared IBM resources** that do not carry Troy's initials.
 - **Do not change the `oig-data-source` side** or its hosting. That is Troy's work on his Mac.

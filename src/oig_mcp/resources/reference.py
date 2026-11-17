@@ -9,7 +9,8 @@ from typing import Any
 
 from fastmcp import FastMCP
 
-from oig_mcp.utils import UpstreamServiceError, fetch_object, hint_for
+from oig_mcp.failures import UpstreamServiceError, hint_for
+from oig_mcp.upstream import fetch_object
 
 _PAGE_SIZE = 100
 # The registry has about 1,500 facilities. A cap and a forward-only offset keep a

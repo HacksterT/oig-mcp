@@ -11,6 +11,8 @@ from typing import Annotated, Any
 from fastmcp import FastMCP
 from pydantic import Field
 
+from oig_mcp.failures import UpstreamServiceError, tool_error
+from oig_mcp.guidance import READ_ONLY_TOOL, VISN_NUMBERING_NOTICE
 from oig_mcp.models import (
     PageLimit,
     PageOffset,
@@ -18,16 +20,8 @@ from oig_mcp.models import (
     SearchResult,
     output_schema,
 )
-from oig_mcp.utils import (
-    READ_ONLY_TOOL,
-    VISN_NUMBERING_NOTICE,
-    UpstreamServiceError,
-    build_provenance,
-    fetch_object,
-    report_urls,
-    shorten_responses,
-    tool_error,
-)
+from oig_mcp.results import build_provenance, report_urls, shorten_responses
+from oig_mcp.upstream import fetch_object
 
 _SHORTLIST_NOTICE = (
     "shortlist_size is the length of a ranked shortlist, capped at 100. It is not "

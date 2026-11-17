@@ -10,7 +10,7 @@ from typing import Any
 import httpx
 import pytest
 
-from oig_mcp import tracing, utils
+from oig_mcp import failures, tracing, upstream
 from oig_mcp.resources import reference
 
 
@@ -63,9 +63,9 @@ async def test_an_invalid_request_becomes_a_clean_error(monkeypatch) -> None:
         def stream(self, *args: Any, **kwargs: Any) -> Any:
             raise httpx.InvalidURL("URL component 'query' too long")
 
-    monkeypatch.setattr(utils, "_shared_client", Broken())
-    with pytest.raises(utils.UpstreamServiceError) as caught:
-        await utils.fetch_json("metrics/counts", {"q": "x"})
+    monkeypatch.setattr(upstream, "_shared_client", Broken())
+    with pytest.raises(failures.UpstreamServiceError) as caught:
+        await upstream.fetch_json("metrics/counts", {"q": "x"})
     assert caught.value.status_code == 400
     assert "too large or malformed" in str(caught.value)
 

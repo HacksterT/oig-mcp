@@ -12,17 +12,11 @@ from typing import Any
 
 from fastmcp import FastMCP
 
+from oig_mcp.failures import ToolFailure, UpstreamServiceError, tool_error
+from oig_mcp.guidance import CITE_TOTALS, READ_ONLY_TOOL
 from oig_mcp.models import DatasetStatus, output_schema
-from oig_mcp.utils import (
-    CITE_TOTALS,
-    READ_ONLY_TOOL,
-    ToolFailure,
-    UpstreamServiceError,
-    build_provenance,
-    fetch_json,
-    fetch_object,
-    tool_error,
-)
+from oig_mcp.results import build_provenance
+from oig_mcp.upstream import fetch_json, fetch_object
 
 _FILTER_FACETS = ("report_type", "topic", "action_office", "state", "visn")
 

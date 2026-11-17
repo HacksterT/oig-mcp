@@ -12,7 +12,7 @@ import httpx
 import pytest
 from fastmcp import FastMCP
 
-from oig_mcp import tracing, utils
+from oig_mcp import tracing, upstream
 from oig_mcp.auth import BearerTokenVerifier
 from oig_mcp.middleware import add_usage_controls
 from oig_mcp.tracing import TraceStore
@@ -37,7 +37,7 @@ def fake_api(
             return real(*args, **kwargs)
         return real(*args, transport=httpx.MockTransport(handler), **kwargs)
 
-    monkeypatch.setattr(utils.httpx, "AsyncClient", client)
+    monkeypatch.setattr(upstream.httpx, "AsyncClient", client)
     return seen
 
 
@@ -47,11 +47,11 @@ async def mcp_client(store: TraceStore | None):
 
     @server.tool
     async def lookup(question: str) -> dict:
-        return {"answer": await utils.fetch_json("meta", params={"q": question})}
+        return {"answer": await upstream.fetch_json("meta", params={"q": question})}
 
     @server.resource("vaoig://taxonomy/{facet}", mime_type="application/json")
     async def taxonomy(facet: str) -> dict:
-        return await utils.fetch_json(f"taxonomy/{facet}")
+        return await upstream.fetch_json(f"taxonomy/{facet}")
 
     add_usage_controls(server, trace_store=store)
     http_app = server.http_app(stateless_http=True, json_response=True)

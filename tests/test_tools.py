@@ -15,7 +15,7 @@ import pytest
 from fastmcp import Client
 from fastmcp.exceptions import ToolError
 
-from oig_mcp import utils
+from oig_mcp import failures, guidance, upstream
 from oig_mcp.app import mcp
 
 AS_OF = {"data_as_of": "2026-11-01"}
@@ -56,7 +56,7 @@ def api(monkeypatch) -> FakeApi:
     fake = FakeApi()
     real_client = httpx.AsyncClient
     monkeypatch.setattr(
-        utils.httpx,
+        upstream.httpx,
         "AsyncClient",
         lambda **kwargs: real_client(
             transport=httpx.MockTransport(lambda r: fake.handle(r)), **kwargs
@@ -203,7 +203,7 @@ async def test_every_tool_reports_an_unreachable_api_as_an_error(
     result = await call_failing(tool, **arguments)
     assert result == {
         "error": "Upstream service returned status 502.",
-        "hint": utils.UNREACHABLE_HINT,
+        "hint": failures.UNREACHABLE_HINT,
     }
 
 
@@ -214,7 +214,7 @@ async def test_rejected_filter_does_not_claim_the_api_is_down(api: FakeApi) -> N
 
 
 @pytest.mark.parametrize(
-    ("status", "hint"), [(429, utils.BUSY_HINT), (503, utils.TIMED_OUT_HINT)]
+    ("status", "hint"), [(429, failures.BUSY_HINT), (503, failures.TIMED_OUT_HINT)]
 )
 async def test_busy_and_timed_out_searches_say_what_to_do(
     api: FakeApi, status: int, hint: str
@@ -558,7 +558,7 @@ async def test_an_empty_result_says_to_check_the_filter_values(
     ("status", "words"), [(500, "failed on this request"), (None, "did not answer")]
 )
 def test_upstream_failures_get_a_hint_for_their_cause(status, words) -> None:
-    from oig_mcp.utils import UpstreamServiceError, tool_error
+    from oig_mcp.failures import UpstreamServiceError, tool_error
 
     failure = tool_error(UpstreamServiceError("failed", status_code=status))
     assert words in failure.body["hint"]
@@ -999,16 +999,19 @@ async def test_calls_share_one_client_that_closes_at_shutdown(
 ) -> None:
     api.routes["search"] = {**AS_OF, **ENVELOPE, "search_mode": "hybrid", "items": []}
     made: list[httpx.AsyncClient] = []
-    factory = utils.httpx.AsyncClient
-    monkeypatch.setattr(
-        utils.httpx, "AsyncClient", lambda **kw: made.append(factory(**kw)) or made[-1]
-    )
+    factory = upstream.httpx.AsyncClient
+
+    def counted(**kw):
+        made.append(factory(**kw))
+        return made[-1]
+
+    monkeypatch.setattr(upstream.httpx, "AsyncClient", counted)
     async with Client(mcp) as client:
         for _ in range(3):
             await client.call_tool("vaoig_search_findings", {"question": "carts"})
     assert len(made) == 1
     assert made[0].is_closed
-    assert utils._shared_client is None
+    assert upstream._shared_client is None
 
 
 # ── Analysis results name their scope (Hermes assessment, 2026-11-10) ───────
@@ -1089,7 +1092,7 @@ async def test_visn_filter_explains_the_two_numberings(api: FakeApi) -> None:
         "vaoig_search_findings", question="carts", filters={"visn": "1"}
     )
     for result in (analysis, search):
-        assert utils.VISN_NUMBERING_NOTICE in result["notices"]
+        assert guidance.VISN_NUMBERING_NOTICE in result["notices"]
 
 
 async def test_state_filter_has_no_visn_numbering_notice(api: FakeApi) -> None:
@@ -1097,7 +1100,7 @@ async def test_state_filter_has_no_visn_numbering_notice(api: FakeApi) -> None:
     result = await call(
         "vaoig_analyze_recommendations", group_by="year", filters={"state": "Texas"}
     )
-    assert utils.VISN_NUMBERING_NOTICE not in result["notices"]
+    assert guidance.VISN_NUMBERING_NOTICE not in result["notices"]
     assert "count others twice" in " ".join(result["notices"])
 
 
@@ -1112,7 +1115,7 @@ async def test_facility_visn_is_flagged_as_possibly_former(api: FakeApi) -> None
     }
     api.routes[f"facilities/{profile['station_number']}"] = profile
     result = await call("vaoig_get_facility_profile", facility="Tampa")
-    assert utils.FACILITY_VISN_NOTICE in result["notices"]
+    assert guidance.FACILITY_VISN_NOTICE in result["notices"]
 
 
 async def test_visn_filter_description_names_the_change() -> None:

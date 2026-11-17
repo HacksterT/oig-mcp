@@ -95,7 +95,7 @@ A separate review agent read the code without the builder's conclusions and prob
 - **Rate limits are per process.** Each token gets 2 requests a second with a burst of 30, counted per MCP request (a client library's own requests count too). Buckets live in memory, so they reset on restart, and two instances allow a client twice the rate.
 - **Orchestrate users share one identity upstream.** In watsonx Orchestrate the server runs over stdio with no token, so there is no per-user limit in the server, and every Orchestrate user reaches the data API with the same credentials. Orchestrate's own access controls decide who can use the agent.
 - **The registration script.** `deploy/ibm/local-mcp-toolkit/register-toolkit.sh` passes the Cloudflare secret, the data API key, and the Orchestrate key as command-line arguments, visible to other users of the same machine while it runs, and exports dependencies without hashes. It runs on a single-user virtual machine; on a shared host, pass the values through files.
-- **Quoted text is marked by field name.** Fields the server passes through from the data API are marked as quoted only if they are on the list in `utils.py`. The data API is the project's own; a third-party upstream would warrant marking every upstream field as quoted by default.
+- **Quoted text is marked by field name.** Fields the server passes through from the data API are marked as quoted only if they are on the list in `guidance.py`. The data API is the project's own; a third-party upstream would warrant marking every upstream field as quoted by default.
 - **Client names reach the data API** in an `X-OIG-Client` header, to link its traces to the server's.
 - **Not load tested** beyond the robustness check's bursts.
 

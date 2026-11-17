@@ -32,7 +32,7 @@ from fastmcp.server.middleware.rate_limiting import (
 from fastmcp.tools import ToolResult
 
 from oig_mcp import tracing
-from oig_mcp.utils import ToolFailure
+from oig_mcp.failures import ToolFailure
 
 # An agent can fan out several searches at once, so allow a burst. A steady two
 # requests a second is still far beyond a person working with an agent.
