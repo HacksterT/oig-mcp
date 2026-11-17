@@ -4,13 +4,13 @@ An MCP server that answers questions across VA Office of Inspector General (OIG)
 
 An entry in the [GSA MCP Server and AI Agent Government Hackathon](https://www.gsa.gov/si-community-of-practice/events-and-training/mcp-server-and-si-agent-government-hackathon), Dataset Access track.
 
+- **Documentation:** [the wiki](docs/README.md) is the full account: mission, architecture, guides, and evaluation. This README is the short overview.
 - **Proposal:** [troymd.com/mcp-hackathon](https://www.troymd.com/mcp-hackathon)
-- **Project overview and deployment:** [docs/project-overview.md](docs/project-overview.md)
-- **Data:** a structured, regularly refreshed copy of what VA OIG publishes at vaoig.gov, built and served by the companion `oig-data-source` repository, which is private. [docs/data-api.md](docs/data-api.md) documents the API this server expects from it. No internal VA systems or nonpublic information are used.
+- **Data:** a structured, regularly refreshed copy of what VA OIG publishes at vaoig.gov, built and served by the companion `oig-data-source` repository, which is private. [Data API](docs/architecture/data-api.md) documents the API this server expects from it. No internal VA systems or nonpublic information are used.
 
 ## Status
 
-The server is built, and it answers from the full data build of November 4, 2026, covering 4,410 reports and 15,649 recommendations. It is deployed in IBM watsonx Orchestrate as a local toolkit. It has been evaluated on two Claude models and an independent agent, and Orchestrate's own agent is being evaluated on the same questions. Testing is described in [docs/evaluation.md](docs/evaluation.md), and every saved score can be checked with one command and no keys: see [Verify it yourself](docs/evaluation.md#verify-it-yourself).
+The server is complete and frozen at tag `eval-final-2`. It answers from the full data build of November 4, 2026, covering 4,410 reports and 15,649 recommendations, is deployed in IBM watsonx Orchestrate as a local toolkit, and is hosted for testers at `https://mcp.troymd.com/mcp`. On 24 questions scored against SQL-computed answers, models pass 2 or 3 without it and 9 to 23 with it; with only the server changed, Orchestrate's agent rose from 10, 8, and 11 to 12 and 12. Every saved score can be recomputed with one command and no keys: [Verify it yourself](docs/evaluation/method.md#verify-it-yourself).
 
 | Capability | Kind |
 |---|---|
@@ -23,7 +23,7 @@ The server is built, and it answers from the full data build of November 4, 2026
 | `vaoig_get_inspection_brief`: one facility's history, common peer findings, peer commitments, and estimated next window | Tool |
 | `vaoig://about`, `vaoig://facilities`, `vaoig://taxonomy/{facet}` | Resources |
 | Inspection readiness checklist, open-recommendation aging brief | Prompts |
-| When a facility name matches several, the user is asked to choose, in clients that support elicitation (both the 2026-07-28 round trip and a live session); other clients get the list of matches | Elicitation |
+| When a facility name matches several, the user is asked to choose, in hosts that support elicitation; other hosts get the matches and an instruction to ask | Elicitation |
 | Suggested values as a person types: facilities (name and station) for the checklist, OIG topics for the aging brief, facet names for the taxonomy | Completions |
 
 ## How it fits together
@@ -38,7 +38,7 @@ vaoig.gov ──> oig-data-source (crawler, SQLite, JSON API in a container behi
                      MCP client (Claude Desktop, Claude Code, watsonx Orchestrate, ...)
 ```
 
-The server calls exactly one origin, configured by the operator, never by a tool argument. The API it expects is documented in [docs/data-api.md](docs/data-api.md), and how the private pipeline builds and checks the data, from crawl to facility responses to reconciliation with OIG, is in [docs/data-pipeline.md](docs/data-pipeline.md).
+The server calls exactly one origin, configured by the operator, never by a tool argument. The API it expects is documented in [Data API](docs/architecture/data-api.md), and how the private pipeline builds and checks the data, from crawl to facility responses to reconciliation with OIG, is in [Data source](docs/architecture/data-source.md).
 
 ## Quick start
 
@@ -74,7 +74,7 @@ MCP_TRANSPORT=streamable-http uv run oig-mcp
 curl http://localhost:8000/health
 ```
 
-The MCP endpoint is `http://localhost:8000/mcp`, and callers send `Authorization: Bearer <MCP_AUTH_TOKEN>`. The server will not start over HTTP without a token, listens on `127.0.0.1` only, and refuses requests whose Host or Origin header names another site. To run the container image instead, use `docker compose up -d --build`. To connect to the hosted copy as a tester, see [docs/testers.md](docs/testers.md).
+The MCP endpoint is `http://localhost:8000/mcp`, and callers send `Authorization: Bearer <MCP_AUTH_TOKEN>`. The server will not start over HTTP without a token, listens on `127.0.0.1` only, and refuses requests whose Host or Origin header names another site. To run the container image instead, use `docker compose up -d --build`. To connect to the hosted copy as a tester, see [Connecting](docs/guides/connecting.md).
 
 ## Configuration
 
@@ -98,22 +98,22 @@ uv run pytest tests/ -v
 uv run ruff check . && uv run ruff format --check .
 ```
 
-Each tool lives in its own file under `src/oig_mcp/tools/` with a `register(mcp)` function, wired up in `tools/__init__.py`. Resources and prompts follow the same pattern. Tool names use the `vaoig_` prefix and take Pydantic-typed inputs with a description and bounds on every parameter. Each tool declares an output schema built from the Pydantic models in `models.py`, so clients see its result shape and check every result against it. Results carry `notices` to pass on, a ready-made `citation` (report number and link) on each report record, and a `provenance` block that says how to cite the result and which fields quote report text. The data API client is in `upstream.py`, failures and their hints in `failures.py`, texts that travel in results in `guidance.py`, and result shaping in `results.py`. The server's `instructions` map each user goal to a tool. FastMCP sends a tool's docstring only up to its `Returns:` section, so anything the model needs to choose or chain tools goes above it.
+Each tool lives in its own file under `src/oig_mcp/tools/` with a `register(mcp)` function; tool names use the `vaoig_` prefix, inputs are Pydantic-typed and bounded, and every tool declares an output schema. FastMCP sends a tool's docstring only up to its `Returns:` section, so anything a model needs to choose or chain tools goes above it. The code map, request flow, and design rules are in [Server design](docs/architecture/server-design.md).
 
 ## Deployment
 
-The same server runs over both MCP transports; only how a client starts it differs.
+The same server runs over both MCP transports; only how a host starts it differs.
 
 | Transport | Used by | How |
 |---|---|---|
-| stdio | watsonx Orchestrate, desktop hosts (Claude Desktop, VS Code, Cursor) | The host starts the server as a local process, with no network endpoint. In Orchestrate it runs as a local toolkit, registered from an IBM-provided VM with IBM Bob, with the data API's settings passed from a connection ([deploy/ibm/local-mcp-toolkit/README.md](deploy/ibm/local-mcp-toolkit/README.md)) |
-| Streamable HTTP | Remote agents, testers, and the evaluation harness, at `https://mcp.troymd.com/mcp` with a bearer token per client ([docs/testers.md](docs/testers.md)) | The `Dockerfile` serves `/mcp`, `/health`, and `/version` on port 8080 |
+| stdio | watsonx Orchestrate, desktop hosts (Claude Desktop, VS Code, Cursor, Grok) | The host starts the server as a local process, with no network endpoint. In Orchestrate it runs as a local toolkit ([deploy/ibm/local-mcp-toolkit/](deploy/ibm/local-mcp-toolkit/README.md)) |
+| Streamable HTTP | Remote agents, testers, and the evaluation harness, at `https://mcp.troymd.com/mcp` with a bearer token per client | The `Dockerfile` serves `/mcp`, `/health`, and `/version` on port 8080, with a session per client so the server can ask the user mid-call on any protocol version |
 
-Over HTTP the server keeps a session per client and streams its replies, so it can ask the user a question mid-call (elicitation) on every protocol version, not only 2026-07-28. A call without a session is still answered, the stateless way, so a bridge that never holds a session ID keeps working; it gets the matches and a next step instead of a question. Idle sessions close after 30 minutes, and a restart drops them; a client that sends an expired session ID gets 404 and starts a new one.
+Setup for each host: [Connecting](docs/guides/connecting.md). Deployments, checks, and operations: [Deployment and operations](docs/guides/deployment.md).
 
 ## Evaluation
 
-An agent answers 24 questions using only these tools, scored against answers computed by SQL from a pinned snapshot, with traces in Arize Phoenix, on Claude, an independent agent, and watsonx Orchestrate. How the testing works is in [docs/testing-architecture.md](docs/testing-architecture.md), and what it found is in [docs/testing-results.md](docs/testing-results.md). To run it, see [eval/README.md](eval/README.md).
+An agent answers 24 questions, plus 6 adversarial ones, using only these tools, scored against answers computed by SQL from a pinned snapshot, on Claude, Llama 3.3 70B on watsonx.ai, DeepSeek through Hermes Agent, and watsonx Orchestrate's own agent. How the testing works: [Method](docs/evaluation/method.md). What it found: [Results](docs/evaluation/results.md). Whether the changes helped: [Debrief](docs/evaluation/debrief.md). To run it: [eval/README.md](eval/README.md).
 
 ## Security
 

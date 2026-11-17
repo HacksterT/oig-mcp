@@ -1,6 +1,8 @@
-# Testing debrief: did the changes help?
+[Wiki](../../README.md) › Evaluation › Debrief
 
-*A closing assessment of the evaluation, written November 17, 2026, after the final rounds. Every figure comes from [`eval/results/`](../eval/results/) and can be recomputed with [`eval/verify_scores.py`](../eval/verify_scores.py). Method: [testing-architecture.md](testing-architecture.md). Full results: [testing-results.md](testing-results.md).*
+# Debrief: did the changes help?
+
+*A closing assessment of the evaluation, written November 17, 2026, after the final rounds. Every figure comes from [`eval/results/`](../../eval/results/) and can be recomputed with [`eval/verify_scores.py`](../../eval/verify_scores.py). Method: [Method](method.md). Full results: [Results](results.md).*
 
 ## Bottom line
 
@@ -58,3 +60,7 @@ Three things make the improvement credible rather than chance:
 - **A separate folder for every test round,** from the start. A shared folder caused a wrong first score for round 2, caught because it matched round 1 exactly.
 - **A real third-party client before calling a server change done.** The HTTP session regression appeared within an hour of every automated check passing.
 - **A small held-out question set, written before any fixes.** It is the one addition that would turn "improved on the questions we fixed" into "improved."
+
+---
+
+← [Results](../evaluation/results.md) · [Wiki home](../../README.md)

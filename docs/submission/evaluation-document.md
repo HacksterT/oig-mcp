@@ -1,6 +1,6 @@
 # Evaluation
 
-*GSA MCP and AI Agent Hackathon. This document follows the structure of the hackathon's sample evaluation document. The full method is in [testing-architecture.md](testing-architecture.md), every score with its limits in [testing-results.md](testing-results.md), and what each test taught in [lessons-learned.md](lessons-learned.md).*
+*GSA MCP and AI Agent Hackathon. This document follows the structure of the hackathon's sample evaluation document. The full method is in [Evaluation method](../evaluation/method.md), every score with its limits in [Evaluation results](../evaluation/results.md), and what each test taught in [the improvement journey](../evaluation/results.md#the-improvement-journey).*
 
 | | |
 |---|---|
@@ -11,7 +11,7 @@
 | **Datasets** | 24 gold questions, plus 6 adversarial questions, with answers computed by SQL from a frozen data snapshot (`2bb10bd321e08dfc`, data as of November 4, 2026) |
 | **Dates** | November 4 to 17, 2026 |
 
-**Did the changes help?** Yes, where there was room. With only the server changed, the Orchestrate agent (GPT-OSS 120B) rose from 10, 8, and 11 to 12 and 12 of 24 questions, its agreement with the gold reference from about 15 to 19 of 24, and IBM's own score from 14, 14, and 13 to 16 and 18: every round-2 run beat every round-1 run on all three measures, and the gains fell on the questions the fixes targeted. Reliability gains were large: a 45-call burst went from 0 to 29 answered, all 2,059 calls were answered at 40 clients, and 49 of 49 hostile inputs are handled. Claude was at its ceiling, so its reruns show only that nothing broke. Links in GPT-OSS answers did not improve, Llama was not rerun, and the test is not blind. The full assessment is in [testing-debrief.md](testing-debrief.md).
+**Did the changes help?** Yes, where there was room. With only the server changed, the Orchestrate agent (GPT-OSS 120B) rose from 10, 8, and 11 to 12 and 12 of 24 questions, its agreement with the gold reference from about 15 to 19 of 24, and IBM's own score from 14, 14, and 13 to 16 and 18: every round-2 run beat every round-1 run on all three measures, and the gains fell on the questions the fixes targeted. Reliability gains were large: a 45-call burst went from 0 to 29 answered, all 2,059 calls were answered at 40 clients, and 49 of 49 hostile inputs are handled. Claude was at its ceiling, so its reruns show only that nothing broke. Links in GPT-OSS answers did not improve, Llama was not rerun, and the test is not blind. The full assessment is in [Debrief](../evaluation/debrief.md).
 
 ## 1. Overview and objectives
 
@@ -47,7 +47,7 @@ The seven tools are built around what a user is trying to do, not around the dat
 
 ### Framework and reproducibility
 
-The harness ([`eval/phoenix/`](../eval/phoenix/)) gives the agent no project-specific prompt: its system prompt is the server's own `instructions`, as any MCP host receives them, and it connects over authenticated HTTP. Every run is recorded in Arize Phoenix with each tool call, its arguments, and its latency, and kept in [`eval/results/`](../eval/results/). The data is frozen, and the harness refuses to run if the server's data differs from the pinned snapshot. One command runs a set:
+The harness ([`eval/phoenix/`](../../eval/phoenix/)) gives the agent no project-specific prompt: its system prompt is the server's own `instructions`, as any MCP host receives them, and it connects over authenticated HTTP. Every run is recorded in Arize Phoenix with each tool call, its arguments, and its latency, and kept in [`eval/results/`](../../eval/results/). The data is frozen, and the harness refuses to run if the server's data differs from the pinned snapshot. One command runs a set:
 
 ```bash
 uv run --group eval python eval/phoenix/run_experiment.py --model claude-opus-5-5
@@ -56,13 +56,13 @@ uv run --group eval python eval/phoenix/run_experiment.py --no-tools          # 
 uv run --group eval python eval/phoenix/run_experiment.py --gold adversarial  # adversarial set
 ```
 
-In watsonx Orchestrate, the server runs as a local toolkit over stdio. The agent has the seven tools and one instruction: "Answer only from what the OIG tools return. Do not use general knowledge or information outside the tool results." IBM's Agent Development Kit runs test files generated from the same gold set ([`eval/orchestrate/tests/`](../eval/orchestrate/tests/)).
+In watsonx Orchestrate, the server runs as a local toolkit over stdio. The agent has the seven tools and one instruction: "Answer only from what the OIG tools return. Do not use general knowledge or information outside the tool results." IBM's Agent Development Kit runs test files generated from the same gold set ([`eval/orchestrate/tests/`](../../eval/orchestrate/tests/)).
 
 ### Verify it yourself
 
 Three levels, from no access at all to a full rebuild. Each command below was run from a clean clone on November 17, with no `.env`.
 
-**With no access.** Everything scored is in the repository: the gold questions and their SQL-computed answers ([`eval/gold/`](../eval/gold/), built by [`build_gold.py`](../eval/gold/build_gold.py)), and every run's answers, tool calls, and scores ([`eval/results/`](../eval/results/)). One command recomputes every code check (facts, report lists, tool choice, citations, data date) from the saved answers and confirms each question's pass or fail. It needs no key, server, or network:
+**With no access.** Everything scored is in the repository: the gold questions and their SQL-computed answers ([`eval/gold/`](../../eval/gold/), built by [`build_gold.py`](../../eval/gold/build_gold.py)), and every run's answers, tool calls, and scores ([`eval/results/`](../../eval/results/)). One command recomputes every code check (facts, report lists, tool choice, citations, data date) from the saved answers and confirms each question's pass or fail. It needs no key, server, or network:
 
 ```bash
 git clone https://github.com/HacksterT/oig-mcp && cd oig-mcp
@@ -72,7 +72,7 @@ uv run --group eval python eval/verify_scores.py
 
 On November 17 it reproduced every saved result: all 18 runs, including the three Orchestrate runs, match on every question. The judge's verdicts are kept as saved. To judge them again, `run_experiment.py --rescore <folder>` uses the Claude judge (an Anthropic API key) and `rejudge_watsonx.py <folder>` uses the watsonx.ai judge (a watsonx.ai key). Both rewrite the folder, so run them on a copy.
 
-**With a tester token.** The hosted server answers at `https://mcp.troymd.com/mcp` with a bearer token; a judge can ask Troy Sybert for one through the hackathon. [testers.md](testers.md) shows how to connect a client. The same token runs the deployment and robustness checks against it, and, with an Anthropic API key, the full question set:
+**With a tester token.** The hosted server answers at `https://mcp.troymd.com/mcp` with a bearer token; a judge can ask Troy Sybert for one through the hackathon. [Connecting](../guides/connecting.md) shows how to connect a client. The same token runs the deployment and robustness checks against it, and, with an Anthropic API key, the full question set:
 
 ```bash
 export MCP_AUTH_TOKEN=...   # the token you were given
@@ -83,11 +83,11 @@ uv run --group eval python eval/phoenix/run_experiment.py --url https://mcp.troy
 
 The deployment check runs 15 of its 22 checks with a token; the other 7 call the data API directly and need its private settings, so they are reported as skipped. The harness first checks that the server's data matches the snapshot the gold answers were computed from, and stops if it does not. The robustness check deliberately bursts past the rate limit, so run it once, not in a loop.
 
-**A full rebuild.** Building the data from vaoig.gov needs the data pipeline and its API (`oig-data-source`), which run on the builder's machine behind Cloudflare Access and are kept private: the crawler's settings and the API's address are operational detail, not part of the server. Everything the server expects from that API is specified in [data-api.md](data-api.md), so another implementation of it would work with this server unchanged.
+**A full rebuild.** Building the data from vaoig.gov needs the data pipeline and its API (`oig-data-source`), which run on the builder's machine behind Cloudflare Access and are kept private: the crawler's settings and the API's address are operational detail, not part of the server. Everything the server expects from that API is specified in [Data API](../architecture/data-api.md), so another implementation of it would work with this server unchanged.
 
 ### Golden dataset
 
-The gold answers do not come from the API being tested: [`build_gold.py`](../eval/gold/build_gold.py) computes them by SQL against the frozen snapshot, opened read-only. The questions span the kinds of work an oversight analyst does:
+The gold answers do not come from the API being tested: [`build_gold.py`](../../eval/gold/build_gold.py) computes them by SQL against the frozen snapshot, opened read-only. The questions span the kinds of work an oversight analyst does:
 
 | Kind | Questions | Examples |
 |---|---|---|
@@ -166,13 +166,13 @@ Each failure was read against the tool results and the data API's traces and sor
 
 The model and its settings were the same before and after; only the server changed. On the 24 questions, Llama's total did not move: two questions it had failed now pass, two it had passed now fail, and the Durham question still overflows its 128K-token context. The traces show why: Llama called the facility profile eight times in a row with the same arguments, about 72,000 characters each. After the result-size changes (F06-S22) the same eight calls come to about 82,000 tokens; Llama has not been rerun since. These retests are not blind: the adversarial questions and the fixes were written the same night.
 
-The whole sequence, round by round, with what each found, changed, and measured, is in [testing-results.md](testing-results.md#the-improvement-journey).
+The whole sequence, round by round, with what each found, changed, and measured, is in [Evaluation results](../evaluation/results.md#the-improvement-journey).
 
 ### Operational metrics
 
 Measured through the server against the hosted data API: median tool latency from about 0.13 seconds (analysis) to about 2 seconds (the inspection brief, which runs up to ten searches). In Orchestrate the agent's average response time was 5.9 to 7.6 seconds per turn, most of it the model. Of 72 Orchestrate conversations, 4 met a platform error; every call that reached the data API succeeded. A full Claude Opus 5.5 run of 24 questions costs about $3 at list prices, including the judge.
 
-**Load.** A [load test](../eval/results/2026-11-17-load-test/summary.md) through the public URL ramped from 1 to 40 concurrent clients, each with its own token, repeating tool calls recorded from the Claude runs. All 2,059 calls were answered, with no errors, refusals, or unclean replies, and the data API answered all 5,941 of its requests. The median call took 0.33 seconds with one client and 1.8 seconds with 40, and the inspection brief 5.4. Inside the data API the median request stayed at 7 to 13 milliseconds, so the added time is the server's queue ahead of it, most likely its limit of eight upstream requests at once.
+**Load.** A [load test](../../eval/results/2026-11-17-load-test/summary.md) through the public URL ramped from 1 to 40 concurrent clients, each with its own token, repeating tool calls recorded from the Claude runs. All 2,059 calls were answered, with no errors, refusals, or unclean replies, and the data API answered all 5,941 of its requests. The median call took 0.33 seconds with one client and 1.8 seconds with 40, and the inspection brief 5.4. Inside the data API the median request stayed at 7 to 13 milliseconds, so the added time is the server's queue ahead of it, most likely its limit of eight upstream requests at once.
 
 ### Error handling
 
@@ -184,12 +184,12 @@ IBM's guide for MCP tools in watsonx Orchestrate, "[MCP tools & integration cons
 
 | Anti-pattern | IBM's fix | This server | Evidence |
 |---|---|---|---|
-| ★ The glorified API wrapper | Business capability tools | Mostly avoided. The tools answer goals, such as an inspection brief, a facility profile, and recurring findings, and compose the data API's generic endpoints behind them. `vaoig_get_report` and `vaoig_search_findings` sit closer to single endpoints. | The brief makes up to 14 data API calls per call ([`inspection_brief.py`](../src/oig_mcp/tools/inspection_brief.py)); [`data-api.md`](data-api.md) treats an endpoint that mirrors one tool as a design smell |
+| ★ The glorified API wrapper | Business capability tools | Mostly avoided. The tools answer goals, such as an inspection brief, a facility profile, and recurring findings, and compose the data API's generic endpoints behind them. `vaoig_get_report` and `vaoig_search_findings` sit closer to single endpoints. | The brief makes up to 14 data API calls per call ([`inspection_brief.py`](../../src/oig_mcp/tools/inspection_brief.py)); [Data API](../architecture/data-api.md) treats an endpoint that mirrors one tool as a design smell |
 | Raw schema leakage | Business-level abstractions | Partial. Results add business fields (citations, a peak year, estimates labeled as estimates, quoted fields, notices), but records otherwise pass through with the data API's field names, such as `rec_id` and `node_id`. | `with_citations`, `peak_year`, and the `*_basis` fields; the profile drops internal fields (#84) |
-| Wishful delegation | Encode complexity in tools | Mostly. Done for the steps that failed in testing: facility resolution with retries, office names turned into abbreviations, the peak year named, peer actions gathered for the brief, and a choice of facility put to the user. Some reasoning is still left to the model, such as filtering a facility's reports by type. | `test_office_filter_sends_a_known_office_as_its_abbreviation`, `test_year_analysis_names_the_peak_year`, [`facility_choice.py`](../src/oig_mcp/facility_choice.py); GPT-OSS 120B passed 8 to 11 of 24 in the first Orchestrate round, before the latest changes |
+| Wishful delegation | Encode complexity in tools | Mostly. Done for the steps that failed in testing: facility resolution with retries, office names turned into abbreviations, the peak year named, peer actions gathered for the brief, and a choice of facility put to the user. Some reasoning is still left to the model, such as filtering a facility's reports by type. | `test_office_filter_sends_a_known_office_as_its_abbreviation`, `test_year_analysis_names_the_peak_year`, [`facility_choice.py`](../../src/oig_mcp/facility_choice.py); GPT-OSS 120B passed 8 to 11 of 24 in the first Orchestrate round, before the latest changes |
 | Anything-in, garbage-out | Strong contracts | Done. Every argument is typed and bounded, unknown filter names are refused (`extra="forbid"`), facets come from a fixed list, and an empty result says to check the filter values. | `test_unknown_filter_is_rejected_not_ignored`, `test_unknown_facet_is_refused_without_a_request`; 48 robustness checks |
 | The god-mode tool | Constrained capabilities | Done. Seven read-only tools, no URL arguments, one fixed upstream origin, and a per-client rate limit. | `readOnlyHint` on every tool; `test_fetch_json_uses_fixed_origin_and_safe_client_policy` |
-| ★ The data firehose | Bounded outputs | Partial, and the main exposure found in testing. Every list is paged and capped, search returns a shortlist, and long narratives are shortened. Llama 3.3 70B still overflowed its context on one question, by calling the facility profile eight times. A 100-item profile page went from 70,126 to 40,906 characters; Llama has not been rerun since. | [Result size](testing-results.md#result-size); [`eval/payload_sizes.py`](../eval/payload_sizes.py) |
+| ★ The data firehose | Bounded outputs | Partial, and the main exposure found in testing. Every list is paged and capped, search returns a shortlist, and long narratives are shortened. Llama 3.3 70B still overflowed its context on one question, by calling the facility profile eight times. A 100-item profile page went from 70,126 to 40,906 characters; Llama has not been rerun since. | [Result size](../evaluation/results.md#result-size); [`eval/payload_sizes.py`](../../eval/payload_sizes.py) |
 | The trusted output trap | Sanitize outputs | Partial, by design. Report text is quoted verbatim, because it is the evidence, so it is marked rather than rewritten: every result names its quoted fields and says never to follow instructions in them. Server notices use only integers from upstream. | `test_tools_that_return_report_text_say_it_is_quoted`; the injected-text adversarial question passed for Claude Opus 5.5 throughout, and for Llama 3.3 70B after the server changes |
 | ★ The "kitchen sink" server | Contextual discovery | Avoided. Seven tools; the server's instructions map each user goal to one tool; descriptions say when to use a different tool; filter values come from `vaoig_get_dataset_status`. | `test_routing_hints_reach_the_client`; tool choice 20 of 20 (Claude) and 19 of 20 (Llama) |
 | The useless error | Structured errors | Partial. Failures are MCP error results with `{error, hint}`: no stack trace or internal detail, and a hint chosen by the cause. They carry no machine-readable `error_code` or `field`, as IBM's format suggests. | `test_upstream_failures_get_a_hint_for_their_cause`; robustness checks inspect every reply for internal detail |
@@ -211,7 +211,7 @@ IBM's guide also describes two patterns: tools that are business capabilities, e
 
 ## 4. Security considerations
 
-The full design, every check with its latest result, the November 17 review, and the accepted risks are in [SECURITY.md](../SECURITY.md).
+The full design, every check with its latest result, the November 17 review, and the accepted risks are in [SECURITY.md](../../SECURITY.md).
 
 **Data classification.** The data is public: OIG's published reports and recommendations at vaoig.gov, with no CUI. Inspection findings are addressed to roles and offices; 77 of 15,649 recommendations, mostly from administrative investigations, name an official as OIG published them. The server never guesses who was responsible and names a person only where a quoted finding does. Questions sent during the hackathon are recorded in traces, users are told so, and they are asked not to enter patient or nonpublic information.
 
@@ -246,4 +246,4 @@ One builder wrote the questions and the server, and some fixes followed failures
 - Read failures against the server's request traces before deciding who is at fault.
 - Use two judges from different model families, and review the answers where they disagree.
 
-The full record, entry by entry, is in [lessons-learned.md](lessons-learned.md).
+The full record, entry by entry, is in [the improvement journey](../evaluation/results.md#the-improvement-journey).

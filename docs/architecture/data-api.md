@@ -1,6 +1,8 @@
+[Wiki](../../README.md) › Architecture › Data API
+
 # OIG Data API contract
 
-This server reads all of its data from one HTTP API, built and hosted by the `oig-data-source` repository (a Python API over a SQLite database, run in a container on Troy's Mac and exposed through Cloudflare Tunnel with Access service tokens). This file records what the MCP server expects from that API. The endpoints below are implemented in `oig-data-source`, not here; how that pipeline builds and checks the data is in [data-pipeline.md](data-pipeline.md).
+This server reads all of its data from one HTTP API, built and hosted by the `oig-data-source` repository (a Python API over a SQLite database, run in a container on Troy's Mac and exposed through Cloudflare Tunnel with Access service tokens). This file records what the MCP server expects from that API. The endpoints below are implemented in `oig-data-source`, not here; how that pipeline builds and checks the data is in [Data source](data-source.md).
 
 The API is deliberately generic: filter, paginate, and aggregate over reports, recommendations, facilities, clusters, and facility responses. The MCP tools compose these calls into goal-level answers. An endpoint that mirrors one tool is a sign that logic has leaked from the server into the API.
 
@@ -102,3 +104,7 @@ How the tools handle these: tool arguments that become `q` are capped below 512 
 **`GET metrics/counts`.** Takes the same filters. Items are years, with `year`, `report_count`, `recommendation_count`, `open_count`, `closed_implemented_count`, `closed_not_implemented_count`, and `median_days_to_closure`. `report_count` counts every matching report when only report filters are set, including reports with no recommendations; with `q`, `status`, `action_office`, or `node_id` it counts reports with a matching recommendation.
 
 **`GET taxonomy/{facet}`.** Facets are `topic`, `state`, `visn`, `district`, `mmc`, `author_office`, `special_project`, `action_office`, and `report_type`. The response uses the list envelope plus `facet`, with every value on one page. Items have `value` and `report_count`. Report facets add `value_id`. `action_office` adds `abbreviation`, `recommendation_count`, and `open_count`. `report_type` adds `label`. An unknown facet returns 404.
+
+---
+
+← [Data source](../architecture/data-source.md) · [Wiki home](../../README.md) · [Server design](../architecture/server-design.md) →
