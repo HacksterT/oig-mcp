@@ -19,7 +19,9 @@ Questions to ask, most important first in each group. Each line says why it matt
 
 ## For IBM
 
-1. **Do local (stdio) MCP toolkits in Orchestrate support MCP client features?** In particular elicitation (the server asks the user to choose), progress notifications, argument completions, and resource links in tool results. Answers decide whether we build elicitation for ambiguous facility names this week.
+1. **Do local (stdio) MCP toolkits in Orchestrate support MCP client features?** In particular elicitation (the server asks the user to choose), progress notifications, argument completions, and resource links in tool results. Your docs say local toolkits suit "MCP protocol features (resources, prompts, etc.)", but we found nothing on elicitation from a toolkit, only for Orchestrate's own flows. Answers decide what Orchestrate users see when a facility name is ambiguous.
+   - **Does Orchestrate speak MCP protocol version 2026-07-28?** That version has the multi-round-trip `input_required` result (SEP-2322). If not, which version does it negotiate?
+   - **Does process-per-invocation mean a new server process for every tool call?** If so, any state or connection pooling in the server does not carry across calls.
 2. **Does Orchestrate use an MCP server's resources and prompts, or only its tools?** The server also offers three resources and two workflow prompts.
 3. **Once a toolkit is imported, can any agent in the instance use its tools, and can judges be given access to see the deployed agent?** It decides how the Orchestrate deployment is shown to judges.
 4. **Can a toolkit be updated in place?** Re-importing ours removed its tools from the agent, and they had to be added back by hand each time.
