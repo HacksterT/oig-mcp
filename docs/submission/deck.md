@@ -252,9 +252,11 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 - The same questions with no server.
 - Five agent models: Claude Opus 5.5 and Sonnet 5.5, Llama 3.3 70B, GPT-OSS 120B in Orchestrate, and DeepSeek V4 Pro.
 
-**Visual:** A pipeline from the gold set (built by SQL) to the agent with only the server's tools, then code checks, two judges, and results in Phoenix.
+**Visual:** A pipeline from the gold set (built by SQL) to the agent with only the server's tools, then code checks, the judges, and results in Phoenix. Beside it, one traced question in Phoenix: Llama 3.3 70B on watsonx.ai lists the server's tools, calls `vaoig_analyze_recommendations`, and answers correctly.
 
-**Speaker notes:** The weaker models are deliberate. A strong model shows what the server makes possible, and a weaker one shows where the server must carry more of the load.
+![One question traced in Phoenix: the agent on watsonx.ai, the MCP tool call, and the answer](images/phoenix-trace.png)
+
+**Speaker notes:** The judging follows IBM's `mcp-eval-wxai` skill: `arize-phoenix-evals` judges on Llama 3.3 70B on watsonx.ai, for correctness, scope, tool selection, tool arguments, and tool response handling, on top of the code checks against SQL-computed answers. The weaker models are deliberate. A strong model shows what the server makes possible, and a weaker one shows where the server must carry more of the load.
 
 ---
 
@@ -286,7 +288,9 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 **Limits:** One builder wrote the questions and the server, and fixes followed failures on these same questions. Twenty-four questions are a check, not a statistical estimate. The load test was one run on one Mac, to 40 clients, not to failure.
 
-**Visual:** A screenshot of the Phoenix experiments chart for the 24-question dataset, showing score and average latency across runs, as the sample deck does. Beside it, a bar chart of no tools against with the server for both models.
+**Visual:** Phoenix's experiments for the gold dataset, with the five evaluators' scores across runs, as the sample deck does. Beside it, a bar chart of no tools against with the server for both models.
+
+![Phoenix experiments on the gold dataset, with the five watsonx.ai evaluators across runs](images/phoenix-experiments.png)
 
 **Speaker notes:** The one Opus failure is the Durham list question. It listed all eight inspection reports correctly, but it also named the excluded reports under a "left out" heading, and the scorer counted those as extras. The scorer was not changed after seeing the result, so it stays a failure.
 
@@ -318,9 +322,11 @@ Each failure was read against the tool results and the data service's request tr
 - **Claude Opus 5.5 regression checks:** 23 of 24 after the scope changes, every measure unchanged; 22 of 24 after the result-size changes, with the judge agreeing on all 24; 29 of 30 on the final server.
 - **Beyond the pass rate:** the Durham page 42 percent smaller; a burst of 45 calls answered 29 instead of 0; 2,059 of 2,059 calls answered at 40 clients; two real hosts that guessed a facility now ask.
 
-**Visual:** The cause table, with before-and-after bars.
+**Visual:** The cause table, with before-and-after bars. Beside it, Phoenix comparing the same question in Orchestrate's round 1 and round 2, each judge's label shown per run.
 
-**Speaker notes:** The traces settled who was at fault. The first report blamed the server for Orchestrate's own connection errors, and the traces showed every server call had succeeded. These retests are not blind: the adversarial questions and the fixes were written the same night.
+![Phoenix comparing Orchestrate round 1 and round 2 on one question, with each evaluator's verdict](images/phoenix-compare-orchestrate.png)
+
+**Speaker notes:** Phoenix's correctness judge on watsonx.ai, independent of our own judge, found Orchestrate's answers correct on 16, 16, and 15 of 24 before the fixes and 20 and 20 after; its tool selection and argument judges showed no change, so the gain came from what the agent did with results. The traces settled who was at fault. The first report blamed the server for Orchestrate's own connection errors, and the traces showed every server call had succeeded. These retests are not blind: the adversarial questions and the fixes were written the same night.
 
 ---
 
