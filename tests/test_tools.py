@@ -520,11 +520,75 @@ async def test_facility_lookup_retries_without_generic_words(api: FakeApi) -> No
     # OIG names no facility "New York VA", so the exact text matches nothing.
     two = _lookup(_facility("630"), _facility("632"))
     api.routes["facilities"] = lambda r: (
-        _lookup() if r.url.params["q"] == "New York VA" else two
+        _lookup() if r.url.params.get("q") == "New York VA" else two
     )
     result = await call("vaoig_get_facility_profile", facility="New York VA")
-    assert [r.url.params["q"] for r in api.requests] == ["New York VA", "New York"]
+    asked = [dict(r.url.params) for r in api.requests]
+    assert [a.get("q") or a.get("state") for a in asked] == [
+        "New York VA",
+        "New York",
+        "New York",  # the state, looked up as one
+    ]
+    assert "state" in asked[2]
     assert [m["station_number"] for m in result["matches"]] == ["630", "632"]
+    assert result["next_step"].startswith('2 facilities match "New York VA". Do not')
+
+
+def _by_query(answers: dict[str, dict[str, Any]]):
+    """A facilities route that answers by its q or state parameter."""
+    return lambda r: answers.get(
+        r.url.params.get("q") or f"state={r.url.params.get('state')}", _lookup()
+    )
+
+
+async def test_one_match_inside_a_state_name_is_not_taken_as_certain(
+    api: FakeApi,
+) -> None:
+    # "California VA" is inside an alias of VA Central California, but the user
+    # most likely means the state, which has other facilities.
+    central, palo_alto = _facility("570"), _facility("640")
+    api.routes["facilities"] = _by_query(
+        {
+            "California VA": _lookup(central),
+            "state=California": _lookup(palo_alto, central),
+        }
+    )
+    result = await call("vaoig_get_facility_profile", facility="California VA")
+    assert [m["station_number"] for m in result["matches"]] == ["640", "570"]
+    assert "facilities/570" not in [r.url.path for r in api.requests]
+
+
+async def test_one_match_for_a_city_in_two_states_is_not_taken_as_certain(
+    api: FakeApi,
+) -> None:
+    carolina, missouri = _facility("544"), _facility("589A4")
+    api.routes["facilities"] = _by_query(
+        {"Columbia VA": _lookup(carolina), "Columbia": _lookup(carolina, missouri)}
+    )
+    result = await call("vaoig_get_facility_profile", facility="Columbia VA")
+    assert [m["station_number"] for m in result["matches"]] == ["544", "589A4"]
+
+
+async def test_an_exact_name_opens_without_widening(api: FakeApi) -> None:
+    carolina = {**_facility("544"), "aliases": ["Columbia VA Health Care System"]}
+    api.routes["facilities"] = _lookup(carolina)
+    api.routes["facilities/544"] = _profile()
+    await call("vaoig_get_facility_profile", facility="columbia va health care system")
+    assert [r.url.path for r in api.requests] == [
+        "/v1/facilities",
+        "/v1/facilities/544",
+    ]
+
+
+async def test_matches_beyond_those_shown_ask_for_a_city_or_station(
+    api: FakeApi,
+) -> None:
+    shown = [_facility(str(n)) for n in range(500, 510)]
+    api.routes["facilities"] = {**_lookup(*shown), "total": 101}
+    result = await call("vaoig_get_facility_profile", facility="Medical Center")
+    assert result["total_matches"] == 101
+    assert "of 101 in all" in result["next_step"]
+    assert "its city or station number" in result["next_step"]
 
 
 async def test_facility_lookup_does_not_retry_a_plain_name(api: FakeApi) -> None:

@@ -69,7 +69,9 @@ vaoig_find_systemic_clusters.
 - One named facility or VA location (its findings, counts, open items, \
 reports): vaoig_get_facility_profile. To prepare that facility \
 for an inspection, use vaoig_get_inspection_brief instead; it adds the most \
-common peer findings and what peers did.
+common peer findings and what peers did. A city, a state, or a common word can \
+match several facilities ("New York VA" matches about ten): when a result lists \
+matches, never choose one; ask the user which they mean.
 
 Scope: this server reports OIG's oversight records. It gives no medical, \
 benefits, or legal advice; if someone describes an emergency, tell them to call \

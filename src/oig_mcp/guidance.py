@@ -59,3 +59,23 @@ READ_ONLY_TOOL = {
     "idempotentHint": True,
     "openWorldHint": True,
 }
+
+
+# When a facility name matches several facilities. Models tend to resolve the
+# ambiguity themselves: "the New York VA" reads as the Manhattan VA, and the
+# match with the most reports looks like the safe pick. Findings credited to the
+# wrong facility are a wrong answer, so the result says not to choose, and why.
+def choose_facility_step(facility: str, shown: int, total: int) -> str:
+    """What to do with the matches for `facility`: ask the user, never pick."""
+    count = f'{shown} facilities match "{facility}"'
+    if total > shown:
+        count += (
+            f", of {total} in all: if the one the user means is not here, ask for "
+            "its city or station number"
+        )
+    return (
+        f"{count}. Do not choose one for the user, not even the largest or best "
+        "known: findings from the wrong facility would be credited to the one they "
+        "meant. List these facilities with their station numbers, ask which one "
+        "they mean, and call again with that station number."
+    )

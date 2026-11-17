@@ -429,11 +429,11 @@ class Report(_Record):
 
 
 class FacilityMatches(BaseModel):
-    """Several facilities matched. Ask the user which one is meant."""
+    """Several facilities matched. Ask the user which one is meant; never choose."""
 
     matches: list[dict[str, Any]]
     total_matches: int | None
-    hint: str
+    next_step: str = Field(description="What to do: ask the user, then call again.")
     provenance: Provenance
 
 

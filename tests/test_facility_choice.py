@@ -107,9 +107,9 @@ async def test_a_client_that_cannot_ask_gets_the_matches(
 ) -> None:
     async with Client(mcp, mode=mode) as client:
         result = await client.call_tool(PROFILE_TOOL, {"facility": "Du"})
-    assert result.structured_content["hint"] == (
-        "Several facilities matched. Ask which one is meant."
-    )
+    step = result.structured_content["next_step"]
+    assert step.startswith('2 facilities match "Du". Do not choose one')
+    assert "call again with that station number" in step
 
 
 async def test_one_match_asks_nothing(api: FakeApi) -> None:
