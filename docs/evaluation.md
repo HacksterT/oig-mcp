@@ -56,6 +56,33 @@ uv run --group eval python eval/phoenix/run_experiment.py --gold adversarial  # 
 
 In watsonx Orchestrate, the server runs as a local toolkit over stdio. The agent has the seven tools and one instruction: "Answer only from what the OIG tools return. Do not use general knowledge or information outside the tool results." IBM's Agent Development Kit runs test files generated from the same gold set ([`eval/orchestrate/tests/`](../eval/orchestrate/tests/)).
 
+### Verify it yourself
+
+Three levels, from no access at all to a full rebuild. Each command below was run from a clean clone on November 17, with no `.env`.
+
+**With no access.** Everything scored is in the repository: the gold questions and their SQL-computed answers ([`eval/gold/`](../eval/gold/), built by [`build_gold.py`](../eval/gold/build_gold.py)), and every run's answers, tool calls, and scores ([`eval/results/`](../eval/results/)). One command recomputes every code check (facts, report lists, tool choice, citations, data date) from the saved answers and confirms each question's pass or fail. It needs no key, server, or network:
+
+```bash
+git clone https://github.com/HacksterT/oig-mcp && cd oig-mcp
+uv sync --group eval
+uv run --group eval python eval/verify_scores.py
+```
+
+On November 17 it reproduced every saved result: all 18 runs, including the three Orchestrate runs, match on every question. The judge's verdicts are kept as saved. To judge them again, `run_experiment.py --rescore <folder>` uses the Claude judge (an Anthropic API key) and `rejudge_watsonx.py <folder>` uses the watsonx.ai judge (a watsonx.ai key). Both rewrite the folder, so run them on a copy.
+
+**With a tester token.** The hosted server answers at `https://mcp.troymd.com/mcp` with a bearer token; a judge can ask Troy Sybert for one through the hackathon. [testers.md](testers.md) shows how to connect a client. The same token runs the deployment and robustness checks against it, and, with an Anthropic API key, the full question set:
+
+```bash
+export MCP_AUTH_TOKEN=...   # the token you were given
+uv run python deploy/verify_deployment.py --url https://mcp.troymd.com   # 15 checks
+uv run python deploy/robustness_check.py --url https://mcp.troymd.com    # 48 checks
+uv run --group eval python eval/phoenix/run_experiment.py --url https://mcp.troymd.com --no-phoenix
+```
+
+The deployment check runs 15 of its 22 checks with a token; the other 7 call the data API directly and need its private settings, so they are reported as skipped. The harness first checks that the server's data matches the snapshot the gold answers were computed from, and stops if it does not. The robustness check deliberately bursts past the rate limit, so run it once, not in a loop.
+
+**A full rebuild.** Building the data from vaoig.gov needs the data pipeline and its API (`oig-data-source`), which run on the builder's machine behind Cloudflare Access and are kept private: the crawler's settings and the API's address are operational detail, not part of the server. Everything the server expects from that API is specified in [data-api.md](data-api.md), so another implementation of it would work with this server unchanged.
+
 ### Golden dataset
 
 The gold answers do not come from the API being tested: [`build_gold.py`](../eval/gold/build_gold.py) computes them by SQL against the frozen snapshot, opened read-only. The questions span the kinds of work an oversight analyst does:
