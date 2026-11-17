@@ -111,6 +111,17 @@ Taken alone, that looks like facilities improved and then slipped. The data cann
 
 **The difference.** The data cannot say which reading is right, so the assistant gives the counts and both readings rather than choosing one. What the counts do show is useful either way: this is a live inspection theme now, and a patient safety manager should be ready for it.
 
+## Security
+
+The data is public, so security here means keeping the service from being misused, keeping its credentials private, and keeping a model from being steered by what it reads. The design, every check with its latest result, and an independent review are in [SECURITY.md](../SECURITY.md).
+
+- **Locked at both ends.** The hosted server answers only callers with a bearer token, and reaches the data service through Cloudflare with a second token and the service's own key. In watsonx Orchestrate it runs inside Orchestrate's runtime, with no network address of its own.
+- **Narrow by design.** Seven read-only tools. No tool writes, runs commands, or reaches any address but the data service. Every input is typed and bounded, so an unexpected value is refused rather than passed on, and each caller is rate limited.
+- **Nothing internal leaks.** A failure returns a short message and a hint, never a stack trace, address, or credential. No credential is committed: a scan of the repository's full history found none.
+- **Hard to steer.** Six adversarial questions, including an instruction hidden in pasted text and a request to name employees, test the model's side. With the server, Claude Opus 5.5 passed 6 of 6 and Llama 3.3 70B 4 of 6.
+- **Checked, not only designed.** On November 17 the server passed 15 of 15 image checks, 22 of 22 deployment checks, and 48 of 48 robustness checks that send hostile and malformed input to every tool. Dependencies are audited for known vulnerabilities on every change, with none found. A separate review agent found no high-severity issues; its findings are fixed or recorded as accepted risks.
+- **Known limits.** Tokens are static and do not expire; a production deployment should use short-lived OAuth tokens. Rate limits live in one process. In Orchestrate every user reaches the data service under one shared identity, and Orchestrate's own access controls decide who can use the agent.
+
 ## Where it stands today
 
 | Status | Capability |
