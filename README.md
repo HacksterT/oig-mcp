@@ -10,7 +10,7 @@ An entry in the [GSA MCP Server and AI Agent Government Hackathon](https://www.g
 
 ## Status
 
-The server is complete and frozen at tag `eval-final-2`. It answers from the full data build of November 4, 2026, covering 4,410 reports and 15,649 recommendations, is deployed in IBM watsonx Orchestrate as a local toolkit, and is hosted for testers at `https://mcp.troymd.com/mcp`. On 24 questions scored against SQL-computed answers, models pass 2 or 3 without it and 9 to 23 with it; with only the server changed, Orchestrate's agent rose from 10, 8, and 11 to 12 and 12. Every saved score can be recomputed with one command and no keys: [Verify it yourself](docs/evaluation/method.md#verify-it-yourself).
+The server is complete. Its scores were measured at tag `eval-final-2`; the one later server change ([#114](https://github.com/HacksterT/oig-mcp/pull/114)) only tells the AI when the user picked a facility and reads a state in a facility name. It answers from the full data build of November 4, 2026, covering 4,410 reports and 15,649 recommendations, is deployed in IBM watsonx Orchestrate as a local toolkit, and is hosted for testers at `https://mcp.troymd.com/mcp`. On 24 questions scored against SQL-computed answers, models pass 2 or 3 without it and 9 to 23 with it; with only the server changed, Orchestrate's agent rose from 10, 8, and 11 to 12 and 12. Every saved score can be recomputed with one command and no keys: [Verify it yourself](docs/evaluation/method.md#verify-it-yourself).
 
 | Capability | Kind |
 |---|---|
