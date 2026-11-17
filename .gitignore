@@ -63,3 +63,6 @@ eval/.phoenix/
 # Orchestrate evaluation: local config and results
 eval/orchestrate/config.yaml
 eval/orchestrate/results/
+
+# Judges sample files, kept local
+docs/MCP-hackathon-sample-*
