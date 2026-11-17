@@ -38,7 +38,7 @@ vaoig.gov ──> oig-data-source (crawler, SQLite, JSON API in a container behi
                      MCP client (Claude Desktop, Claude Code, watsonx Orchestrate, ...)
 ```
 
-The server calls exactly one origin, configured by the operator, never by a tool argument. The API it expects is documented in [docs/data-api.md](docs/data-api.md).
+The server calls exactly one origin, configured by the operator, never by a tool argument. The API it expects is documented in [docs/data-api.md](docs/data-api.md), and how the private pipeline builds and checks the data, from crawl to facility responses to reconciliation with OIG, is in [docs/data-pipeline.md](docs/data-pipeline.md).
 
 ## Quick start
 

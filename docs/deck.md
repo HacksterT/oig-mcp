@@ -115,7 +115,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
   watsonx Orchestrate agent · Claude · any MCP client
 ```
 
-**Speaker notes:** One tool per file, each registering itself. Everything outbound goes through one hardened HTTP client.
+**Speaker notes:** One tool per file, each registering itself. Everything outbound goes through one hardened HTTP client. Behind the API is a private pipeline built for this entry: it crawls vaoig.gov, extracts 11,264 facility responses from inspection PDFs with rules rather than an LLM, groups recurring findings into 283 clusters, and reconciles every build with OIG's own listing row by row before publishing. docs/data-pipeline.md describes each stage.
 
 ---
 
