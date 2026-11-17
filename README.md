@@ -102,7 +102,14 @@ Each tool lives in its own file under `src/oig_mcp/tools/` with a `register(mcp)
 
 ## Deployment
 
-The server runs in IBM watsonx Orchestrate as a local toolkit, registered from an IBM-provided VM with IBM Bob: Orchestrate runs it over stdio and passes it the data API's settings from a connection. See [deploy/ibm/local-mcp-toolkit/README.md](deploy/ibm/local-mcp-toolkit/README.md). For hosted use, the `Dockerfile` serves stateless Streamable HTTP (the MCP specification's HTTP transport) on port 8080 with `/mcp`, `/health`, and `/version`.
+The same server runs over both MCP transports; only how a client starts it differs.
+
+| Transport | Used by | How |
+|---|---|---|
+| stdio | watsonx Orchestrate, desktop hosts (Claude Desktop, VS Code, Cursor) | The host starts the server as a local process, with no network endpoint. In Orchestrate it runs as a local toolkit, registered from an IBM-provided VM with IBM Bob, with the data API's settings passed from a connection ([deploy/ibm/local-mcp-toolkit/README.md](deploy/ibm/local-mcp-toolkit/README.md)) |
+| Streamable HTTP | Remote agents, testers, and the evaluation harness, at `https://mcp.troymd.com/mcp` with a bearer token per client ([docs/testers.md](docs/testers.md)) | The `Dockerfile` serves `/mcp`, `/health`, and `/version` on port 8080 |
+
+Over HTTP the server keeps a session per client and streams its replies, so it can ask the user a question mid-call (elicitation) on every protocol version, not only 2026-07-28. Idle sessions close after 30 minutes, and a restart drops them; clients start a new one.
 
 ## Evaluation
 

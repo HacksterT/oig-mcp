@@ -73,7 +73,7 @@ The MCP server calls exactly one outbound origin: the data API set in `OIG_DATA_
 |---|---|
 | Seven tools, three resources, two prompts | Built and tested |
 | Bearer authentication on `/mcp` | Built and tested on both connections. See `deploy/verify_deployment.py` |
-| Container image | Built from `uv.lock`, runs as non-root, stateless HTTP with JSON responses |
+| Container image | Built from `uv.lock`, runs as non-root, Streamable HTTP with a session per client |
 | Evaluation (Arize Phoenix) | Run on two Claude models and an independent agent; watsonx Orchestrate's agent is being run on the same questions. See [`testing-architecture.md`](testing-architecture.md) and [`testing-results.md`](testing-results.md) |
 | `oig-data-source` crawler, database, and API | Live behind Cloudflare Access and its own API key, with search limits, and the full data build of 2026-11-04 |
 | Hosted test endpoint | The same image runs on Troy's Mac for testers and judges, through a Cloudflare Tunnel, with tool-call traces on through judging |
@@ -181,7 +181,7 @@ Resolved on 2026-11-16: whether a remote toolkit accepts a bearer connection no 
 
 ## 11. Reference
 
-**Server endpoints over HTTP:** `/mcp` (MCP over Streamable HTTP, one of the two standard transports in the MCP specification along with stdio; stateless, JSON responses, no SSE), `/health`, `/version`.
+**Server endpoints over HTTP:** `/mcp` (MCP over Streamable HTTP, one of the two standard transports in the MCP specification along with stdio; a session per client and streamed replies, so the server can ask the user mid-call on any protocol version), `/health`, `/version`.
 
 **Transport selection:** if the platform sets `PORT` (the Dockerfile does, as container platforms do), the server runs HTTP on that port. Otherwise `MCP_TRANSPORT=streamable-http` runs HTTP on `MCP_HOST:MCP_PORT`, loopback by default, with Host and Origin checks. Otherwise it runs over stdio, which is how watsonx Orchestrate's local toolkit runs it, through `deploy/ibm/local-mcp-toolkit/server.py`. Any other `MCP_TRANSPORT` value stops startup. Stateless HTTP matches the specification's direction: the 2026-07-28 revision dropped the connection-scoped session, so every request carries its own metadata.
 

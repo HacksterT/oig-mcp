@@ -222,7 +222,7 @@ def test_streamable_http_refuses_to_start_without_token(monkeypatch) -> None:
     assert calls == []
 
 
-def test_platform_port_serves_stateless_http_with_token(monkeypatch) -> None:
+def test_platform_port_serves_http_sessions_with_token(monkeypatch) -> None:
     calls = _capture_run(monkeypatch)
     monkeypatch.setenv("PORT", "8080")
     monkeypatch.setattr(app_module.settings, "mcp_auth_token", TOKEN)
@@ -232,8 +232,8 @@ def test_platform_port_serves_stateless_http_with_token(monkeypatch) -> None:
             "transport": "streamable-http",
             "host": "0.0.0.0",
             "port": 8080,
-            "stateless_http": True,
-            "json_response": True,
+            "stateless_http": False,
+            "json_response": False,
             "host_origin_protection": False,
         }
     ]
@@ -263,8 +263,8 @@ def test_local_http_binds_loopback_and_checks_host(monkeypatch) -> None:
             "transport": "streamable-http",
             "host": "127.0.0.1",
             "port": app_module.settings.mcp_port,
-            "stateless_http": True,
-            "json_response": True,
+            "stateless_http": False,
+            "json_response": False,
             "host_origin_protection": "auto",
         }
     ]

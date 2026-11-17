@@ -138,7 +138,7 @@ def verify_mcp_gate(report: Report, url: str, token: str, access: dict) -> None:
             got = status(headers)
             report.check(f"refuses {name}", got == 401, f"HTTP {got}")
 
-        # A stateless server has no event stream, so GET returns 405 to anyone.
+        # Without the token, GET is refused like every other request.
         # The token in a query string is tested in tests/, not here, because
         # sending it would write the real token into the platform's access log.
         got = client.get("/mcp", headers=MCP_ACCEPT).status_code
@@ -155,8 +155,8 @@ def verify_mcp_gate(report: Report, url: str, token: str, access: dict) -> None:
             f"HTTP {response.status_code}",
         )
         report.check(
-            "keeps no session, so restarts and extra instances are safe",
-            "mcp-session-id" not in response.headers,
+            "opens a session, so it can ask the user mid-call on any protocol",
+            "mcp-session-id" in response.headers,
         )
 
 

@@ -301,9 +301,10 @@ async def facility_choice(url: str, token: str, checker: Checker) -> None:
     """A client that can ask its user is asked which facility; its answer must be
     one of the matches, or the tool answers with the matches as before."""
     print("\nChoosing among several matching facilities")
-    for pick, case, wanted in [
-        ("630", "a valid choice opens that facility", "630"),
-        ("999", "a choice outside the matches is ignored", None),
+    for pick, case, wanted, mode in [
+        ("630", "a valid choice opens that facility", "630", "auto"),
+        ("999", "a choice outside the matches is ignored", None, "auto"),
+        ("630", "a 2025-11-25 client is asked over HTTP too", "630", "legacy"),
     ]:
         asked: list[int] = []
 
@@ -313,7 +314,9 @@ async def facility_choice(url: str, token: str, checker: Checker) -> None:
 
         transport = bearer_transport(url, token)
         try:
-            async with Client(transport, timeout=120, elicitation_handler=handler) as c:
+            async with Client(
+                transport, timeout=120, elicitation_handler=handler, mode=mode
+            ) as c:
                 args = {"facility": "New York VA"}
                 result = await c.call_tool(PROFILE, args, raise_on_error=False)
             body = result.structured_content or {}
