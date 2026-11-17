@@ -1,6 +1,26 @@
-# The data pipeline behind the server
+[Wiki](../../README.md) › Architecture › Data source
 
-*How VA OIG's public website becomes the data this server answers from. The pipeline lives in a separate, private repository, `oig-data-source`; this page describes what it does so its work can be judged without it. Figures are from the full build of November 4, 2026, read from the data API's `meta` endpoint. The API contract the server relies on is in [data-api.md](data-api.md).*
+# Data source
+
+*The private `oig-data-source` repository: what it builds, how its pipeline works, and the checks that keep a bad build from being served. It is described here so its work can be judged without access to it. Figures are from the full build of November 4, 2026, read from the data API's `meta` endpoint. The contract the server relies on is in [Data API](data-api.md).*
+
+## The repository
+
+`oig-data-source` is the data service behind this server: a collection pipeline, a SQLite database, and a read-only JSON API. It stays private by design; GSA confirmed that is acceptable for the hackathon. All of its data comes from public vaoig.gov pages and PDFs, and it uses no internal VA systems.
+
+| | November 4, 2026 build |
+|---|---|
+| Reports | 4,410 distinct reports, 1996 to 2026 (OIG lists five twice); 2,229 with recommendations |
+| Recommendations | 15,649, of which 567 are open |
+| PDFs | 2,214 documents, 89,188 pages with text, none needing OCR |
+| Facility responses | 11,264, parsed from inspection reports |
+| Facilities | 159, with 1,232 inspections |
+| Recurring findings | 283 clusters covering 2,591 recommendations |
+| Search vectors | 26,077, from a locally run embedding model |
+
+It runs as two containers, a pipeline and an API, on one Mac. A `refresh` command crawls what changed, then parses, ingests, indexes, embeds, derives, validates, snapshots, and publishes, stopping at the first failure; the running API serves the new database from its next request. The API listens only on the machine itself and is reached from outside through a Cloudflare Tunnel behind Cloudflare Access. The repository's own design records cover its main choices: SQLite as the system of record, stable keys for reports and recommendations, a containerized API on a local host, and hybrid search ([Decisions](../guides/decisions.md#data-source)).
+
+## The pipeline
 
 OIG publishes every report and recommendation, and its website is good at finding one document. It has no API or bulk export, and the facts that matter across reports, such as what facilities committed to do, sit inside about 2,200 PDFs. The pipeline turns that public record into one structured, checked, searchable dataset, so that each of this server's tools is a query rather than an afternoon of reading.
 
@@ -8,7 +28,7 @@ OIG publishes every report and recommendation, and its website is good at findin
 vaoig.gov → crawl → parse → extract responses → link facilities → cluster → index → check → publish → read-only API → this server
 ```
 
-## Stages
+### Stages
 
 | Stage | What it does | Output (November 4 build) | How it was checked |
 |---|---|---|---|
@@ -19,7 +39,7 @@ vaoig.gov → crawl → parse → extract responses → link facilities → clus
 | Cluster | Groups recommendations that recur across reports, by two methods, because older reports reuse templated wording and current inspections do not: matching the first 12 normalized words across 5 or more reports, and, for current inspections, meaning (cosine similarity of at least 0.88 to one central recommendation) across 3 or more reports. | 283 clusters: 259 by wording, 24 by meaning | The weakest members of each meaning-based cluster were reviewed: most fit, and a few are off theme, which the server's cluster results say |
 | Index for search | Builds keyword indexes (BM25) and, with an embedding model that runs locally, meaning vectors for every recommendation and corrective action. A search runs both and merges them by reciprocal rank fusion. | Every recommendation and corrective action has a vector | Gates require vectors for at least 99 percent (both were 100) |
 | Check, then publish | Compares the build with what OIG publishes and runs six data gates that catch silent loss, such as a page change that empties a field. A build that fails a gate is not published. | Passed: no failed gates | See below |
-| Serve | A read-only API over the published database, with every query written ahead of time and every value bound: neither the server nor a model writes SQL. Reachable only through Cloudflare Access with a service token and its own API key. | The endpoints in [data-api.md](data-api.md) | Its own test suite, and this server's deployment checks of its credentials |
+| Serve | A read-only API over the published database, with every query written ahead of time and every value bound: neither the server nor a model writes SQL. Reachable only through Cloudflare Access with a service token and its own API key. | The endpoints in [Data API](data-api.md) | Its own test suite, and this server's deployment checks of its credentials |
 
 ## Checks that keep a bad build from being served
 
@@ -58,3 +78,7 @@ Search blends keywords and meaning, so a plain sentence such as "staff left medi
 - **VISN realignment.** VA replaced its 18 VISNs with five on July 15, 2026. OIG labels reports from August 2026 with the new networks and did not retag older ones, so labels 1, 2, 4, and 5 each name two different regions. The data keeps OIG's labels; the server warns whenever a VISN filter is used and suggests filtering by state.
 - **Clusters are automated.** A facility missing from a cluster may still have been cited for that theme in other words, and a repeat finding means an issue was cited again, not that nothing was done in between.
 - **One machine.** The API runs on a single local machine; a dated snapshot allows it to move to a cloud host without changing this server.
+
+---
+
+← [System](../architecture/system.md) · [Wiki home](../../README.md) · [Data API](../architecture/data-api.md) →

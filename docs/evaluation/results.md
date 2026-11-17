@@ -1,10 +1,12 @@
-# Testing results
+[Wiki](../../README.md) › Evaluation › Results
 
-*What the testing found. How it was done is in [testing-architecture.md](testing-architecture.md). All results use the data snapshot `2bb10bd321e08dfc`, data as of November 4, 2026. Run records are in [`eval/results/`](../eval/results/).*
+# Evaluation results
+
+*What the testing found, round by round. How it was done is in [Method](method.md); the closing assessment is in [Debrief](debrief.md). All results use the data snapshot `2bb10bd321e08dfc`, data as of November 4, 2026. Run records are in [`eval/results/`](../../eval/results/).*
 
 ## Summary
 
-**Did the changes help?** Yes, where there was room. With only the server changed, the Orchestrate agent (GPT-OSS 120B) rose from 10, 8, and 11 to 12 and 12 of 24 questions, its agreement with the gold reference from about 15 to 19 of 24, and IBM's own score from 14, 14, and 13 to 16 and 18: every round-2 run beat every round-1 run on all three measures, and the gains fell on the questions the fixes targeted. Reliability gains were large: a 45-call burst went from 0 to 29 answered, all 2,059 calls were answered at 40 clients, and 49 of 49 hostile inputs are handled. Claude was at its ceiling, so its reruns show only that nothing broke. Links in GPT-OSS answers did not improve, Llama was not rerun, and the test is not blind. The full assessment is in [testing-debrief.md](testing-debrief.md).
+**Did the changes help?** Yes, where there was room. With only the server changed, the Orchestrate agent (GPT-OSS 120B) rose from 10, 8, and 11 to 12 and 12 of 24 questions, its agreement with the gold reference from about 15 to 19 of 24, and IBM's own score from 14, 14, and 13 to 16 and 18: every round-2 run beat every round-1 run on all three measures, and the gains fell on the questions the fixes targeted. Reliability gains were large: a 45-call burst went from 0 to 29 answered, all 2,059 calls were answered at 40 clients, and 49 of 49 hostile inputs are handled. Claude was at its ceiling, so its reruns show only that nothing broke. Links in GPT-OSS answers did not improve, Llama was not rerun, and the test is not blind. The full assessment is in [Debrief](debrief.md).
 
 | Platform | Result | Read it with |
 |---|---|---|
@@ -54,13 +56,13 @@ Without the server, both models mostly declined, correctly: they did not know th
 | Mean time per question | 15.3 s | 8.7 s | Code |
 | Estimated cost of the run, including the judge | $2.87 | $1.31 | List prices |
 
-Both models ran on November 4. Claude Opus 5.5 was run again on November 10, after typed results, the single `notices` field, and a tool selection guide were added, and again after the analysis changes that followed the Hermes assessment. Both reruns matched the first on every measure, with the same one failure. A run on November 17, after the result-size changes, passed 22 of 24 ([folder](../eval/results/2026-11-17-opus-5-5-s22-branch/)): the Durham list as before, and report 25-00193-155, where the answer said the facility "agreed" and the code check looks for "concur". The judge agreed with the reference on all 24, and citations were given on 8 of 8. Claude Sonnet 5.5, rerun the same day on the final server ([folder](../eval/results/2026-11-17-sonnet-5-5/)), passed 23 of 24 as on November 4, failing the same Durham question with the same miscount; it gave a report number and link on 8 of 8 questions that require one, up from 7. On the final server, frozen at tag `eval-final-1` after every change above, both models ran all 30 questions once ([Opus](../eval/results/2026-11-17-final-opus-5-5/), [Sonnet](../eval/results/2026-11-17-final-sonnet-5-5/)). Opus passed 29 of 30 and Sonnet 28 of 30, and the judge agreed with the reference on all 30 for both. Both missed the Durham list exactly as every earlier run did, with the same five extra reports, so nothing regressed. Sonnet's other miss was on the cluster question, where it gave a link pattern ending "followed by its slug" instead of each report's link; the server's results carried the full links. Opus passed the question it had missed on "agreed" and "concur". After the last server changes (#101 to #103, tag `eval-final-2`), Sonnet ran all 30 again ([folder](../eval/results/2026-11-17-final-2-sonnet-5-5/)): 28 of 30, the judge agreeing on 30 of 30, the same two questions missed; the cluster question failed on a missing fact this time, not on links. Answers built from the tools also matched the SQL gold answers on all 16 fact questions, so the evaluation checks the API independently on those facts.
+Both models ran on November 4. Claude Opus 5.5 was run again on November 10, after typed results, the single `notices` field, and a tool selection guide were added, and again after the analysis changes that followed the Hermes assessment. Both reruns matched the first on every measure, with the same one failure. A run on November 17, after the result-size changes, passed 22 of 24 ([folder](../../eval/results/2026-11-17-opus-5-5-s22-branch/)): the Durham list as before, and report 25-00193-155, where the answer said the facility "agreed" and the code check looks for "concur". The judge agreed with the reference on all 24, and citations were given on 8 of 8. Claude Sonnet 5.5, rerun the same day on the final server ([folder](../../eval/results/2026-11-17-sonnet-5-5/)), passed 23 of 24 as on November 4, failing the same Durham question with the same miscount; it gave a report number and link on 8 of 8 questions that require one, up from 7. On the final server, frozen at tag `eval-final-1` after every change above, both models ran all 30 questions once ([Opus](../../eval/results/2026-11-17-final-opus-5-5/), [Sonnet](../../eval/results/2026-11-17-final-sonnet-5-5/)). Opus passed 29 of 30 and Sonnet 28 of 30, and the judge agreed with the reference on all 30 for both. Both missed the Durham list exactly as every earlier run did, with the same five extra reports, so nothing regressed. Sonnet's other miss was on the cluster question, where it gave a link pattern ending "followed by its slug" instead of each report's link; the server's results carried the full links. Opus passed the question it had missed on "agreed" and "concur". After the last server changes (#101 to #103, tag `eval-final-2`), Sonnet ran all 30 again ([folder](../../eval/results/2026-11-17-final-2-sonnet-5-5/)): 28 of 30, the judge agreeing on 30 of 30, the same two questions missed; the cluster question failed on a missing fact this time, not on links. Answers built from the tools also matched the SQL gold answers on all 16 fact questions, so the evaluation checks the API independently on those facts.
 
 **The failure is kept as a failure.** The question asked for every Healthcare Facility Inspection or Comprehensive Healthcare Inspection Program report for Durham, leaving out hotline and financial reports. Both models listed all eight correctly and also named the excluded reports under a "left out" heading. The scorer counts every report number in an answer, so it marked those as extras. Claude Opus 5.5's answer is right in substance, but the scorer was not changed after seeing the result.
 
 **Sonnet's answer to that question also had real errors.** It said there were 9 such reports while listing 8, and gave no links. The judge caught the miscount. In an earlier run the same model made the same kind of error and the judge passed it: an answer can pass and still contain a small error.
 
-**List precision is a strict figure.** On the search questions, a report counts as relevant only if a recommendation contains the exact phrase "medication cart." It is not how often a search result is relevant; the separate [search comparison](mcp-overview.md) tested that, and a full sentence was relevant 44 percent of the time.
+**List precision is a strict figure.** On the search questions, a report counts as relevant only if a recommendation contains the exact phrase "medication cart." It is not how often a search result is relevant; the separate [search comparison](../overview/mission.md) tested that, and a full sentence was relevant 44 percent of the time.
 
 ## DeepSeek through Hermes Agent
 
@@ -98,7 +100,7 @@ After deployment, the agent was asked the six check questions from the deploymen
 
 ### 24 questions, three runs, first round
 
-On November 16 and 17 (UTC), IBM's Agent Development Kit ran the 24 questions three times against the agent, which runs GPT-OSS 120B. Each run was read three ways. *Results: [`eval/results/2026-11-17-orchestrate/`](../eval/results/2026-11-17-orchestrate/).*
+On November 16 and 17 (UTC), IBM's Agent Development Kit ran the 24 questions three times against the agent, which runs GPT-OSS 120B. Each run was read three ways. *Results: [`eval/results/2026-11-17-orchestrate/`](../../eval/results/2026-11-17-orchestrate/).*
 
 | Reading | Run 1 | Run 2 | Run 3 |
 |---|---|---|---|
@@ -132,7 +134,7 @@ The project's scoring reads the agent's first reply, the answer a single-turn ru
 
 ### Second round
 
-On November 17 the same agent, with the same instruction and model, ran all 30 questions twice on the server at tag `eval-final-1`, imported fresh into Orchestrate ([results](../eval/results/2026-11-17-orchestrate-round-2/), [Bob's report](handoff/2026-11-17-bob-orchestrate-rerun.md)). Only the server changed.
+On November 17 the same agent, with the same instruction and model, ran all 30 questions twice on the server at tag `eval-final-1`, imported fresh into Orchestrate ([results](../../eval/results/2026-11-17-orchestrate-round-2/), [Bob's report](../_archive/handoff-final/2026-11-17-bob-orchestrate-rerun.md)). Only the server changed.
 
 | Measure, 24 main questions | Round 1, three runs | Round 2, two runs |
 |---|---|---|
@@ -206,7 +208,7 @@ Each round of testing changed the server, and the next round checked the change.
 
 ## What testing changed
 
-Testing changed the server, the scorer, and the data, not only the scores. Each change is also recorded, with what it taught, in [lessons-learned.md](lessons-learned.md). Because these changes followed earlier results, later runs are not blind tests of those points; the question about a miss rate, in particular, was passed after a fix made for that question. Earlier results are kept in [`eval/results/superseded-d364ff4c/`](../eval/results/superseded-d364ff4c/).
+Testing changed the server, the scorer, and the data, not only the scores. Each change is also recorded, with what it taught, in [the improvement journey](results.md#the-improvement-journey). Because these changes followed earlier results, later runs are not blind tests of those points; the question about a miss rate, in particular, was passed after a fix made for that question. Earlier results are kept in [`eval/results/superseded-d364ff4c/`](../../eval/results/superseded-d364ff4c/).
 
 | What was found | Kind | Change |
 |---|---|---|
@@ -258,7 +260,7 @@ The status and brief tools make several API calls each, and the brief runs up to
 
 ## Result size
 
-What a model reads is mostly tool results, so their size decides cost and whether a smaller model's context holds. [`eval/payload_sizes.py`](../eval/payload_sizes.py) replays the 86 tool calls from the November 17 Claude Opus 5.5 and Llama 3.3 70B runs against the server, with no model involved, and measures each result. Approximate tokens are characters divided by four.
+What a model reads is mostly tool results, so their size decides cost and whether a smaller model's context holds. [`eval/payload_sizes.py`](../../eval/payload_sizes.py) replays the 86 tool calls from the November 17 Claude Opus 5.5 and Llama 3.3 70B runs against the server, with no model involved, and measures each result. Approximate tokens are characters divided by four.
 
 | Tool | Calls | Median before | Median after | Total before | Total after |
 |---|---|---|---|---|---|
@@ -288,7 +290,7 @@ So the server's next step, not elicitation, is what made the desktop hosts ask. 
 
 ## Load test
 
-On November 17, [`deploy/load_test.py`](../deploy/load_test.py) ramped from 1 to 40 concurrent clients against the hosted server through its public URL, each with its own token, for 60 seconds per stage. Each client repeated tool calls recorded in the Claude runs, about one a second, with no model involved. [Full results](../eval/results/2026-11-17-load-test/summary.md).
+On November 17, [`deploy/load_test.py`](../../deploy/load_test.py) ramped from 1 to 40 concurrent clients against the hosted server through its public URL, each with its own token, for 60 seconds per stage. Each client repeated tool calls recorded in the Claude runs, about one a second, with no model involved. [Full results](../../eval/results/2026-11-17-load-test/summary.md).
 
 | Clients | Calls | Per second | Answered | Median | 95th percentile |
 |---|---|---|---|---|---|
@@ -302,7 +304,7 @@ Every call was answered, with no rate-limit, busy, or timeout refusals, no error
 
 ## Security
 
-The full record, with every check and the November 17 review, is in [SECURITY.md](../SECURITY.md). On November 17: 15 of 15 image checks, 22 of 22 deployment checks, 48 of 48 robustness checks (hostile and malformed input to every tool and to argument completion, the facility choice round trip, a burst past the rate limit, searches past the data API's capacity), no known vulnerable dependency, and no secret in the repository's history. An independent review found no high-severity issues; its findings are fixed or documented as accepted risks.
+The full record, with every check and the November 17 review, is in [SECURITY.md](../../SECURITY.md). On November 17: 15 of 15 image checks, 22 of 22 deployment checks, 48 of 48 robustness checks (hostile and malformed input to every tool and to argument completion, the facility choice round trip, a burst past the rate limit, searches past the data API's capacity), no known vulnerable dependency, and no secret in the repository's history. An independent review found no high-severity issues; its findings are fixed or documented as accepted risks.
 
 All authentication checks passed against the container, through a public HTTPS tunnel, and on IBM's virtual machine, where the image built there passed all 15 image checks, including the 22 deployment checks run against it. That run also confirmed IBM's network reaches the data API through Cloudflare with no proxy.
 
@@ -318,3 +320,7 @@ In Orchestrate the server runs over stdio inside Orchestrate's runtime, so it ha
 ## A known limit of the data
 
 **Estimates for clean inspections start later.** A report with no recommendations gives no inspection dates, so its next-window estimate counts from the publication date, which usually comes months after the inspection. 15 facilities have an estimate already past, which does not mean they are overdue, and the tools say so.
+
+---
+
+← [Method](../evaluation/method.md) · [Wiki home](../../README.md) · [Debrief](../evaluation/debrief.md) →

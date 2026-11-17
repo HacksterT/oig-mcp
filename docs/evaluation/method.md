@@ -1,6 +1,8 @@
-# Testing architecture
+[Wiki](../../README.md) › Evaluation › Method
 
-*How oig-mcp is tested, and why it is tested this way. What the testing found is in [testing-results.md](testing-results.md).*
+# Evaluation method
+
+*How the server is tested, why it is tested this way, and how to check every score yourself. What the testing found is in [Results](results.md).*
 
 ## What the testing is for
 
@@ -14,14 +16,14 @@ The automated tests and deployment checks make sure the server behaves as design
 
 | Layer | What it checks | When | Where |
 |---|---|---|---|
-| Automated tests | 275 tests: every tool's inputs, results, and output schema; error messages and hints; authentication; that each tool description says what a model needs to choose it | Every change, in GitHub Actions | [`tests/`](../tests/) |
-| Image checks | 15 checks on the container image: no secret inside it, a non-root user, refusal to start without a valid token or with a plain-HTTP data address, clean refusals when the data API credentials are wrong | Before each deployment | [`deploy/verify_image.sh`](../deploy/verify_image.sh) |
-| Deployment checks | 22 checks on a running server: seven kinds of bad credentials refused and the right token accepted, no session state, all seven tools listed, live data with no secret in it, and the data API refusing four kinds of wrong credentials | Against every deployment | [`deploy/verify_deployment.py`](../deploy/verify_deployment.py) |
-| Robustness check | 48 checks on a running server: hostile and malformed input to every tool (traversal, injection, every bound exceeded, wrong types) and to argument completion, the facility choice round trip, a burst past the rate limit and recovery, searches past the data API's capacity, and no stack trace, address, or credential in any reply | Against every deployment | [`deploy/robustness_check.py`](../deploy/robustness_check.py) |
-| Security scans | Dependency audit on every change; secret scan of the full history; an independent code review | Every change, and before submission | [SECURITY.md](../SECURITY.md) |
-| Agent evaluation | 24 gold questions, and 6 adversarial ones, answered by an agent using only the tools, scored by code and two AI judges | After changes that affect what a model sees | [`eval/`](../eval/README.md) |
-| Baseline | The same 24 questions and models with no server | Once per model | [`run_experiment.py --no-tools`](../eval/phoenix/run_experiment.py) |
-| Cross-platform runs | The same questions on other models and hosts | Once per platform; three runs per round on watsonx Orchestrate | [`eval/orchestrate/`](../eval/orchestrate/README.md) |
+| Automated tests | 275 tests: every tool's inputs, results, and output schema; error messages and hints; authentication; that each tool description says what a model needs to choose it | Every change, in GitHub Actions | [`tests/`](../../tests/) |
+| Image checks | 15 checks on the container image: no secret inside it, a non-root user, refusal to start without a valid token or with a plain-HTTP data address, clean refusals when the data API credentials are wrong | Before each deployment | [`deploy/verify_image.sh`](../../deploy/verify_image.sh) |
+| Deployment checks | 22 checks on a running server: seven kinds of bad credentials refused and the right token accepted, no session state, all seven tools listed, live data with no secret in it, and the data API refusing four kinds of wrong credentials | Against every deployment | [`deploy/verify_deployment.py`](../../deploy/verify_deployment.py) |
+| Robustness check | 48 checks on a running server: hostile and malformed input to every tool (traversal, injection, every bound exceeded, wrong types) and to argument completion, the facility choice round trip, a burst past the rate limit and recovery, searches past the data API's capacity, and no stack trace, address, or credential in any reply | Against every deployment | [`deploy/robustness_check.py`](../../deploy/robustness_check.py) |
+| Security scans | Dependency audit on every change; secret scan of the full history; an independent code review | Every change, and before submission | [SECURITY.md](../../SECURITY.md) |
+| Agent evaluation | 24 gold questions, and 6 adversarial ones, answered by an agent using only the tools, scored by code and two AI judges | After changes that affect what a model sees | [`eval/`](../../eval/README.md) |
+| Baseline | The same 24 questions and models with no server | Once per model | [`run_experiment.py --no-tools`](../../eval/phoenix/run_experiment.py) |
+| Cross-platform runs | The same questions on other models and hosts | Once per platform; three runs per round on watsonx Orchestrate | [`eval/orchestrate/`](../../eval/orchestrate/README.md) |
 
 The first three layers test the server as software. The last two test it as something a model has to use.
 
@@ -31,13 +33,13 @@ The harness follows the `mcp-eval` skill that came with the hackathon template. 
 
 | IBM's skill | This project |
 |---|---|
-| A dataset of questions with verified answers | [`eval/gold/questions.json`](../eval/gold/questions.json), 24 questions, each answer computed by SQL ([`build_gold.py`](../eval/gold/build_gold.py)) from the frozen data snapshot |
-| An agent with no context but the tools | [`agent.py`](../eval/phoenix/agent.py), whose only prompt is the server's own `instructions` field |
-| A correctness judge against ground truth | [`scoring.py`](../eval/phoenix/scoring.py): code checks facts, lists, tool choice, and citations; an AI judge decides what code cannot |
-| A scope judge for in-scope answers and refusals | Five behavior questions and six adversarial ones ([`adversarial.json`](../eval/gold/adversarial.json)), each with written criteria the judge applies |
-| Agent and judge on watsonx.ai models | [`watsonx.py`](../eval/phoenix/watsonx.py) runs the agent on any watsonx.ai chat model at temperature 0 (`--model meta-llama/llama-3-3-70b-instruct`); [`rejudge_watsonx.py`](../eval/phoenix/rejudge_watsonx.py) judges saved answers again with Llama 3.3 70B and compares the two judges |
-| Phoenix traces of every run | Phoenix records each question's tool calls and answer; run records and summaries are kept in [`eval/results/`](../eval/results/) |
-| Scripts to run an experiment | [`run_experiment.py`](../eval/phoenix/run_experiment.py) runs the set; [`score_external.py`](../eval/phoenix/score_external.py) scores answers collected from an agent outside the harness with the same gold and judge |
+| A dataset of questions with verified answers | [`eval/gold/questions.json`](../../eval/gold/questions.json), 24 questions, each answer computed by SQL ([`build_gold.py`](../../eval/gold/build_gold.py)) from the frozen data snapshot |
+| An agent with no context but the tools | [`agent.py`](../../eval/phoenix/agent.py), whose only prompt is the server's own `instructions` field |
+| A correctness judge against ground truth | [`scoring.py`](../../eval/phoenix/scoring.py): code checks facts, lists, tool choice, and citations; an AI judge decides what code cannot |
+| A scope judge for in-scope answers and refusals | Five behavior questions and six adversarial ones ([`adversarial.json`](../../eval/gold/adversarial.json)), each with written criteria the judge applies |
+| Agent and judge on watsonx.ai models | [`watsonx.py`](../../eval/phoenix/watsonx.py) runs the agent on any watsonx.ai chat model at temperature 0 (`--model meta-llama/llama-3-3-70b-instruct`); [`rejudge_watsonx.py`](../../eval/phoenix/rejudge_watsonx.py) judges saved answers again with Llama 3.3 70B and compares the two judges |
+| Phoenix traces of every run | Phoenix records each question's tool calls and answer; run records and summaries are kept in [`eval/results/`](../../eval/results/) |
+| Scripts to run an experiment | [`run_experiment.py`](../../eval/phoenix/run_experiment.py) runs the set; [`score_external.py`](../../eval/phoenix/score_external.py) scores answers collected from an agent outside the harness with the same gold and judge |
 
 The harness drives Claude models through Anthropic's API and IBM models through watsonx.ai, as IBM's skill does. Only Llama 3.3 70B and Mistral Small 3.1 24B serve chat in the project's watsonx.ai region, so Llama 3.3 70B is both the IBM agent and the IBM judge. The watsonx Orchestrate runs below add IBM's own agent and evaluation engine.
 
@@ -77,7 +79,7 @@ Code scores everything it can: exact facts, list recall and precision, tool choi
 
 **DeepSeek, through Hermes Agent.** An independent agent host, Hermes Agent running DeepSeek V4 Pro 0813, answered 18 of the questions over public HTTPS, and its answers were scored afterward with `score_external.py`. This tests the server with a host and a model family not used while building it.
 
-**IBM's agent, through watsonx Orchestrate.** The server is registered in Orchestrate as a local toolkit: Orchestrate runs the server itself over stdio and passes it the data API's address and credentials from a key_value connection. The agent, `gsa-oig-assist-TES`, has the seven tools and one instruction, "Answer only from what the OIG tools return. Do not use general knowledge or information outside the tool results.", and no guidelines, so its behavior still comes from the server. IBM's Agent Development Kit runs the 24 questions against that agent with `orchestrate evaluations evaluate`, using test files generated from the same gold set ([`eval/orchestrate/tests/`](../eval/orchestrate/tests/)). A model reached through Orchestrate's model gateway, `gpt-oss-120b`, plays the user if the agent asks a follow-up question, and judges the answers.
+**IBM's agent, through watsonx Orchestrate.** The server is registered in Orchestrate as a local toolkit: Orchestrate runs the server itself over stdio and passes it the data API's address and credentials from a key_value connection. The agent, `gsa-oig-assist-TES`, has the seven tools and one instruction, "Answer only from what the OIG tools return. Do not use general knowledge or information outside the tool results.", and no guidelines, so its behavior still comes from the server. IBM's Agent Development Kit runs the 24 questions against that agent with `orchestrate evaluations evaluate`, using test files generated from the same gold set ([`eval/orchestrate/tests/`](../../eval/orchestrate/tests/)). A model reached through Orchestrate's model gateway, `gpt-oss-120b`, plays the user if the agent asks a follow-up question, and judges the answers.
 
 ```mermaid
 flowchart LR
@@ -103,7 +105,7 @@ flowchart LR
 A single judge can be wrong in either direction, so each Orchestrate run is read three ways.
 
 1. **IBM's evaluation engine** reports whether the agent called the expected tool with the right critical argument (journey success, tool call precision and recall), whether the answer matches the gold summary and contains its key values (text match and keywords), and a verdict with reasoning for each behavior check written into the test.
-2. **The project's own scoring** scores the same transcripts with [`score_runs.py`](../eval/orchestrate/score_runs.py), using the gold answers, code checks, and both judges used for the harness, so the platforms compare on equal terms. It scores the agent's first reply to each question, the answer a single-turn harness run would give; later turns are driven by IBM's simulated user and are kept, not scored.
+2. **The project's own scoring** scores the same transcripts with [`score_runs.py`](../../eval/orchestrate/score_runs.py), using the gold answers, code checks, and both judges used for the harness, so the platforms compare on equal terms. It scores the agent's first reply to each question, the answer a single-turn harness run would give; later turns are driven by IBM's simulated user and are kept, not scored.
 3. **The data API's traces** record every request the server makes, with its parameters and response. Each request carries `X-Trace-Id`, `X-OIG-Client`, and `X-OIG-Tool` headers, so the traces show which tools the agent actually called, with what arguments, and what came back, independent of any judge.
 
 Where the two judges agree and the traces support them, the result stands. Where they disagree, the answer is read against the gold answer and the traces, and the results say which judge was right and why, along with how often the judges agreed.
@@ -128,8 +130,39 @@ Where the two judges agree and the traces support them, the result stands. Where
 
 **Some Orchestrate tests check only the answer.** Twelve gold questions accept either of two tools, or need no tool, and an Orchestrate test can name only one expected path. For those, IBM's engine does not score the tool path, and the traces show what was called.
 
-**Load:** one ramp from 1 to 40 concurrent clients through the public URL ([`deploy/load_test.py`](../deploy/load_test.py), results in testing-results.md). **Not tested:** load to failure, and questions about report text beyond what the tools return.
+**Load:** one ramp from 1 to 40 concurrent clients through the public URL ([`deploy/load_test.py`](../../deploy/load_test.py), results in testing-results.md). **Not tested:** load to failure, and questions about report text beyond what the tools return.
 
 ## How to run it
 
-The harness: [`eval/README.md`](../eval/README.md). The Orchestrate tests: [`eval/orchestrate/README.md`](../eval/orchestrate/README.md). The image and deployment checks: [`deploy/README.md`](../deploy/README.md).
+The harness: [`eval/README.md`](../../eval/README.md). The Orchestrate tests: [`eval/orchestrate/README.md`](../../eval/orchestrate/README.md). The image and deployment checks: [`deploy/README.md`](../../deploy/README.md).
+
+## Verify it yourself
+
+Three levels, from no access at all to a full rebuild. Each command below runs from a clean clone, with no `.env`.
+
+**With no access.** Everything scored is in the repository: the gold questions and their SQL-computed answers ([`eval/gold/`](../../eval/gold/), built by [`build_gold.py`](../../eval/gold/build_gold.py)), and every run's answers, tool calls, and scores ([`eval/results/`](../../eval/results/)). One command recomputes every code check (facts, report lists, tool choice, citations, data date) from the saved answers and confirms each question's pass or fail. It needs no key, server, or network:
+
+```bash
+git clone https://github.com/HacksterT/oig-mcp && cd oig-mcp
+uv sync --group eval
+uv run --group eval python eval/verify_scores.py
+```
+
+On November 17 it reproduced every saved result: all 24 runs, including the five Orchestrate runs, match on every question. The judge's verdicts are kept as saved. To judge them again, `run_experiment.py --rescore <folder>` uses the Claude judge (an Anthropic API key) and `rejudge_watsonx.py <folder>` uses the watsonx.ai judge (a watsonx.ai key). Both rewrite the folder, so run them on a copy.
+
+**With a tester token.** The hosted server answers at `https://mcp.troymd.com/mcp` with a bearer token; a judge can ask Troy Sybert for one through the hackathon. [Connecting](../guides/connecting.md) shows how to connect a client. The same token runs the deployment and robustness checks against it, and, with an Anthropic API key, the full question set:
+
+```bash
+export MCP_AUTH_TOKEN=...   # the token you were given
+uv run python deploy/verify_deployment.py --url https://mcp.troymd.com   # 15 checks
+uv run python deploy/robustness_check.py --url https://mcp.troymd.com    # 49 checks
+uv run --group eval python eval/phoenix/run_experiment.py --url https://mcp.troymd.com --no-phoenix
+```
+
+The deployment check runs 15 of its 22 checks with a token; the other 7 call the data API directly and need its private settings, so they are reported as skipped. The harness first checks that the server's data matches the snapshot the gold answers were computed from, and stops if it does not. The robustness check deliberately bursts past the rate limit, so run it once, not in a loop.
+
+**A full rebuild.** Building the data from vaoig.gov needs the data pipeline and its API (`oig-data-source`), which run on the builder's machine behind Cloudflare Access and are kept private: the crawler's settings and the API's address are operational detail, not part of the server. Everything the server expects from that API is specified in [Data API](../architecture/data-api.md), so another implementation of it would work with this server unchanged.
+
+---
+
+← [Decisions](../guides/decisions.md) · [Wiki home](../../README.md) · [Results](../evaluation/results.md) →

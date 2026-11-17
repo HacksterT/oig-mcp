@@ -67,7 +67,7 @@ python3 deploy/mcp_clients.py list
 python3 deploy/mcp_clients.py remove <name>
 ```
 
-Names are lowercase letters, digits, `-`, and `_`. Each change restarts the server for a few seconds. To replace an exposed token, `remove` and then `add`. Send the tester [docs/testers.md](../docs/testers.md) and the token, and paste the token before copying anything else.
+Names are lowercase letters, digits, `-`, and `_`. Each change restarts the server for a few seconds. To replace an exposed token, `remove` and then `add`. Send the tester [Connecting](../docs/guides/connecting.md) and the token, and paste the token before copying anything else.
 
 ## Run it locally for any MCP client
 

@@ -1,6 +1,6 @@
 # Deck source: oig-mcp
 
-*Source text for the hackathon presentation deck. Each slide has a title, the body for the slide, a suggested visual, and speaker notes. Slides follow the order of the hackathon's sample deck, with three added: who the server serves (slide 4), the watsonx Orchestrate deployment (slide 9), and the failure analysis (slide 13). Figures come from [evaluation.md](evaluation.md) and [SECURITY.md](../SECURITY.md) as of November 17, 2026, including the second Orchestrate round.*
+*Source text for the hackathon presentation deck. Each slide has a title, the body for the slide, a suggested visual, and speaker notes. Slides follow the order of the hackathon's sample deck, with three added: who the server serves (slide 4), the watsonx Orchestrate deployment (slide 9), and the failure analysis (slide 13). Figures come from [the evaluation document](evaluation-document.md) and [SECURITY.md](../../SECURITY.md) as of November 17, 2026, including the second Orchestrate round.*
 
 ---
 
@@ -115,7 +115,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
   watsonx Orchestrate agent · Claude · any MCP client
 ```
 
-**Speaker notes:** One tool per file, each registering itself. Everything outbound goes through one hardened HTTP client. Behind the API is a private pipeline built for this entry: it crawls vaoig.gov, extracts 11,264 facility responses from inspection PDFs with rules rather than an LLM, groups recurring findings into 283 clusters, and reconciles every build with OIG's own listing row by row before publishing. docs/data-pipeline.md describes each stage.
+**Speaker notes:** One tool per file, each registering itself. Everything outbound goes through one hardened HTTP client. Behind the API is a private pipeline built for this entry: it crawls vaoig.gov, extracts 11,264 facility responses from inspection PDFs with rules rather than an LLM, groups recurring findings into 283 clusters, and reconciles every build with OIG's own listing row by row before publishing. The wiki's Data source page describes each stage.
 
 ---
 
@@ -183,7 +183,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 **Visual:** A result with its provenance block, notices, and quoted fields highlighted.
 
-**Speaker notes:** This is why the Orchestrate agent needs only one instruction: answer only from what the tools return. The ambiguity rule was tested in two real hosts with two models. Asked about "the New York VA", Hermes with DeepSeek and Claude Desktop each chose VA NY Harbor themselves. After one server change, the result's next step saying not to choose and why, both asked the user instead, and Hermes offered the facilities as a list of choices with its own tool. No host prompt changed. The server-side picker itself is tested with the MCP SDK's client; neither desktop host displayed it. Measured against all ten anti-patterns in IBM's guide, the server fully meets four, mostly meets two, and partly meets four; the table, with evidence for each row, is in docs/evaluation.md.
+**Speaker notes:** This is why the Orchestrate agent needs only one instruction: answer only from what the tools return. The ambiguity rule was tested in two real hosts with two models. Asked about "the New York VA", Hermes with DeepSeek and Claude Desktop each chose VA NY Harbor themselves. After one server change, the result's next step saying not to choose and why, both asked the user instead, and Hermes offered the facilities as a list of choices with its own tool. No host prompt changed. The server-side picker itself is tested with the MCP SDK's client; neither desktop host displayed it. Measured against all ten anti-patterns in IBM's guide, the server fully meets four, mostly meets two, and partly meets four; the table, with evidence for each row, is in the evaluation document.
 
 ---
 
@@ -367,4 +367,4 @@ Each failure was read against the tool results and the data service's request tr
 
 **Visual:** None, or one icon per lesson.
 
-**Speaker notes:** The full record, entry by entry, is in docs/lessons-learned.md.
+**Speaker notes:** The full record, round by round, is in the wiki's Evaluation results.

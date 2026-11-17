@@ -1,6 +1,6 @@
 # Evaluation harness
 
-An assistant answers gold questions using only this server's tools, and its answers are scored against answers computed by SQL. How the testing works is in [`docs/testing-architecture.md`](../docs/testing-architecture.md), and the results are in [`docs/testing-results.md`](../docs/testing-results.md). The same questions run against watsonx Orchestrate's agent as described in [`orchestrate/README.md`](orchestrate/README.md).
+An assistant answers gold questions using only this server's tools, and its answers are scored against answers computed by SQL. How the testing works is in [Evaluation method](../docs/evaluation/method.md), and the results are in [Evaluation results](../docs/evaluation/results.md). The same questions run against watsonx Orchestrate's agent as described in [`orchestrate/README.md`](orchestrate/README.md).
 
 ## Run it
 
@@ -44,7 +44,7 @@ uv run --group eval python eval/phoenix/run_experiment.py --gold adversarial  # 
 
 IBM's `mcp-eval-wxai` skill runs this kind of evaluation with the agent on watsonx.ai. The harness does the same when `--model` is a watsonx.ai model ID: the agent's turns go to IBM's chat API, at temperature 0, with the server's own instructions and tools, and everything else (the questions, the code checks, the Claude judge, Phoenix) is unchanged. A Claude judge on a Llama agent also keeps the judge independent of the agent's model family.
 
-Add the skill's three values to `.env`: `WATSONX_URL` (the region's endpoint, such as `https://ca-tor.ml.cloud.ibm.com`), `WATSONX_API_KEY`, and `WATSONX_PROJECT_ID` (a project with a watsonx.ai Runtime instance). Then check the model, and run:
+Add the skill's three values to `.env`: `WATSONX_URL` (the region's endpoint, such as `https://us-south.ml.cloud.ibm.com`), `WATSONX_API_KEY`, and `WATSONX_PROJECT_ID` (a project with a watsonx.ai Runtime instance). Then check the model, and run:
 
 ```bash
 uv run --group eval python eval/phoenix/watsonx_smoke.py --model meta-llama/llama-3-3-70b-instruct
