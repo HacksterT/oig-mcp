@@ -5,7 +5,7 @@ This MCP server lets an AI assistant answer questions across what the VA Office 
 ## What you need
 
 - **Endpoint:** `https://mcp.troymd.com/mcp`
-- **Your token:** Troy sends you one. It's yours alone, so please don't share it. If it gets exposed, tell Troy and he'll replace it.
+- **Your token:** Troy sends you one. It's yours alone, so please don't share it. If it gets exposed, tell Troy and he'll replace it. Hackathon judges can ask for one through the hackathon; [Verify it yourself](evaluation.md#verify-it-yourself) lists what a token lets you check.
 - **An MCP client:** one that can send a custom header over HTTP.
 
 ## Connect

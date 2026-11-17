@@ -10,7 +10,7 @@ An entry in the [GSA MCP Server and AI Agent Government Hackathon](https://www.g
 
 ## Status
 
-The server is built, and it answers from the full data build of November 4, 2026, covering 4,410 reports and 15,649 recommendations. It is deployed in IBM watsonx Orchestrate as a local toolkit. It has been evaluated on two Claude models and an independent agent, and Orchestrate's own agent is being evaluated on the same questions. Testing is described in [docs/evaluation.md](docs/evaluation.md).
+The server is built, and it answers from the full data build of November 4, 2026, covering 4,410 reports and 15,649 recommendations. It is deployed in IBM watsonx Orchestrate as a local toolkit. It has been evaluated on two Claude models and an independent agent, and Orchestrate's own agent is being evaluated on the same questions. Testing is described in [docs/evaluation.md](docs/evaluation.md), and every saved score can be checked with one command and no keys: see [Verify it yourself](docs/evaluation.md#verify-it-yourself).
 
 | Capability | Kind |
 |---|---|
