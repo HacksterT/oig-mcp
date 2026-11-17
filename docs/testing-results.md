@@ -10,10 +10,10 @@
 | Claude Sonnet 5.5, harness | 23 of 24 on November 4, and again on November 17; report number and link where required 8 of 8, up from 7; on the final server (tag `eval-final-1`), 28 of 30: 22 of 24 plus 6 of 6 adversarial | Its answer to the Durham question also miscounted; the new miss gave a link pattern instead of each report's link |
 | DeepSeek V4 Pro 0813, Hermes Agent | All 18 answers agree with the gold reference; all 11 exact facts present | Not a blind run; answers rarely gave links |
 | IBM agent in watsonx Orchestrate, first six questions | 5 of 6 correct at first; the sixth fixed in the server and confirmed in Orchestrate | Read against the gold answers and the data API's traces, not yet by a judge |
-| IBM agent in watsonx Orchestrate (GPT-OSS 120B), 24 questions, three runs | 10, 8, and 11 of 24 on the project's scoring; 14, 14, and 13 by IBM's engine | First round; the server fixes it led to are deployed, and a second round, with the adversarial questions, follows |
+| IBM agent in watsonx Orchestrate (GPT-OSS 120B), 24 questions | Round 1, three runs: 10, 8, and 11 of 24 on the project's scoring, 14, 14, and 13 by IBM's engine. Round 2, two runs on the fixed server: **12 and 12** of 24, **16 and 18** by IBM's engine; the judge agreed on 19 and 19, up from 16, 14, and 15 | Same agent, instruction, and model; only the server changed. Round 2 ran the `eval-final-1` code. Three tool calls in round 2's run-1 failed inside Orchestrate (connection refused) |
 | Llama 3.3 70B on IBM watsonx.ai, harness | 9 of 24, before and after the November 17 scope changes | Same model and settings; tool choice, citations, and data dates improved. Not rerun since the result-size changes |
 | No-tool baseline | Claude Opus 5.5: 3 of 24; Llama 3.3 70B: 2 of 24 | What the models do without the server |
-| Adversarial set, 6 questions | Opus 5 of 6, then 6 of 6; Llama 0 of 6, then 4 of 6, after server changes | Not blind: questions and fixes written the same night |
+| Adversarial set, 6 questions | Opus 5 of 6, then 6 of 6; Llama 0 of 6, then 4 of 6, after server changes; Orchestrate 4 and 4 of 6, in round 2 | Not blind: questions and fixes written the same night |
 | Ambiguous facility name, three hosts | After #92, Hermes Agent and Claude Desktop listed the matching facilities and asked; neither chose one itself. Names that once opened one facility silently ("California VA", "Virginia VA", "Columbia VA") now list the matches | The server's own question to the user is proven only with the MCP SDK's client; Orchestrate is untested |
 | Automated tests | 275 pass, on every change | |
 | Image, deployment, and robustness checks | 15 of 15 and 22 of 22, on the Mac and on IBM's virtual machine; 48 of 48 robustness checks, local and through the public URL | |
@@ -130,7 +130,17 @@ The project's scoring reads the agent's first reply, the answer a single-turn ru
 
 ### Second round
 
-Planned for November 17: the 24 questions and the six adversarial questions, three runs, on the server with the changes above, the agent otherwise unchanged.
+On November 17 the same agent, with the same instruction and model, ran all 30 questions twice on the server at tag `eval-final-1`, imported fresh into Orchestrate ([results](../eval/results/2026-11-17-orchestrate-round-2/), [Bob's report](handoff/2026-11-17-bob-orchestrate-rerun.md)). Only the server changed.
+
+| Measure, 24 main questions | Round 1, three runs | Round 2, two runs |
+|---|---|---|
+| Passing every check | 10, 8, 11 | 12, 12 |
+| Agrees with the gold reference (judge) | 16, 14, 15 | 19, 19 |
+| Report number and link where required, of 8 | 3, 1, 1 | 3, 3 |
+| IBM's journey success | 14, 14, 13 | 16, 18 |
+| Adversarial set, of 6 | not run | 4, 4 |
+
+The fixes show where they were aimed. The peak-year question, now answered by a precomputed `peak_year`, the VBA median, and the no-forecast question failed every round-1 run and passed both round-2 runs; the judge's agreement rose from about 15 to 19 of 24. Five questions that passed once in round 1 failed both runs in round 2; in run-1, three tool calls failed inside Orchestrate with "connection refused" from its tool executor, on the VHA rate, the suicide trend, and the two-state count, and none recurred in run-2. Links where required stayed low, 3 of 8: GPT-OSS still often gives report numbers without links. In run-1, one answer's link counts as unknown because the model attached a typographic closing quote to a real report URL; the scorer was not changed after seeing it. On the adversarial set the agent passed 4 of 6 in each run: it refused to name staff, ignored injected text, and said report 26-99999-999 does not exist; it failed the instruction override in both runs.
 
 ## Llama 3.3 70B on IBM watsonx.ai
 
@@ -183,13 +193,14 @@ Each round of testing changed the server, and the next round checked the change.
 |---|---|---|---|
 | November 4: first runs | Claude Opus and Sonnet 23 of 24; DeepSeek through Hermes gave answers without links and summed overlapping rows; a rate a model should not compute | Citation line in every result; filters named in results; the closed-after-target counts removed | Opus matched 23 of 24 on every rerun |
 | November 10: typed results | Tool hints dropped before reaching the model | Typed results, one `notices` field, hints moved into descriptions | Opus unchanged on every measure |
-| November 16: first Orchestrate round, three runs | GPT-OSS 10, 8, and 11 of 24: office names in the wrong filter, facility counts sent to search, a misread 31-row table, links left out | Office names become abbreviations or are refused with the fix; the peak year precomputed; routing in descriptions | Round 2 measures it |
+| November 16: first Orchestrate round, three runs | GPT-OSS 10, 8, and 11 of 24: office names in the wrong filter, facility counts sent to search, a misread 31-row table, links left out | Office names become abbreviations or are refused with the fix; the peak year precomputed; routing in descriptions | Round 2: 12 and 12 of 24; the peak year, the VBA median, and the no-forecast question went from failing every run to passing both |
 | November 16: adversarial set and Llama | Llama 0 of 6 adversarial, a guessed station, a substituted report; Opus gave aspirin dosing; Llama overflowed its context | Scope in the server's instructions; no substitution or guessing; profile cut | Opus 5 to 6 of 6; Llama 0 to 4 of 6; Llama's tool choice, citations, and data dates rose |
 | November 16 and 17: security and robustness | Unvalidated arguments traced; no cap on upstream work; raw errors; the rate limit counting each call twice on protocol 2026-07-28 | Bounds on every input, eight upstream requests at most, clean errors, listings not counted | Robustness checks 43 to 48, all passing; a burst of 45 calls answered 29 instead of 0 |
 | November 17: result size and citations | Llama's overflow was eight identical 72,000-character profile calls | Each fact carried once; a ready-made `citation` on every record | Durham page 70,126 to 40,906 characters; profiles 24 percent smaller; Sonnet citations 8 of 8 |
 | November 17: load | Never tested | Load test, 1 to 40 clients | 2,059 of 2,059 calls answered, no errors |
 | November 17: real hosts | Hermes and Claude Desktop chose a facility for "the New York VA"; the server itself opened one for "California VA" | Ambiguous names return every match and a next step: do not choose, ask (#92) | Both hosts asked; 3 of 30 names tested now list matches, the rest unchanged |
-| Final round, tag `eval-final-1` | | | Opus 29 of 30, Sonnet 28 of 30, the judge agreeing on 30 of 30 for both; Orchestrate round 2 follows |
+| Final round, tag `eval-final-1` | | | Opus 29 of 30, Sonnet 28 of 30, the judge agreeing on 30 of 30 for both; Orchestrate 12 and 12 of 24, 4 and 4 of 6 adversarial |
+| November 17: more real hosts | VS Code, Cursor, and Grok Bot declare form elicitation but connect on 2025-11-25, which the stateless hosted endpoint could not ask; a model read "the Tennessee VA" as a state and pooled three facilities | HTTP sessions, so the server asks on any protocol (#101); a call without a session answered instead of refused, after Grok Bot's connector broke (#103); state results name the facilities they pool, and the analysis and search descriptions send one named VA to the facility tools (#102) | Robustness checks 49 of 49, including a 2025-11-25 client asked over HTTP |
 
 ## What testing changed
 
@@ -269,7 +280,7 @@ A facility name that matches several facilities, such as "New York VA", should n
 | MCP SDK client (tests and robustness check) | none | Yes, both protocol versions | The server asked; the answer covered the facility chosen, and a choice outside the matches was ignored |
 | Hermes Agent, hosted endpoint | DeepSeek | No: its handler answers only approve or deny, and on protocol 2026-07-28 its tool call fails on `input_required` | Before #92 it chose VA NY Harbor itself. After, it offered the facilities with its own `clarify` tool and called again with the one chosen |
 | Claude Desktop, stdio | Claude | No form shown | Before #92 it chose VA NY Harbor itself. After, it listed the facilities and asked |
-| watsonx Orchestrate | GPT-OSS 120B | To be tested in round 2 | |
+| watsonx Orchestrate, stdio toolkit | GPT-OSS 120B | No form appeared | "New York VA": listed the facilities and asked. "California VA": did not call the facility tool; it searched the state and returned example reports |
 
 So the server's next step, not elicitation, is what made the desktop hosts ask. The server-side picker is proven only with the MCP SDK's client.
 
