@@ -1,0 +1,432 @@
+{
+  "question": "What has OIG found at the Columbia VA?",
+  "choice": "589A4",
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "before_commit": "f133d93",
+  "after_commit": "a408cf3",
+  "runs": {
+    "before": [
+      {
+        "server_calls": 1,
+        "facility_calls": 1,
+        "model_requests": 2,
+        "tokens": 28733,
+        "usage": {
+          "input": 6,
+          "output": 2455,
+          "cache_write": 18789,
+          "cache_read": 7483
+        },
+        "tool_output_chars": 27879,
+        "form_shown": 1,
+        "stations_opened": [
+          "589A4"
+        ],
+        "looked_up_another": false,
+        "seconds": 24.0,
+        "calls": [
+          {
+            "tool": "vaoig_get_facility_profile",
+            "arguments": {
+              "facility": "Columbia"
+            },
+            "station": "589A4",
+            "matches": null,
+            "result_chars": 27879
+          }
+        ],
+        "answer": "I found **one** facility under that name: the **VA Columbia Missouri Healthcare System** (Harry S. Truman Memorial Veterans' Hospital, station 589A4). **If you meant the VA in Columbia, South Carolina (Wm. Jennings Bryan Dorn VA Medical Center), tell me and I'll look that one up.**\n\n**Data as of:** November 4, 2026 (13 days old, so it's current).\n\n## Overview\n- **14 OIG reports** from 2001 to 2026.\n- **73 recommendations.** **1 is open.** The rest are closed.\n\n## Most recent inspection: Healthcare Facility Inspection (October 2026)\nOIG inspected on February 10\u201312, 2026, and made **one recommendation, which is still open**:\n> \"Facility leaders take appropriate actions so staff maintain a safe and clean environment, in accordance with Veterans Health Administration Directive 1608(1), Comprehensive Environment of Care Program.\"\n\nReport 26-00046-284, https://www.vaoig.gov/reports/healthcare-facility-inspection/healthcare-facility-inspection-va-columbia-missouri\n\n## Earlier reports with recommendations\n- **Comprehensive Healthcare Inspection (May 2024): 7 recommendations, all closed as implemented by December 2024.** They covered:\n  - Ongoing Professional Practice Evaluations (performance reviews) for practitioners, and review of that data by leadership.\n  - Testing of door alarms on the mental health inpatient unit.\n  - Suicide prevention: same-day suicide risk evaluations after a positive screen, monthly outreach by suicide prevention coordinators, and alerting the suicide prevention team when patients report suicidal behaviors.\n\n  Report 23-00112-161, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s-0\n- **Hotline inspection after a patient's death by suicide (January 2021): 7 recommendations, all closed as implemented in 2021.** OIG found problems with care coordination and processes on the inpatient mental health unit:\n  - Teamwork with Vet Center providers, safety planning (including asking about access to lethal means), and passing suicide risk results along during handoffs.\n  - Assigning mental health treatment coordinators and making issue briefs accurate.\n  - Deciding whether to tell the family about what went wrong (an institutional disclosure).\n  - A VHA-wide recommendation to include Vet Center staff in root cause analyses.\n\n  Report 20-01521-48, https://www.vaoig.gov/reports/hotline-healthcare-inspection/deficiencies-inpatient-mental-health-care-coordination-and\n- **Comprehensive Healthcare Inspection (July 2020): 14 recommendations, all closed.** Topics included documenting utilization management decisions, root cause analysis elements, practitioner evaluations, provider exit reviews, long-term opioid therapy (risk assessments, urine drug testing, informed consent, follow-up), and suicide prevention training. Report 19-06864-183, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s\n- **Older reviews with recommendations:**\n  - Report 16-00550-145 (2017), 13 recommendations: https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/clinical-assessment-program-review-harry-s\n  - Report 13-03424-74 (2014), 13 recommendations: https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/community-based-outpatient-clinic-and-primary-9\n  - Report 13-03650-53 (2014), 18 recommendations: https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-3\n\n## Reports with no recommendations in this data\n- Three hotline inspections:\n  - Report 14-01698-176 (2015): https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-follow-facility-response-administrative\n  - Report 11-04228-72 (2012): https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-discharge-travel-and-treatment-issues\n  - Report 05-01372-60 (2006): https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-alleged-suspicious-death-delay-surgery\n- Four Combined Assessment Program reviews:\n  - Report 10-00879-126 (2010): https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s\n  - Report 07-02836-66 (2008): https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-0\n  - Report 05-00082-198 (2005): https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-1\n  - Report 00-02066-51 (2001): https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-2\n\n## Repeat finding\nOIG made the same recommendation in both 2017 and 2020: physician utilization management advisors should consistently document their decisions in the national utilization management database. Both are closed as implemented. OIG inspects against a standard checklist, so a repeat means the same issue was cited again. It doesn't mean nothing was done in between.\n\n## Next inspection\nMy **rough estimate** is around **February 2029**: the last inspection plus about three years, since the program runs on a roughly three-year cycle. **OIG publishes no inspection schedule**, so treat this as a guess.\n\n**Notes:**\n- The facility's network label (VISN 15) uses VA's old numbering. It may not match the five networks VA created on July 15, 2026.\n- The open recommendation shows what's still unresolved. It doesn't predict what OIG will cite next time.\n\nI can open any of these reports to show the facility's full response and corrective actions, or check the South Carolina facility."
+      },
+      {
+        "server_calls": 1,
+        "facility_calls": 1,
+        "model_requests": 2,
+        "tokens": 29005,
+        "usage": {
+          "input": 6,
+          "output": 2732,
+          "cache_write": 11301,
+          "cache_read": 14966
+        },
+        "tool_output_chars": 27879,
+        "form_shown": 1,
+        "stations_opened": [
+          "589A4"
+        ],
+        "looked_up_another": false,
+        "seconds": 24.5,
+        "calls": [
+          {
+            "tool": "vaoig_get_facility_profile",
+            "arguments": {
+              "facility": "Columbia VA"
+            },
+            "station": "589A4",
+            "matches": null,
+            "result_chars": 27879
+          }
+        ],
+        "answer": "I found records for the **VA Columbia Missouri Healthcare System** (Harry S. Truman Memorial Veterans' Hospital, station 589A4). There's also a VA medical center in Columbia, South Carolina, the Wm. Jennings Bryan Dorn VA Medical Center. If that's the one you meant, tell me and I'll look it up.\n\n**Data as of 2026-11-04**, which is current.\n\n## Overview\n- **14 OIG reports** from 2001 to 2026, with **73 recommendations**. **1 is still open.**\n- All of the recommendations below went to the Veterans Health Administration.\n\n## Most recent: Healthcare Facility Inspection (October 2026)\nOIG inspected the facility on February 10\u201312, 2026, and made one recommendation. **It is still open:**\n> \"Facility leaders take appropriate actions so staff maintain a safe and clean environment, in accordance with Veterans Health Administration Directive 1608(1), Comprehensive Environment of Care Program.\"\n\nReport 26-00046-284, https://www.vaoig.gov/reports/healthcare-facility-inspection/healthcare-facility-inspection-va-columbia-missouri\n\n## Comprehensive Healthcare Inspection (May 2024): 7 recommendations, all closed as implemented\n- **Reviews of doctors' and other providers' work:** OIG found that service chiefs needed to complete Ongoing Professional Practice Evaluations regularly and include service-specific criteria in them. The Clinical Executive Board also needed to review the evaluation data.\n- **Mental health unit safety:** Staff needed to test the over-the-door alarms on inpatient sleeping rooms the way the manufacturer recommends.\n- **Suicide prevention:** OIG called for:\n  - completing Comprehensive Suicide Risk Evaluations the same day for patients who screen positive\n  - at least five suicide prevention outreach activities a month\n  - telling the suicide prevention team when patients report suicidal behaviors\n\nReport 23-00112-161, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s-0\n\n## Hotline inspection after a patient's suicide (January 2021): 7 recommendations, all closed as implemented\nOIG found problems with care coordination and processes on the inpatient mental health unit. Its recommendations covered:\n- working with Vet Center providers on shared patients\n- creating safety plans together with patients, including asking them about access to lethal means\n- passing suicide risk information along when patients move between care settings\n- assigning Mental Health Treatment Coordinators\n- making issue briefs accurate\n- considering an institutional disclosure\n\nOIG also asked VHA to give written guidance nationally so that Vet Center staff are included in root cause analyses of suicide-related events.\n\nReport 20-01521-48, https://www.vaoig.gov/reports/hotline-healthcare-inspection/deficiencies-inpatient-mental-health-care-coordination-and\n\n## Comprehensive Healthcare Inspection (July 2020): 14 recommendations\nThe recommendations shown to me are all closed as implemented. They covered:\n- **Utilization management:** documenting decisions and having all required staff join reviews\n- **Root cause analyses:** including all required parts\n- **Provider evaluations:** having peers review providers, and completing exit reviews when providers leave\n- **Long-term opioid therapy:** risk assessments, urine drug testing, informed consent, and follow-up visits\n- **Suicide prevention training:** yearly refresher training for staff\n\nReport 19-06864-183, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s\n\n**Repeat finding:** OIG asked twice for physician utilization management advisors to document their decisions consistently, first in 2017 (Report 16-00550-145) and again in 2020. Both recommendations are closed as implemented. OIG inspects against a standard checklist, so a repeat means the same issue was cited again. It doesn't mean nothing was done in between.\n\n## Earlier reports\n- **2017:** Clinical Assessment Program Review, 13 recommendations. Report 16-00550-145, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/clinical-assessment-program-review-harry-s\n- **2015:** Follow-up on the facility's response to an Administrative Board of Investigation, no recommendations. Report 14-01698-176, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-follow-facility-response-administrative\n- **2014:** Outpatient Clinic and Primary Care Reviews, 13 recommendations. Report 13-03424-74, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/community-based-outpatient-clinic-and-primary-9\n- **2014:** Combined Assessment Program Review, 18 recommendations. Report 13-03650-53, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-3\n- **2012:** Hotline inspection of discharge, travel, and treatment issues. Report 11-04228-72, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-discharge-travel-and-treatment-issues\n- **2006:** Hotline inspection of an alleged suspicious death, a surgery delay, and a missing heart workup before surgery. Report 05-01372-60, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-alleged-suspicious-death-delay-surgery\n- **Combined Assessment Program Reviews:**\n  - 2010: Report 10-00879-126, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s\n  - 2008: Report 07-02836-66, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-0\n  - 2005: Report 05-00082-198, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-1\n  - 2001: Report 00-02066-51, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-2\n\n  This data copy lists no recommendations for these four reports or for the 2006 and 2012 hotline inspections.\n\n## Next inspection\n**This is an estimate, not an OIG date. OIG publishes no inspection schedule.** If OIG keeps to its roughly three-year cycle, the next inspection might come around **February 2029**, three years after the last one ended. The open finding shows what is still unresolved. It doesn't predict what OIG will cite next time.\n\n**Note on the network label:** The data tags this facility as VISN 15. That label comes from OIG's report tags, mostly in VA's old numbering, so it may not match the five networks VA created on July 15, 2026.\n\nI can pull the full text of any report, including what the facility committed to do about the open finding, or show the other 48 recommendations."
+      },
+      {
+        "server_calls": 1,
+        "facility_calls": 1,
+        "model_requests": 2,
+        "tokens": 28615,
+        "usage": {
+          "input": 6,
+          "output": 2343,
+          "cache_write": 11300,
+          "cache_read": 14966
+        },
+        "tool_output_chars": 27879,
+        "form_shown": 1,
+        "stations_opened": [
+          "589A4"
+        ],
+        "looked_up_another": false,
+        "seconds": 22.7,
+        "calls": [
+          {
+            "tool": "vaoig_get_facility_profile",
+            "arguments": {
+              "facility": "Columbia VA"
+            },
+            "station": "589A4",
+            "matches": null,
+            "result_chars": 27879
+          }
+        ],
+        "answer": "The search returned the **VA Columbia Missouri Healthcare System** (Harry S. Truman Memorial Veterans' Hospital, station 589A4). There's also a large VA in **Columbia, South Carolina** (Wm. Jennings Bryan Dorn VA Medical Center). If that's the one you meant, tell me and I'll look it up.\n\nThe data is current as of **November 4, 2026** (13 days old).\n\n## Overview\n- **14 OIG reports** from 2001 to 2026, with **73 recommendations** in total\n- **1 recommendation is still open.** The rest are closed.\n\n## Most recent inspection: Healthcare Facility Inspection (published October 5, 2026)\nOIG inspected the facility February 10\u201312, 2026, and made **one recommendation, which is still open**:\n> \"Facility leaders take appropriate actions so staff maintain a safe and clean environment, in accordance with Veterans Health Administration Directive 1608(1), Comprehensive Environment of Care Program.\"\n\nReport 26-00046-284, https://www.vaoig.gov/reports/healthcare-facility-inspection/healthcare-facility-inspection-va-columbia-missouri\n\n## Comprehensive Healthcare Inspection (published May 1, 2024)\nOIG made 7 recommendations, and all were closed as implemented by December 2024. They covered:\n- **Reviews of how well practitioners perform:** reviews weren't done regularly, didn't include criteria specific to each service, and weren't reviewed by the Clinical Executive Board.\n- **Mental health inpatient unit:** staff didn't follow the manufacturer's instructions for testing the alarms on the doors of patient sleeping rooms.\n- **Suicide prevention:**\n  - Full suicide risk evaluations weren't always done on the same day as a positive screening.\n  - Suicide prevention coordinators were expected to do at least five outreach activities a month.\n  - Staff didn't always tell the suicide prevention team when patients reported suicidal behavior.\n\nReport 23-00112-161, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s-0\n\n## Hotline inspection: suicide of a patient (published January 5, 2021)\nOIG found problems with how inpatient mental health care was coordinated before a patient died by suicide. It made 7 recommendations, all closed as implemented in 2021:\n- Better coordination with Vet Center providers who shared the patient's care\n- Building safety plans with patients, including asking directly about access to lethal means (such as firearms)\n- Passing on suicide risk results when patients move between care teams\n- Assigning a mental health treatment coordinator\n- Making sure internal incident reports to leadership are complete and accurate\n- Reviewing whether the patient's family should be formally told about problems in the patient's care (a \"disclosure\")\n- One VA-wide recommendation: include Vet Center staff when reviewing suicide-related events\n\nReport 20-01521-48, https://www.vaoig.gov/reports/hotline-healthcare-inspection/deficiencies-inpatient-mental-health-care-coordination-and\n\n## Comprehensive Healthcare Inspection (published July 9, 2020)\nOIG made 14 recommendations, all closed as implemented. The first 10 I reviewed covered:\n- Reviews of whether hospital stays and services were medically needed, and who took part in them\n- Investigations into the causes of adverse events, which were missing required parts\n- Practitioner performance reviews and reviews when providers leave\n- Long-term opioid prescribing: risk assessments, urine drug tests, informed consent, and follow-up visits\n- Yearly suicide prevention training for staff\n\nReport 19-06864-183, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s\n\n## Repeat finding\nOne issue was cited in both 2017 and 2020: physician advisors weren't consistently recording their decisions about whether hospital stays were needed in VA's national database. Both times it was closed as implemented. OIG inspects against a standard checklist, so a repeat means the same issue was cited again. It doesn't mean nothing was done in between.\n\n## Older reports\n- **Inspections in 2017 and 2014:** 13, 18, and 13 recommendations. I haven't listed their details here.\n  - Report 16-00550-145, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/clinical-assessment-program-review-harry-s\n  - Report 13-03650-53, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-3\n  - Report 13-03424-74, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/community-based-outpatient-clinic-and-primary-9\n- **Hotline reports with no recommendations:** a 2015 follow-up on the hospital's response to an internal investigation's findings (14-01698-176), 2012 problems with discharge, travel, and treatment (11-04228-72), and a 2006 report on an alleged suspicious death and surgery delay (05-01372-60).\n- **Earlier reviews (2001\u20132010) with no recommendations in this data:** 10-00879-126, 07-02836-66, 05-00082-198, 00-02066-51.\n\n## Notes\n- **Next inspection:** OIG publishes no inspection schedule. Based on its roughly three-year cycle, this tool estimates the next one around **February 2029**, counting from when the last inspection ended. That's only an estimate. Open findings show what's still unresolved, not what OIG will cite next time.\n- **Network (VISN):** the facility is listed under VISN 15, which comes from OIG's report tags and mostly uses VA's old numbering. It may not match the facility's network under the five networks VA created on July 15, 2026.\n\nI can pull the full text of any report, including the facility's response to each recommendation, or the rest of the 73 recommendations."
+      },
+      {
+        "server_calls": 1,
+        "facility_calls": 1,
+        "model_requests": 2,
+        "tokens": 28715,
+        "usage": {
+          "input": 6,
+          "output": 2443,
+          "cache_write": 11300,
+          "cache_read": 14966
+        },
+        "tool_output_chars": 27879,
+        "form_shown": 1,
+        "stations_opened": [
+          "589A4"
+        ],
+        "looked_up_another": false,
+        "seconds": 22.7,
+        "calls": [
+          {
+            "tool": "vaoig_get_facility_profile",
+            "arguments": {
+              "facility": "Columbia VA"
+            },
+            "station": "589A4",
+            "matches": null,
+            "result_chars": 27879
+          }
+        ],
+        "answer": "The search matched **Columbia, Missouri** (VA Columbia Missouri Healthcare System / Harry S. Truman Memorial Veterans' Hospital, station 589A4). There is also a VA medical center in **Columbia, South Carolina** (Wm. Jennings Bryan Dorn). If that's the one you meant, tell me and I'll look it up.\n\nThe data is current as of **November 4, 2026**, 13 days ago, so it isn't stale.\n\n## Columbia, Missouri: the main numbers\n- **14 OIG reports** from 2001 to 2026\n- **73 recommendations**, and **1 is still open**\n\n## The open recommendation\n**Report 26-00046-284** is the Healthcare Facility Inspection published October 5, 2026. The inspection itself took place February 10\u201312, 2026. It made one recommendation, and it is still open:\n> \"Facility leaders take appropriate actions so staff maintain a safe and clean environment, in accordance with Veterans Health Administration Directive 1608(1), Comprehensive Environment of Care Program.\"\n\nLink: https://www.vaoig.gov/reports/healthcare-facility-inspection/healthcare-facility-inspection-va-columbia-missouri\n\n## Recent reports (all recommendations closed as implemented)\n**Comprehensive Healthcare Inspection, 23-00112-161, May 2024. 7 recommendations, closed Sept\u2013Dec 2024.**\n- Professional practice evaluations of licensed independent practitioners: ongoing evaluations weren't done regularly, lacked service-specific criteria, and weren't reviewed by the Clinical Executive Board.\n- Alarms on the inpatient mental health unit's bedroom doors weren't tested according to the manufacturer's instructions.\n- Suicide prevention:\n  - Patients who screened positive weren't always given a full suicide risk evaluation the same day.\n  - Suicide prevention coordinators didn't always meet the requirement of 5 outreach activities a month.\n  - Staff didn't always tell the suicide prevention team when patients reported suicidal behavior.\n- Link: https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s-0\n\n**Hotline inspection after a patient's death by suicide, 20-01521-48, January 2021. 7 recommendations, closed June\u2013July 2021.** The findings covered:\n- Coordination between inpatient mental health staff and Vet Center providers\n- Safety planning, including asking patients directly about access to lethal means\n- How suicide risk information was passed between care teams\n- Assigning Mental Health Treatment Coordinators\n- Whether issue briefs were accurate\n- Reviewing whether an institutional disclosure was needed\n\nOne recommendation went to VA's national leadership (the Under Secretary for Health) about including Vet Center staff in root cause analyses.\n- Link: https://www.vaoig.gov/reports/hotline-healthcare-inspection/deficiencies-inpatient-mental-health-care-coordination-and\n\n**Comprehensive Healthcare Inspection, 19-06864-183, July 2020. 14 recommendations.**\n- Documentation and review of utilization management (decisions about whether care is medically needed)\n- Missing elements in root cause analyses\n- Professional practice evaluations and the forms required when a provider leaves\n- Long-term opioid therapy: behavior risk assessments, urine drug testing, informed consent, and follow-up\n- Annual suicide prevention training\n\nLink: https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s\n\n## Repeat finding\nOIG cited the same issue in 2017 (16-00550-145) and again in 2020 (19-06864-183): physician utilization management advisors weren't consistently recording their decisions in the national database. Both recommendations are now closed as implemented. OIG inspects every facility against a standard checklist, so a repeat means the issue was cited again, not that nothing was done in between.\n\n## Older reports\n- **16-00550-145** (2017), 13 recommendations: https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/clinical-assessment-program-review-harry-s\n- **13-03424-74** (2014, outpatient and primary care clinics), 13 recommendations: https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/community-based-outpatient-clinic-and-primary-9\n- **13-03650-53** (2014), 18 recommendations: https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-3\n- **14-01698-176** (2015), follow-up on an Administrative Board of Investigation: https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-follow-facility-response-administrative\n- **11-04228-72** (2012), problems with discharge, travel, and treatment: https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-discharge-travel-and-treatment-issues\n- **05-01372-60** (2006), a suspicious death, a delayed surgery, and a missing heart workup before surgery: https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-alleged-suspicious-death-delay-surgery\n- Facility reviews from 2010 (10-00879-126), 2008 (07-02836-66), 2005 (05-00082-198), and 2001 (00-02066-51)\n\nThis dataset lists no recommendations for these older reports, so the PDFs are the place to check the details. Several of them were matched to this facility by report title rather than station number.\n\n## Next inspection\nThe tool estimates the next inspection around **February 2029**, but that's only a guess. It assumes roughly a three-year cycle starting from when the last inspection ended. OIG doesn't publish an inspection schedule.\n\n**Network note:** the facility is tagged VISN 15, but that label comes from VA's old regional network numbers. VA created five new networks on July 15, 2026, so the label may not match the current setup.\n\nI can pull any report in full, including the facility's responses and corrective actions, or show the other 48 recommendations."
+      },
+      {
+        "server_calls": 1,
+        "facility_calls": 1,
+        "model_requests": 2,
+        "tokens": 29176,
+        "usage": {
+          "input": 6,
+          "output": 2907,
+          "cache_write": 11297,
+          "cache_read": 14966
+        },
+        "tool_output_chars": 27879,
+        "form_shown": 1,
+        "stations_opened": [
+          "589A4"
+        ],
+        "looked_up_another": false,
+        "seconds": 25.9,
+        "calls": [
+          {
+            "tool": "vaoig_get_facility_profile",
+            "arguments": {
+              "facility": "Columbia"
+            },
+            "station": "589A4",
+            "matches": null,
+            "result_chars": 27879
+          }
+        ],
+        "answer": "The search matched **VA Columbia Missouri Healthcare System** (Harry S. Truman Memorial Veterans' Hospital, station 589A4). There's also a VA in **Columbia, South Carolina** (Wm. Jennings Bryan Dorn VA Medical Center). If you meant that one, tell me and I'll look it up.\n\nData is current as of **November 4, 2026** (13 days old, not stale).\n\n## Overview: Columbia, Missouri\n- **14 OIG reports** from 2001 to 2026, with **73 recommendations** in total.\n- **1 recommendation is still open.** The rest shown here were closed as implemented.\n\n## Most recent: Healthcare Facility Inspection (published Oct. 5, 2026)\nReport 26-00046-284, https://www.vaoig.gov/reports/healthcare-facility-inspection/healthcare-facility-inspection-va-columbia-missouri\n- OIG was on site February 10\u201312, 2026, and made **one recommendation, which is still open**: *\"Facility leaders take appropriate actions so staff maintain a safe and clean environment, in accordance with Veterans Health Administration Directive 1608(1), Comprehensive Environment of Care Program.\"*\n\n## Comprehensive Healthcare Inspection (May 1, 2024)\nReport 23-00112-161, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s-0\nOIG made 7 recommendations. All were closed as implemented between September and December 2024. They covered:\n- **Reviews of doctors' work:** service chiefs should complete these reviews (called Ongoing Professional Practice Evaluations) regularly and include criteria specific to each service. The Clinical Executive Board should review the results.\n- **Mental health unit:** staff should test the alarms on sleeping-room doors the way the manufacturer recommends.\n- **Suicide prevention:**\n  - Outpatients who screen positive for suicide risk should get a full suicide risk evaluation the same day, when that's feasible and clinically appropriate.\n  - Suicide prevention coordinators should do at least five outreach activities a month.\n  - Clinical staff should notify the suicide prevention team when patients report suicidal behavior.\n\n## Review after a patient's death by suicide (Jan. 5, 2021)\nReport 20-01521-48, https://www.vaoig.gov/reports/hotline-healthcare-inspection/deficiencies-inpatient-mental-health-care-coordination-and\nOIG found problems with how the inpatient mental health unit coordinated care before a patient died by suicide. All 7 recommendations were closed as implemented in 2021. They covered:\n- Working with Vet Center providers on shared patients, including discharge planning.\n- Building safety plans with patients, including asking about access to lethal means.\n- Passing on suicide risk results when patients move between care settings.\n- Assigning a mental health treatment coordinator to each patient.\n- Making internal incident reports (issue briefs) complete and accurate.\n- Deciding whether the hospital should formally disclose what happened.\n- A VA-wide recommendation to include Vet Center staff when reviewing suicide-related events.\n\n## Comprehensive Healthcare Inspection (July 9, 2020)\nReport 19-06864-183, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s\nOIG made 14 recommendations. The 10 I retrieved were closed as implemented in 2020\u20132021. They covered:\n- **Reviews of whether care was medically needed:** physician reviewers should record their decisions in the national database, and the required staff should take part in reviewing the data.\n- **Reviews of serious incidents:** these reviews (root cause analyses) should include every required element.\n- **Doctors' work:** reviews should be done by peers with similar training, and exit reviews should be completed when providers leave.\n- **Long-term opioid therapy:** providers should do a risk assessment first, get informed consent, do urine drug testing, and follow up on time.\n- **Training:** staff should get annual suicide prevention refresher training.\n\n## Repeat finding\nOIG cited the same issue in both 2017 and 2020: physician reviewers weren't consistently recording their decisions in the national database. Both recommendations are closed as implemented. A repeat means OIG cited the same issue again under its standard checklist. It doesn't mean nothing was done in between.\n\n## Older reports\n- Report 16-00550-145 (2017, 13 recommendations): https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/clinical-assessment-program-review-harry-s\n- Report 13-03424-74 (2014, outpatient clinic and primary care reviews, 13 recommendations): https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/community-based-outpatient-clinic-and-primary-9\n- Report 13-03650-53 (2014, 18 recommendations): https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-3\n- Report 14-01698-176 (2015, follow-up on an internal VA investigation): https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-follow-facility-response-administrative\n- Report 11-04228-72 (2012, discharge, travel, and treatment issues): https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-discharge-travel-and-treatment-issues\n- Report 05-01372-60 (2006, alleged suspicious death and surgery delay): https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-alleged-suspicious-death-delay-surgery\n- Earlier facility-wide reviews (reports titled \"Combined Assessment Program Review\"):\n  - Report 10-00879-126 (2010): https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s\n  - Report 07-02836-66 (2008): https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-0\n  - Report 05-00082-198 (2005): https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-1\n  - Report 00-02066-51 (2001): https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-2\n\nThe dataset doesn't list any recommendations for the six reports from 2012 and earlier.\n\n## When OIG might inspect next\nOIG doesn't publish an inspection schedule. This dataset **estimates** the next inspection around **February 2029**: about three years after the February 2026 inspection ended, based on the program's roughly three-year cycle. Reports usually come out months after the visit. This is only an estimate, and the open item doesn't predict what OIG will find next time.\n\n**Note on VISN:** the data lists this facility in VISN 15, the regional network number taken from OIG's reports. That's mostly VA's old numbering, so it may not match the facility's network under the five new networks VA created on July 15, 2026.\n\nI can show the remaining 48 recommendations, or the facility's response to the open item, if that would help."
+      }
+    ],
+    "after": [
+      {
+        "server_calls": 1,
+        "facility_calls": 1,
+        "model_requests": 2,
+        "tokens": 29361,
+        "usage": {
+          "input": 6,
+          "output": 3012,
+          "cache_write": 11377,
+          "cache_read": 14966
+        },
+        "tool_output_chars": 28112,
+        "form_shown": 1,
+        "stations_opened": [
+          "589A4"
+        ],
+        "looked_up_another": false,
+        "seconds": 28.0,
+        "calls": [
+          {
+            "tool": "vaoig_get_facility_profile",
+            "arguments": {
+              "facility": "Columbia"
+            },
+            "station": "589A4",
+            "matches": null,
+            "result_chars": 28112
+          }
+        ],
+        "answer": "OIG has 14 reports on file for the **VA Columbia Missouri Healthcare System (Harry S. Truman Memorial Veterans' Hospital), station 589A4**. You chose this facility from three that match \"Columbia,\" so I've covered only this one. The data is current as of **November 4, 2026**, which is 13 days old and not stale.\n\n## Summary\n- **14 reports** from 2001 to 2026, with **73 recommendations** in total.\n- **1 recommendation is open.** The other 72 are closed. All 24 that I looked at closely were closed as implemented. I haven't checked the remaining 48 one by one.\n\n## The one open item, from the latest inspection\n**Healthcare Facility Inspection, published Oct 5, 2026.** OIG inspected the facility Feb 10\u201312, 2026, and made one recommendation, which is still open:\n> \"Facility leaders take appropriate actions so staff maintain a safe and clean environment, in accordance with Veterans Health Administration Directive 1608(1), Comprehensive Environment of Care Program.\"\n\nReport 26-00046-284, https://www.vaoig.gov/reports/healthcare-facility-inspection/healthcare-facility-inspection-va-columbia-missouri\n\n## Recent reports\n**Comprehensive Healthcare Inspection, May 2024: 7 recommendations, all closed as implemented in 2024.**\n- **Clinician performance reviews:** Service chiefs weren't regularly completing ongoing reviews of how licensed independent practitioners were doing their jobs. The reviews also lacked criteria specific to each service, and the Clinical Executive Board wasn't reviewing the results.\n- **Mental health unit:** Over-the-door alarms on sleeping rooms weren't being tested the way the manufacturer recommends.\n- **Suicide prevention:** For outpatients who screened positive for suicide risk, the full risk evaluation wasn't always done the same day. Suicide prevention coordinators weren't doing at least five outreach activities a month. Staff weren't always telling the suicide prevention team when patients reported suicidal behaviors.\n\nReport 23-00112-161, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s-0\n\n**Hotline inspection, Jan 2021: problems in inpatient mental health care before a patient's death by suicide. 7 recommendations, all closed as implemented in 2021.** The issues were:\n- Weak coordination with Vet Center providers on information about the patient and on discharge planning.\n- Safety plans that didn't ask patients directly whether they could get lethal means.\n- Suicide risk information not being passed along when patients moved between care settings.\n- Mental Health Treatment Coordinators not being assigned as required.\n- Issue briefs that weren't complete or accurate.\n\nOIG also asked the hospital to review the patient's final episode of care and decide whether it owed the family a formal disclosure. A further recommendation, made to VA headquarters, was to include Vet Center staff in root cause analyses of suicide-related events.\n\nReport 20-01521-48, https://www.vaoig.gov/reports/hotline-healthcare-inspection/deficiencies-inpatient-mental-health-care-coordination-and\n\n**Comprehensive Healthcare Inspection, July 2020: 14 recommendations, closed 2020\u20132021.** Topics included:\n- **Utilization management:** decisions not documented, and required staff not always taking part in team reviews.\n- Root cause analyses missing required elements.\n- Ongoing reviews of practitioners not done by peers with similar training and privileges.\n- Exit review forms for departing providers not done on time.\n- **Long-term opioid therapy:** behavior risk assessments, urine drug tests, informed consent and follow-up not always done.\n- Staff missing annual suicide prevention refresher training.\n\nReport 19-06864-183, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s\n\n## A repeated finding\nOIG made the same recommendation in two reports, in 2017 and 2020: physician utilization management advisors weren't consistently recording their decisions in the national database. Both times it was closed as implemented. The tool explains that OIG inspects against a standard checklist, so a repeat means the same issue was cited again. It doesn't mean nothing was done in between.\n\n## Older reports\n- **Clinical Assessment Program Review, 2017: 13 recommendations.** Report 16-00550-145, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/clinical-assessment-program-review-harry-s\n- **Outpatient clinic and primary care reviews, 2014: 13 recommendations.** Report 13-03424-74, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/community-based-outpatient-clinic-and-primary-9\n- **Combined Assessment Program Review, 2014: 18 recommendations.** Report 13-03650-53, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-3\n- **Seven earlier reports (2001\u20132015) with no recommendations recorded in this data:**\n  - Follow-up on an Administrative Board of Investigation, 2015: Report 14-01698-176, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-follow-facility-response-administrative\n  - Discharge, travel and treatment issues, 2012: Report 11-04228-72, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-discharge-travel-and-treatment-issues\n  - Alleged suspicious death and delay in surgery, 2006: Report 05-01372-60, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-alleged-suspicious-death-delay-surgery\n  - Combined Assessment Program reviews from 2010, 2008, 2005 and 2001:\n    - Report 10-00879-126, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s\n    - Report 07-02836-66, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-0\n    - Report 05-00082-198, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-1\n    - Report 00-02066-51, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-2\n\n## Things to keep in mind\n- **Next inspection:** The tool estimates around **February 2029**. That's just the end of the last inspection plus OIG's roughly three-year cycle. OIG doesn't publish a schedule.\n- **What the open item means:** It's an issue that hasn't been resolved yet. It doesn't predict what OIG will cite at a future inspection.\n- **Network number:** The facility is tagged VISN 15, which comes from OIG's report tags in VA's former numbering. It may not match the facility's network under the five networks VA created on July 15, 2026.\n\nI can pull the full text of any report, including the facility's response to the open environment-of-care item, or list the remaining 48 recommendations."
+      },
+      {
+        "server_calls": 1,
+        "facility_calls": 1,
+        "model_requests": 2,
+        "tokens": 28446,
+        "usage": {
+          "input": 6,
+          "output": 2091,
+          "cache_write": 11383,
+          "cache_read": 14966
+        },
+        "tool_output_chars": 28115,
+        "form_shown": 1,
+        "stations_opened": [
+          "589A4"
+        ],
+        "looked_up_another": false,
+        "seconds": 20.3,
+        "calls": [
+          {
+            "tool": "vaoig_get_facility_profile",
+            "arguments": {
+              "facility": "Columbia VA"
+            },
+            "station": "589A4",
+            "matches": null,
+            "result_chars": 28115
+          }
+        ],
+        "answer": "OIG has published **14 reports** on the **VA Columbia Missouri Healthcare System** (station 589A4, Harry S. Truman Memorial Veterans' Hospital). Those reports contain **73 recommendations**, and **1 is still open**. The data is current as of **2026-11-04** (13 days old, so not stale).\n\n*You picked the Missouri facility from 3 that match \"Columbia VA,\" so this covers only that one. OIG tags its VISN as 15, but that label uses VA's former numbering and may not match the five networks VA created on July 15, 2026.*\n\n## The one open recommendation\n**Healthcare Facility Inspection, published Oct 5, 2026** (on-site Feb 10\u201312, 2026). Report 26-00046-284, https://www.vaoig.gov/reports/healthcare-facility-inspection/healthcare-facility-inspection-va-columbia-missouri\n- \"Facility leaders take appropriate actions so staff maintain a safe and clean environment, in accordance with Veterans Health Administration Directive 1608(1), Comprehensive Environment of Care Program.\" This was the only recommendation in the report, and it's **open**.\n\n## Recent reports (all recommendations closed as implemented)\n**Comprehensive Healthcare Inspection, May 2024: 7 recommendations, all closed in Sept\u2013Dec 2024.** Report 23-00112-161, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s-0\n- **Reviews of doctors' and other independent practitioners' performance (Ongoing Professional Practice Evaluations):** reviews weren't done regularly, lacked service-specific criteria, and weren't reviewed by the Clinical Executive Board.\n- **Door alarms on the inpatient mental health unit:** staff weren't testing the over-the-door alarms on sleeping room doors the way the manufacturer recommends.\n- **Suicide prevention:**\n  - Comprehensive Suicide Risk Evaluations weren't done the same day after a positive screen.\n  - Suicide prevention coordinators weren't doing at least five outreach activities a month.\n  - The suicide prevention team wasn't told when patients reported suicidal behaviors.\n\n**Hotline inspection after a patient's suicide, Jan 2021: 7 recommendations, all closed in 2021.** Report 20-01521-48, https://www.vaoig.gov/reports/hotline-healthcare-inspection/deficiencies-inpatient-mental-health-care-coordination-and\n- Weak coordination between inpatient mental health staff and Vet Center providers.\n- Safety plans didn't include asking patients directly about access to lethal means.\n- Gaps in passing on suicide risk results when patients moved between care settings.\n- Mental Health Treatment Coordinators weren't assigned as required.\n- Issue briefs weren't comprehensive and accurate.\n- OIG asked the facility to review the patient's final episode of care to decide whether to disclose it to the family. It also asked VHA to include Vet Center staff in root cause analyses of suicide-related events.\n\n**Comprehensive Healthcare Inspection, July 2020: 14 recommendations, all closed in 2020\u20132021.** Report 19-06864-183, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s\n- **Utilization management:** decisions weren't documented, and required staff didn't take part in reviews.\n- **Root cause analyses** were missing required parts.\n- **Practitioner performance reviews and exit reviews** weren't completed.\n- **Long-term opioid therapy:** behavior risk assessments, urine drug testing, informed consent, and timely follow-up were missing.\n- **Annual suicide prevention refresher training** wasn't completed.\n\n## A finding OIG cited twice\nIn both the 2017 and 2020 inspections, OIG said physician utilization management advisors weren't consistently documenting their decisions in the national utilization management database. Both recommendations are closed as implemented. OIG inspects against a standard checklist, so a repeat means the issue came up again, not that nothing was done in between.\n\n## Older reports\n- **Clinical Assessment Program Review, 2017:** 13 recommendations. Report 16-00550-145, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/clinical-assessment-program-review-harry-s\n- **Outpatient clinic and primary care review, 2014:** 13 recommendations. Report 13-03424-74, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/community-based-outpatient-clinic-and-primary-9\n- **Combined Assessment Program Review, 2014:** 18 recommendations. Report 13-03650-53, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-3\n\nSeven other reports from 2001\u20132015 have no recommendations in this data:\n- Combined Assessment Program reviews from 2001, 2005, 2008 and 2010\n- Hotline reports on:\n  - an alleged suspicious death and delayed surgery (2006)\n  - discharge, travel and treatment issues (2012)\n  - a follow-up to an administrative board's findings (2015)\n\nI can list them all with links if you'd like.\n\n## Next inspection\nMy data source **estimates** the next inspection around **February 2029**, about three years after the last one. That's only an estimate: OIG doesn't publish a schedule. Having one open finding now doesn't predict what OIG will cite next time.\n\nI can open any of these reports to show what the facility said it would do about each finding."
+      },
+      {
+        "server_calls": 1,
+        "facility_calls": 1,
+        "model_requests": 2,
+        "tokens": 28571,
+        "usage": {
+          "input": 6,
+          "output": 2213,
+          "cache_write": 11386,
+          "cache_read": 14966
+        },
+        "tool_output_chars": 28112,
+        "form_shown": 1,
+        "stations_opened": [
+          "589A4"
+        ],
+        "looked_up_another": false,
+        "seconds": 19.6,
+        "calls": [
+          {
+            "tool": "vaoig_get_facility_profile",
+            "arguments": {
+              "facility": "Columbia"
+            },
+            "station": "589A4",
+            "matches": null,
+            "result_chars": 28112
+          }
+        ],
+        "answer": "I've answered for the **VA Columbia Missouri Healthcare System (Harry S. Truman Memorial Veterans' Hospital), station 589A4**. Three facilities match \"Columbia,\" and this is the one you picked from the list.\n\n**Data as of 2026-11-04** (13 days old, so it's current).\n\n## Overview\n- **14 OIG reports** from 2001 to 2026\n- **73 recommendations**, of which **1 is still open**\n\n## Open recommendation\n**Most recent inspection:** Healthcare Facility Inspection, done on site Feb 10\u201312, 2026 and published Oct 5, 2026. It made one recommendation, which is still open:\n> \"Facility leaders take appropriate actions so staff maintain a safe and clean environment, in accordance with Veterans Health Administration Directive 1608(1), Comprehensive Environment of Care Program.\"\n\nReport 26-00046-284, https://www.vaoig.gov/reports/healthcare-facility-inspection/healthcare-facility-inspection-va-columbia-missouri\n\n## Earlier reports (all recommendations listed below are closed and implemented)\n- **Comprehensive Healthcare Inspection, 2024** (7 recommendations, closed Sept\u2013Dec 2024). Topics:\n  - Ongoing Professional Practice Evaluations of practitioners, including the Clinical Executive Board's review of them\n  - Testing of over-the-door alarms on mental health inpatient rooms\n  - Same-day Comprehensive Suicide Risk Evaluations after a positive suicide risk screen\n  - Suicide prevention outreach, and notifying the suicide prevention team\n\n  Report 23-00112-161, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s-0\n- **Hotline inspection, 2021: \"Deficiencies in Inpatient Mental Health Care Coordination and Processes Prior to a Patient's Death by Suicide\"** (7 recommendations, closed mid-2021). Topics:\n  - Coordination between the inpatient mental health unit and the Vet Center\n  - Safety planning, including asking patients about access to lethal means\n  - Communicating suicide risk at handoffs\n  - Assigning a Mental Health Treatment Coordinator\n  - Accurate issue briefs\n  - Reviewing whether an institutional disclosure was warranted\n  - VHA-wide guidance to include Vet Centers in root cause analyses\n\n  Report 20-01521-48, https://www.vaoig.gov/reports/hotline-healthcare-inspection/deficiencies-inpatient-mental-health-care-coordination-and\n- **Comprehensive Healthcare Inspection, 2020** (14 recommendations). Topics:\n  - Utilization management documentation and reviews\n  - Elements required in root cause analyses\n  - Provider practice evaluations and exit reviews\n  - Long-term opioid therapy: risk assessments, urine drug testing, informed consent, and follow-up\n  - Suicide prevention training\n\n  Report 19-06864-183, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s\n- **Clinical Assessment Program Review, 2017** (13 recommendations). Report 16-00550-145, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/clinical-assessment-program-review-harry-s\n- **Two reviews in 2014:**\n  - Combined Assessment Program Review (18 recommendations). Report 13-03650-53, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-3\n  - Outpatient clinic and primary care review (13 recommendations). Report 13-03424-74, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/community-based-outpatient-clinic-and-primary-9\n- **Older reports with no recommendations in this data:**\n  - Follow-up on an Administrative Board of Investigation, 2015. Report 14-01698-176, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-follow-facility-response-administrative\n  - Discharge, travel, and treatment issues, 2012. Report 11-04228-72, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-discharge-travel-and-treatment-issues\n  - Alleged suspicious death and delay in surgery, 2006. Report 05-01372-60, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-alleged-suspicious-death-delay-surgery\n  - Combined Assessment Program reviews in 2010, 2008, 2005, and 2001: Reports 10-00879-126, 07-02836-66, 05-00082-198, and 00-02066-51. The links are on vaoig.gov under each report number.\n\n## Repeat finding\nOIG made the same recommendation in both 2017 and 2020: physician utilization management advisors need to document their decisions in the National Utilization Management Integration database. Both are closed and implemented. In the tool's words: *\"OIG inspects against a standard protocol, so a repeat shows the same issue was cited again, not that nothing was done in between.\"*\n\n## Next inspection (estimate only)\nThis tool estimates about **February 2029**, roughly three years after the 2026 inspection ended, because the program runs on a cycle of about three years. **OIG doesn't publish a schedule**, and the open item above doesn't tell you what OIG will cite next time.\n\n## Notes from the data\n- The VISN number (15) comes from OIG's tags, which mostly use VA's old numbering. It may not match the five networks VA created on July 15, 2026.\n- I haven't listed all 73 recommendations here. I can show the rest (mainly from 2014 and 2017), or pull any report's full text with the facility's responses."
+      },
+      {
+        "server_calls": 1,
+        "facility_calls": 1,
+        "model_requests": 2,
+        "tokens": 29064,
+        "usage": {
+          "input": 6,
+          "output": 2701,
+          "cache_write": 11391,
+          "cache_read": 14966
+        },
+        "tool_output_chars": 28115,
+        "form_shown": 1,
+        "stations_opened": [
+          "589A4"
+        ],
+        "looked_up_another": false,
+        "seconds": 25.2,
+        "calls": [
+          {
+            "tool": "vaoig_get_facility_profile",
+            "arguments": {
+              "facility": "Columbia VA"
+            },
+            "station": "589A4",
+            "matches": null,
+            "result_chars": 28115
+          }
+        ],
+        "answer": "Here's OIG's record for the **VA Columbia Missouri Healthcare System** (Harry S. Truman Memorial Veterans' Hospital, station 589A4). Three facilities matched \"Columbia VA,\" and you picked this one, so this answer covers only the Missouri facility.\n\n**Data as of November 4, 2026** (13 days old, so it's current).\n\n## Summary\n- **14 OIG reports** from 2001 to 2026\n- **73 recommendations** in total. **1 is still open**, and the rest are closed as implemented.\n\n## Most recent inspection: Healthcare Facility Inspection (October 2026)\nOIG inspected the facility February 10\u201312, 2026, and published the report October 5, 2026. It made one recommendation, which is still **open**:\n> \"Facility leaders take appropriate actions so staff maintain a safe and clean environment, in accordance with Veterans Health Administration Directive 1608(1), Comprehensive Environment of Care Program.\"\n\nReport 26-00046-284, https://www.vaoig.gov/reports/healthcare-facility-inspection/healthcare-facility-inspection-va-columbia-missouri\n\n## Earlier reports with findings\n**Comprehensive Healthcare Inspection (May 2024): 7 recommendations, all closed as implemented (2024)**\n- Physicians' performance reviews (Ongoing Professional Practice Evaluations): service chiefs weren't doing them regularly, they lacked criteria specific to each service, and the Clinical Executive Board needed to review the results.\n- Testing the over-the-door alarms on sleeping-room doors in the inpatient mental health unit.\n- Suicide prevention: finishing same-day suicide risk evaluations after a positive screen, doing at least five outreach activities a month, and telling the suicide prevention team when patients report suicidal behavior.\n\nReport 23-00112-161, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s-0\n\n**Hotline inspection: Deficiencies in Inpatient Mental Health Care Coordination and Processes Prior to a Patient's Death by Suicide (January 2021): 7 recommendations, all closed as implemented (2021)**\n- Coordination between inpatient mental health staff and Vet Center providers.\n- Building safety plans with patients, including asking about access to lethal means.\n- Passing on suicide risk results when patients are handed off between staff.\n- Assigning a Mental Health Treatment Coordinator.\n- Accurate issue briefs (internal reports on significant events).\n- A full review to decide whether the hospital should disclose the case to the family.\n- A VHA-wide recommendation to include Vet Center staff in root cause analyses.\n\nReport 20-01521-48, https://www.vaoig.gov/reports/hotline-healthcare-inspection/deficiencies-inpatient-mental-health-care-coordination-and\n\n**Comprehensive Healthcare Inspection (July 2020): 14 recommendations, all closed as implemented**\nThese covered utilization management (reviews of whether care and admissions were appropriate), required parts of root cause analyses, performance reviews of physicians, exit reviews when providers leave, long-term opioid therapy, and annual suicide prevention training. The opioid findings were risk assessments, urine drug testing, informed consent, and follow-up visits.\n\nReport 19-06864-183, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s\n\n**Other reports with recommendations, all closed:**\n- Clinical Assessment Program Review (March 2017), 13 recommendations: Report 16-00550-145, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/clinical-assessment-program-review-harry-s\n- Outpatient Clinic and Primary Care Clinic Reviews (February 2014), 13 recommendations: Report 13-03424-74, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/community-based-outpatient-clinic-and-primary-9\n- Combined Assessment Program Review (January 2014), 18 recommendations: Report 13-03650-53, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-3\n\n## Repeat finding\nOIG made the same standard recommendation in 2017 and again in 2020: physicians who advise on utilization management should consistently record their decisions in the national tracking database. It was closed as implemented both times. OIG inspects against a standard checklist, so a repeat means the issue came up again. It doesn't mean nothing was done in between.\n\n## Older reports with no recommendations in this data\n- Follow-up on an Administrative Board of Investigation (2015): 14-01698-176, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-follow-facility-response-administrative\n- Discharge, travel, and treatment issues (2012): 11-04228-72, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-discharge-travel-and-treatment-issues\n- Alleged suspicious death, delay in surgery, and missing heart workup before surgery (2006): 05-01372-60, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-alleged-suspicious-death-delay-surgery\n- Combined Assessment Program reviews from 2010, 2008, 2005 and 2001: 10-00879-126 (https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s), 07-02836-66 (https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-0), 05-00082-198 (https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-1), 00-02066-51 (https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-2)\n\nThe full reports may still contain recommendations that aren't in this data, so check the PDFs for details.\n\n## Next inspection (estimate only)\nThe tool estimates the next inspection around **February 2029**. That's three years after the 2026 inspection ended, based on the program's roughly three-year cycle. **OIG doesn't publish a schedule**, and the open finding doesn't predict what OIG will cite next time.\n\n## Notes\n- The network number on file (VISN 15) comes from OIG's report tags, which mostly use VA's old numbering. It may not match the facility's network under the five networks VA created on July 15, 2026.\n- This is OIG's oversight record, not a rating of the facility.\n\nI can open any of these reports to show the facility's response and corrective actions, or check one of the other Columbia facilities."
+      },
+      {
+        "server_calls": 1,
+        "facility_calls": 1,
+        "model_requests": 2,
+        "tokens": 29046,
+        "usage": {
+          "input": 6,
+          "output": 2698,
+          "cache_write": 11376,
+          "cache_read": 14966
+        },
+        "tool_output_chars": 28112,
+        "form_shown": 1,
+        "stations_opened": [
+          "589A4"
+        ],
+        "looked_up_another": false,
+        "seconds": 24.9,
+        "calls": [
+          {
+            "tool": "vaoig_get_facility_profile",
+            "arguments": {
+              "facility": "Columbia"
+            },
+            "station": "589A4",
+            "matches": null,
+            "result_chars": 28112
+          }
+        ],
+        "answer": "This covers the **VA Columbia Missouri Healthcare System** (Harry S. Truman Memorial Veterans' Hospital, station 589A4), the one you picked from the three facilities that matched \"Columbia.\" The data is current as of **November 4, 2026** (13 days old, so not stale).\n\n## Overview\n- **14 OIG reports** from 2001 to 2026, with **73 recommendations** in total.\n- **1 recommendation is still open.** All the others I reviewed were closed as implemented.\n\n## Most recent inspection (October 2026), with the one open item\n**Healthcare Facility Inspection**, done February 10\u201312, 2026, published October 5, 2026: Report 26-00046-284, https://www.vaoig.gov/reports/healthcare-facility-inspection/healthcare-facility-inspection-va-columbia-missouri\n- One recommendation, still **open**: *\"Facility leaders take appropriate actions so staff maintain a safe and clean environment, in accordance with Veterans Health Administration Directive 1608(1), Comprehensive Environment of Care Program.\"*\n\n## Comprehensive Healthcare Inspection (May 2024)\nReport 23-00112-161, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s-0. Seven recommendations, all closed as implemented by December 2024:\n- **Reviews of doctors' and other independent practitioners' work:** reviews weren't done regularly, didn't include service-specific criteria, and weren't reviewed by the Clinical Executive Board.\n- **Mental health inpatient safety:** staff weren't following the manufacturer's instructions for testing alarms over sleeping-room doors.\n- **Suicide prevention:**\n  - Same-day Comprehensive Suicide Risk Evaluations after a positive screen\n  - At least five outreach activities a month\n  - Notifying the suicide prevention team when patients report suicidal behavior\n\n## Hotline inspection after a patient's death by suicide (January 2021)\n*Deficiencies in Inpatient Mental Health Care Coordination and Processes Prior to a Patient's Death by Suicide*: Report 20-01521-48, https://www.vaoig.gov/reports/hotline-healthcare-inspection/deficiencies-inpatient-mental-health-care-coordination-and. Seven recommendations, all closed as implemented in 2021:\n- Better teamwork between inpatient mental health staff and Vet Center providers\n- Making safety plans with patients, including asking about access to lethal means\n- Passing suicide risk results along when patients move between care settings\n- Assigning Mental Health Treatment Coordinators\n- Accurate issue briefs\n- Deciding whether a formal disclosure to the family was warranted\n- Guidance for all of VHA to include Vet Center staff in root cause analyses\n\n## Comprehensive Healthcare Inspection (July 2020)\nReport 19-06864-183, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/comprehensive-healthcare-inspection-harry-s. Fourteen recommendations, all closed as implemented in 2020\u201321. They included:\n- **Utilization management:** recording decisions and taking part in team reviews\n- **Root cause analyses:** missing required elements\n- **Practitioner reviews:** peer evaluations and exit reviews when providers leave\n- **Long-term opioid therapy:** behavior risk assessments, urine drug testing, informed consent, and timely follow-up\n- **Suicide prevention:** annual refresher training\n\n## Older reports\n- Clinical Assessment Program Review (2017, 13 recommendations): Report 16-00550-145, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/clinical-assessment-program-review-harry-s\n- Clinic and primary care reviews (2014, 13 recommendations): Report 13-03424-74, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/community-based-outpatient-clinic-and-primary-9\n- Combined Assessment Program Review (2014, 18 recommendations): Report 13-03650-53, https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-3\n- Follow-up on how the facility handled an Administrative Board of Investigation (2015): Report 14-01698-176, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-follow-facility-response-administrative\n- Discharge, travel, and treatment issues (2012): Report 11-04228-72, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-discharge-travel-and-treatment-issues\n- Alleged suspicious death, delay in surgery, and no heart workup before surgery (2006): Report 05-01372-60, https://www.vaoig.gov/reports/hotline-healthcare-inspection/healthcare-inspection-alleged-suspicious-death-delay-surgery\n- Combined Assessment Program Reviews from 2010, 2008, 2005, and 2001: Reports 10-00879-126 (https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s), 07-02836-66 (https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-0), 05-00082-198 (https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-1), and 00-02066-51 (https://www.vaoig.gov/reports/comprehensive-healthcare-inspection-program/combined-assessment-program-review-harry-s-2)\n\nThe dataset lists no recommendations for these last six reports.\n\n## Repeat finding\nOne recommendation appeared in two reports, the 2017 and 2020 inspections: physician advisors weren't consistently recording their decisions in the National Utilization Management Integration database. Both times it was closed as implemented. *How repeats are identified:* \"The same templated recommendation in more than one report for this facility. OIG inspects against a standard protocol, so a repeat shows the same issue was cited again, not that nothing was done in between.\"\n\n## Next inspection\nThis tool **estimates** the next inspection around **February 2029**. OIG doesn't publish a schedule. The estimate is just \"the most recent inspection plus about three years, from the program's stated approximately three-year cycle,\" counted from the end of the February 2026 inspection. The open item above is simply what's still unresolved. It doesn't predict what OIG will cite next time.\n\n## Notes from the data source\n- The facility's VISN (regional network) number comes from OIG's report tags, mostly in VA's old numbering. It may not match the five networks VA created on July 15, 2026.\n- This is a factual record of OIG findings, not a rating of the facility.\n\nI can also show what the facility said it would do about any of these findings, or the details of the older reports."
+      }
+    ]
+  },
+  "summary_before": {
+    "server_calls": {
+      "median": 1,
+      "each": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "facility_calls": {
+      "median": 1,
+      "each": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "model_requests": {
+      "median": 2,
+      "each": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "tokens": {
+      "median": 28733,
+      "each": [
+        28733,
+        29005,
+        28615,
+        28715,
+        29176
+      ]
+    },
+    "tool_output_chars": {
+      "median": 27879,
+      "each": [
+        27879,
+        27879,
+        27879,
+        27879,
+        27879
+      ]
+    },
+    "looked_up_another": 0,
+    "form_shown": 5
+  },
+  "summary_after": {
+    "server_calls": {
+      "median": 1,
+      "each": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "facility_calls": {
+      "median": 1,
+      "each": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "model_requests": {
+      "median": 2,
+      "each": [
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "tokens": {
+      "median": 29046,
+      "each": [
+        29361,
+        28446,
+        28571,
+        29064,
+        29046
+      ]
+    },
+    "tool_output_chars": {
+      "median": 28112,
+      "each": [
+        28112,
+        28115,
+        28112,
+        28115,
+        28112
+      ]
+    },
+    "looked_up_another": 0,
+    "form_shown": 5
+  }
+}
