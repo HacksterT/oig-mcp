@@ -124,7 +124,7 @@ Without the server, neither model could give the data's figures, beyond one by O
 | Platform | Questions passing every check | Notes |
 |---|---|---|
 | Claude Opus 5.5, harness | 23 of 24 on every run from November 4 to 17; 22 of 24 after the November 17 result-size changes | Each failure is a scoring call on a correct answer, kept as a failure |
-| Claude Sonnet 5.5, harness | 23 of 24 | |
+| Claude Sonnet 5.5, harness | 23 of 24 on November 4 and again on November 17, after every server change | Citations where required rose from 7 of 8 to 8 of 8 |
 | Llama 3.3 70B, harness on watsonx.ai | 9 of 24, before and after the November 17 server changes | Tool choice, citations, and data dates improved; one question overflows the model's context |
 | GPT-OSS 120B, the Orchestrate agent, three runs | 10, 8, and 11 of 24 on the project's scoring; IBM's engine: 14, 14, and 13 | Server changes from these runs are deployed; a second round, with the adversarial questions, is planned for November 17 |
 | DeepSeek V4 Pro, Hermes Agent | All 18 answers agree with the gold reference | Not a blind run |
