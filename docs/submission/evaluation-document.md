@@ -188,6 +188,18 @@ The model and its settings were the same before and after; only the server chang
 
 The whole sequence, round by round, with what each found, changed, and measured, is in [Evaluation results](../evaluation/results.md#the-improvement-journey).
 
+### Asking the user instead of guessing
+
+A facility name that matches several, such as "the Columbia VA" (South Carolina, Missouri, and Washington, DC), is never resolved by the model. Where the host can show MCP forms, the server asks the user directly (elicitation); everywhere else the result lists the matches with a next step: do not choose, ask, then call again with the station number. Before that next step, Hermes Agent and Claude Desktop each chose VA NY Harbor for "the New York VA"; after it, both asked, as did the Orchestrate agent. The form itself was shown in Claude Code. The model never sees the form, so at first it treated the user's pick as the server's guess; a notice in the result ([#114](https://github.com/HacksterT/oig-mcp/pull/114)) fixed that:
+
+| Claude Code, "the Columbia VA" | Calls to the server | Model requests | Tokens processed | Answer |
+|---|---|---|---|---|
+| Take 1, before #114 | 3 | 6 | 431,343 | Doubted the user's pick and asked again |
+| Take 2, before #114 | 4 | 5 | 316,094 | Looked up the other facility too and answered for both |
+| Take 3, after #114 | 1 | 3 | 171,280 | Answered for the facility the user chose |
+
+One take each, so the size of the saving is an illustration; most tokens are Claude Code's own cached context. No desktop app has shown the form yet: Claude Desktop accepts URL mode only. Detail: [Evaluation results](../evaluation/results.md#the-form-in-claude-code).
+
 ### Operational metrics
 
 Measured through the server against the hosted data API: median tool latency from about 0.13 seconds (analysis) to about 2 seconds (the inspection brief, which runs up to ten searches). In Orchestrate the agent's average response time was 5.9 to 7.6 seconds per turn, most of it the model. Of 72 Orchestrate conversations, 4 met a platform error; every call that reached the data API succeeded. A full Claude Opus 5.5 run of 24 questions costs about $3 at list prices, including the judge.

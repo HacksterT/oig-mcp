@@ -21,7 +21,7 @@
 | MCP Python SDK client | Form | Yes | The tests and the robustness check: asked, answered, and invalid or malformed answers ignored, on both protocol versions over HTTP; a URL-only declaration is never asked |
 | VS Code 1.145 (Copilot chat) | Form and URL | Expected, over stdio or HTTP | Not yet tried |
 | Cursor 3.26 | Form | Expected, over stdio or HTTP | Not yet tried |
-| Claude Code 2.1 | Form | Yes, over stdio | "Columbia VA": the form listed three facilities and the answer covered the one chosen. Before the choice notice, the model doubted the choice or looked up the others too |
+| Claude Code 2.1 | Form | Yes, over stdio | "Columbia VA": the form listed three facilities and the answer covered the one chosen. Before the choice notice, the model doubted the choice or looked up the others too; after it, one call instead of three or four ([the three takes](../evaluation/results.md#the-form-in-claude-code)) |
 | Grok (xAI) | Form and URL | Expected | Grok Bot over HTTP: the matches and the next step; its form not yet seen |
 | Claude Desktop 5.11 | URL only | No | The matches; after the next step was added, it asked in chat |
 | Hermes Agent | Approve or deny only | No | Before the next step, it chose a facility; after, it offered the matches with its own `clarify` tool |
