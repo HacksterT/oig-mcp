@@ -24,7 +24,7 @@ Each runs against a build or a live server, with no model involved.
 | `deploy/verify_deployment.py` | Who may reach `/mcp` (8 ways of being refused), that it opens a session, and that tools get live data | 22 of 22 |
 | `deploy/robustness_check.py` | Every tool under traversal, injection, out-of-bound values, and bursts past every limit; each reply checked for stack traces, addresses, and credentials; the facility question on both protocol versions | 49 of 49 |
 | `deploy/load_test.py` | Throughput and latency from 1 to 40 concurrent clients | 2,059 of 2,059 calls answered ([results](../evaluation/results.md#load-test)) |
-| `tests/`, on every change in CI | Every tool's inputs, results, schemas, errors, authentication, and security boundaries | 300 pass |
+| `tests/`, on every change in CI | Every tool's inputs, results, schemas, errors, authentication, and security boundaries | 313 pass |
 
 ## Operations
 

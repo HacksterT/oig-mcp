@@ -68,7 +68,7 @@ Ask: "Check the OIG dataset status." The answer should give a data date of Novem
 
 - "Staff left medication carts unlocked in a hallway. Has OIG cited this?"
 - "Help me prepare for the next inspection at the VA El Paso Healthcare System."
-- "What has OIG found at the Columbia VA?" It matches two facilities, so the host should show a choice or ask which one ([Elicitation](../architecture/mcp-features.md#elicitation)).
+- "What has OIG found at the Columbia VA?" It matches three facilities, so the host should show a choice or ask which one ([Elicitation](../architecture/mcp-features.md#elicitation)).
 
 ## What to expect on the hosted endpoint
 

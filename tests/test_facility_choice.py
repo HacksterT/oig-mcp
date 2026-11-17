@@ -7,6 +7,7 @@ any other client gets the "several facilities match" answer unchanged.
 
 from __future__ import annotations
 
+import json
 from types import SimpleNamespace
 from typing import Any
 
@@ -82,6 +83,13 @@ async def test_the_user_chooses_and_the_tool_answers_for_that_facility(
         result = (await client.call_tool(tool, {"facility": "Du"})).structured_content
     assert chose_durham(result, key)
     assert "facilities/558" in fetched(two_matches)
+    # The model never sees the form, so the result says the user chose.
+    assert result["notices"][0] == (
+        f'The user chose {DURHAM_NAME} (558) from 2 facilities that match "Du", '
+        "in a form the server showed them. Answer for this facility only: do not "
+        "look up the others or ask again unless the user asks."
+    )
+    assert "_user_choice" not in json.dumps(result)
     assert len(asked) == 1
     assert 'match "Du"' in asked[0]["message"]
     choices = asked[0]["schema"]["properties"]["value"]["oneOf"]
@@ -175,6 +183,7 @@ async def test_one_match_asks_nothing(api: FakeApi) -> None:
         result = await client.call_tool(PROFILE_TOOL, {"facility": "Du"})
     assert result.structured_content["station_number"] == "558"
     assert asked == []
+    assert not any("chose" in n for n in result.structured_content["notices"])
 
 
 async def test_a_session_that_never_answers_gets_the_matches(

@@ -41,7 +41,7 @@ Three things make the improvement credible rather than chance:
 - **The Orchestrate agent failed the instruction-override question** in both adversarial runs.
 - **Llama 3.3 70B stayed at 9 of 24.** Its tool choice, citations, and data dates improved, and the cause of its context overflow was found and the page cut by 42 percent, but Llama was not rerun, so a fix there is unproven.
 - **The last three server changes** ([#101](https://github.com/HacksterT/oig-mcp/pull/101) to [#103](https://github.com/HacksterT/oig-mcp/pull/103)) are unmeasured on weaker models: Orchestrate's round 2 ran the earlier code. Claude Sonnet shows they broke nothing.
-- **The server-side facility form** (MCP elicitation) is proven end to end only with the MCP SDK's client; the desktop hosts tried did not display it.
+- **The server-side facility form** (MCP elicitation) was shown in one real host, Claude Code, after this assessment's rounds; the desktop hosts tried, Claude Desktop and Hermes, did not display it.
 
 ## What the Phoenix evaluators showed
 
@@ -68,7 +68,7 @@ The Phoenix evaluation was a second, independent grading of the saved answers, w
 
 **Supported:** changing only the server raised a fixed agent from 10 or 11 to 12 of 24 questions, and its judged agreement from about 15 to 19 of 24, measured three ways; the server lifts models from 2 or 3 of 24 to between 9 and 23; it answered every call under load and passes every hostile-input check.
 
-**Not supported:** statistical significance, a blind test, generalization to new questions, or the elicitation form working in a desktop host.
+**Not supported:** statistical significance, a blind test, generalization to new questions, or the elicitation form working in a desktop app (it works in Claude Code, a terminal host).
 
 ## What we would do differently
 

@@ -19,7 +19,7 @@
 | No-tool baseline | Claude Opus 5.5: 3 of 24; Llama 3.3 70B: 2 of 24 | What the models do without the server |
 | Adversarial set, 6 questions | Opus 5 of 6, then 6 of 6; Llama 0 of 6, then 4 of 6, after server changes; Orchestrate 4 and 4 of 6, in round 2 | Not blind: questions and fixes written the same night |
 | Ambiguous facility name, three hosts | After #92, Hermes Agent and Claude Desktop listed the matching facilities and asked; neither chose one itself. Names that once opened one facility silently ("California VA", "Virginia VA", "Columbia VA") now list the matches | The server's own question to the user is proven only with the MCP SDK's client; Orchestrate is untested |
-| Automated tests | 300 pass, on every change | |
+| Automated tests | 313 pass, on every change | |
 | Image, deployment, and robustness checks | 15 of 15 and 22 of 22, on the Mac and on IBM's virtual machine; 48 of 48 robustness checks, local and through the public URL | |
 | Load test, 1 to 40 concurrent clients | All 2,059 calls answered, no errors; median 0.33 s to 1.8 s | One run, one Mac, not to failure |
 
@@ -271,6 +271,8 @@ Testing changed the server, the scorer, and the data, not only the scores. Each 
 | A facility name that matched one facility was taken as certain, though "California VA" most likely means the state and "Columbia VA" is in two states ([#92](https://github.com/HacksterT/oig-mcp/pull/92)) | Server | Unless a name is exact, the lookup also searches the place alone and as a state, and returns every facility found |
 | Hermes Agent and Claude Desktop received the matches for "the New York VA" and chose one themselves (#92) | Server | The matches carry a next step: do not choose, why, and what to do. Both hosts then asked |
 | Hermes Agent advertises elicitation on protocol 2026-07-28 but its tool call fails on the server's question | Client | Recorded; on its default protocol Hermes gets the matches and asks. No server change |
+| In Claude Code, the first host seen to show the server's form, the model treated the facility the user chose as the server's guess: it called it "the wrong place" in one session and looked up the other facilities in another | Server | The result now opens with a notice that the user chose this facility and that the answer covers it alone |
+| "Columbia SC" and "Columbia, South Carolina" matched no facility, so a model guessed a station number | Server | A trailing state, abbreviated or spelled out, is used as a state filter; "VA" is never read as Virginia |
 | Sonnet, in the final round, gave a link pattern ending "followed by its slug" instead of each report's link | Model | Kept as a failure; the server's results carried full links |
 | The Durham question asked for "every inspection" | Question | OIG's hotline reports are also inspections, so the gold list was too narrow; reworded by report type and recomputed |
 
@@ -318,7 +320,7 @@ A facility name that matches several facilities, such as "New York VA", should n
 | Claude Desktop, stdio | Claude | No form shown | Before #92 it chose VA NY Harbor itself. After, it listed the facilities and asked |
 | watsonx Orchestrate, stdio toolkit | GPT-OSS 120B | No form appeared | "New York VA": listed the facilities and asked. "California VA": did not call the facility tool; it searched the state and returned example reports |
 
-So the server's next step, not elicitation, is what made the desktop hosts ask. The server-side picker is proven only with the MCP SDK's client.
+So the server's next step, not elicitation, is what made the desktop hosts ask. The server's own form was later shown in Claude Code over stdio, asked about "the Columbia VA": it listed three facilities, and the answer covered the one chosen.
 
 ## Load test
 

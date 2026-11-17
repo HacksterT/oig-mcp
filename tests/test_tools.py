@@ -17,6 +17,7 @@ from fastmcp.exceptions import ToolError
 
 from oig_mcp import failures, guidance, upstream
 from oig_mcp.app import mcp
+from oig_mcp.tools.facility_profile import split_state
 from tests.conftest import FakeApi
 
 AS_OF = {"data_as_of": "2026-11-01"}
@@ -596,6 +597,56 @@ async def test_facility_lookup_does_not_retry_a_plain_name(api: FakeApi) -> None
     result = await call("vaoig_get_facility_profile", facility="West Haven")
     assert len(api.requests) == 1
     assert "No facility matched" in result["error"]
+
+
+@pytest.mark.parametrize(
+    ("facility", "name", "state"),
+    [
+        ("Columbia SC", "Columbia", "South Carolina"),
+        ("Columbia, South Carolina", "Columbia", "South Carolina"),
+        ("Kansas City mo", "Kansas City", "Missouri"),
+        ("Washington DC", "Washington", "District of Columbia"),
+        ("Clarksburg West Virginia", "Clarksburg", "West Virginia"),
+        ("the Columbia VA, SC", "Columbia", "South Carolina"),
+    ],
+)
+async def test_a_name_ending_in_a_state_is_looked_up_in_that_state(
+    api: FakeApi, facility: str, name: str, state: str
+) -> None:
+    def route(request: Any) -> dict[str, Any]:
+        params = request.url.params
+        in_state = params.get("q") == name and params.get("state") == state
+        return _lookup(_facility()) if in_state else _lookup()
+
+    api.routes["facilities"] = route
+    api.routes["facilities/528A6"] = _profile()
+    result = await call("vaoig_get_facility_profile", facility=facility)
+    assert result["station_number"] == "528A6"
+
+
+@pytest.mark.parametrize(
+    "place", ["Columbia", "Tennessee", "New York", "West Virginia", "Medical Center"]
+)
+def test_a_name_without_a_trailing_state_is_not_split(place: str) -> None:
+    assert split_state(place) is None
+
+
+async def test_va_is_never_read_as_virginia(api: FakeApi) -> None:
+    api.routes["facilities"] = _lookup()
+    await call("vaoig_get_facility_profile", facility="Richmond VA")
+    assert all(r.url.params.get("state") != "Virginia" for r in api.requests)
+
+
+async def test_a_state_reading_that_finds_nothing_changes_nothing(
+    api: FakeApi,
+) -> None:
+    # "in" read as Indiana finds nothing, so the name is looked up as before.
+    api.routes["facilities"] = lambda r: (
+        _lookup(_facility()) if r.url.params.get("q") == "Northport in" else _lookup()
+    )
+    api.routes["facilities/528A6"] = _profile()
+    result = await call("vaoig_get_facility_profile", facility="Northport in")
+    assert result["station_number"] == "528A6"
 
 
 async def test_state_filter_accepts_a_postal_code(api: FakeApi) -> None:

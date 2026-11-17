@@ -23,6 +23,7 @@ from oig_mcp.models import FacilityMatches, InspectionBrief, NotFound, output_sc
 from oig_mcp.results import build_provenance, citation, report_urls, with_citations
 from oig_mcp.tools.facility_profile import (
     PAST_WINDOW_NOTICE,
+    USER_CHOICE,
     fetch_profile,
     window_has_passed,
 )
@@ -252,6 +253,8 @@ def register(mcp: FastMCP) -> None:
                 "This facility has more recommendations than were checked, so "
                 "facility_in_this_group covers only its newest 100."
             )
+        if user_choice := profile.get(USER_CHOICE):
+            notices.insert(0, user_choice)
 
         peer_items = [i for s in searches if s for i in s.get("items", [])]
         return {
