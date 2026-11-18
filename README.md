@@ -2,7 +2,7 @@
 
 An MCP server that answers questions across VA Office of Inspector General (OIG) reports: which findings recur across facilities, whether a theme is growing, what peer facilities did in response, and how long similar recommendations take to close. Every answer cites a report number and a vaoig.gov link.
 
-An entry in the [GSA MCP Server and AI Agent Government Hackathon](https://www.gsa.gov/si-community-of-practice/events-and-training/mcp-server-and-si-agent-government-hackathon), Dataset Access track.
+An entry in the [GSA MCP Server and AI Agent Government Hackathon](https://www.gsa.gov/super-intelligence/si-community-of-practice/events-and-training/mcp-server-and-si-agent-government-hackathon), Dataset Access track.
 
 - **Documentation:** [the wiki](docs/README.md) is the full account: mission, architecture, guides, and evaluation. This README is the short overview.
 - **Proposal:** [troymd.com/mcp-hackathon](https://www.troymd.com/mcp-hackathon)
@@ -113,7 +113,7 @@ Setup for each host: [Connecting](docs/guides/connecting.md). Deployments, check
 
 ## Evaluation
 
-An agent answers 24 questions, plus 6 adversarial ones, using only these tools, scored against answers computed by SQL from a pinned snapshot, on Claude, Llama 3.3 70B on watsonx.ai, DeepSeek through Hermes Agent, and watsonx Orchestrate's own agent. How the testing works: [Method](docs/evaluation/method.md). What it found: [Results](docs/evaluation/results.md). Whether the changes helped: [Debrief](docs/evaluation/debrief.md). To run it: [eval/README.md](eval/README.md).
+An agent answers 24 questions, plus 6 adversarial ones, using only these tools, scored against answers computed by SQL from a pinned snapshot, on five models: Claude Opus 5.5 and Sonnet 5.5, GPT-OSS 120B in watsonx Orchestrate, Llama 3.3 70B on watsonx.ai, and DeepSeek V4 Pro through Hermes Agent. How the testing works: [Method](docs/evaluation/method.md). What it found: [Results](docs/evaluation/results.md). Whether the changes helped: [Debrief](docs/evaluation/debrief.md). To run it: [eval/README.md](eval/README.md).
 
 ## Security
 
