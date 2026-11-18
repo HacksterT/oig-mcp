@@ -6,12 +6,14 @@
 |---|---|
 | **Server under test** | oig-mcp, an MCP server over VA Office of Inspector General (OIG) reports and recommendations, with seven tools |
 | **Evaluation frameworks** | Arize Phoenix (harness, traces, experiments); IBM's Agent Development Kit (`orchestrate evaluations evaluate`) against the server deployed in IBM watsonx Orchestrate |
-| **Agent models** | Claude Opus 5.5 and Claude Sonnet 5.5 (Anthropic API); Llama 3.3 70B (IBM watsonx.ai, temperature 0); GPT-OSS 120B (the Orchestrate agent); DeepSeek V4 Pro 0813 (Hermes Agent) |
+| **Agent models** | Claude Opus 5.5 and Claude Sonnet 5.5 (Anthropic API); Llama 3.3 70B (IBM watsonx.ai, temperature 0); GPT-OSS 120B (in IBM watsonx Orchestrate); DeepSeek V4 Pro 0813 (Hermes Agent). Five models from four model makers, three open-weight |
 | **Judges** | Code checks; Claude Opus 5.5; Llama 3.3 70B on watsonx.ai, both as a second judge and through `arize-phoenix-evals` (correctness, scope, tool selection, tool invocation, tool response handling) as IBM's skill specifies; IBM's evaluation engine (GPT-OSS 120B) |
 | **Datasets** | 24 gold questions, plus 6 adversarial questions, with answers computed by SQL from a frozen data snapshot (`2bb10bd321e08dfc`, data as of November 4, 2026) |
 | **Dates** | November 4 to 17, 2026 |
 
-**Did the changes help?** Yes, where there was room. With only the server changed, the Orchestrate agent (GPT-OSS 120B) rose from 10, 8, and 11 to 12 and 12 of 24 questions, its agreement with the gold reference from about 15 to 19 of 24, and IBM's own score from 14, 14, and 13 to 16 and 18: every round-2 run beat every round-1 run on all three measures, and the gains fell on the questions the fixes targeted. Phoenix's correctness judge on watsonx.ai, built as IBM's skill specifies, agrees: 16, 16, and 15 of 24 correct in round 1, 20 and 20 in round 2; its tool selection and tool argument judges show no change. Reliability gains were large: a 45-call burst went from 0 to 29 answered, all 2,059 calls were answered at 40 clients, and 49 of 49 hostile inputs are handled. Claude was at its ceiling, so its reruns show only that nothing broke. Links in GPT-OSS answers did not improve, Llama was not rerun, and the test is not blind. The full assessment is in [Debrief](../evaluation/debrief.md).
+**Five models, one server.** With the server, the five models passed between 9 and 23 of 24 questions, against 2 or 3 without it. The spread is itself a finding: it shows what an MCP server must carry for weaker models ([Same server, five models](#same-server-five-models)).
+
+**Did the changes help?** Yes, where there was room. With only the server changed, GPT-OSS 120B in watsonx Orchestrate rose from 10, 8, and 11 to 12 and 12 of 24 questions, its agreement with the gold reference from about 15 to 19 of 24, and IBM's own score from 14, 14, and 13 to 16 and 18: every round-2 run beat every round-1 run on all three measures, and the gains fell on the questions the fixes targeted. Phoenix's correctness judge on watsonx.ai, built as IBM's skill specifies, agrees: 16, 16, and 15 of 24 correct in round 1, 20 and 20 in round 2; its tool selection and tool argument judges show no change. Reliability gains were large: a 45-call burst went from 0 to 29 answered, all 2,059 calls were answered at 40 clients, and 49 of 49 hostile inputs are handled. Claude was at its ceiling, so its reruns show only that nothing broke. Links in GPT-OSS answers did not improve, Llama was not rerun, and the test is not blind. The full assessment is in [Debrief](../evaluation/debrief.md).
 
 ## 1. Overview and objectives
 
@@ -121,19 +123,43 @@ Questions passing every check; exact facts present; agreement with the gold refe
 
 Without the server, neither model could give the data's figures, beyond one by Opus; the few questions they passed were refusals, which need no data. With it, Claude Opus 5.5 gives every exact figure, and has matched that result on every rerun since November 4.
 
-### Results across platforms
+### Same server, five models
 
-| Platform | Questions passing every check | Notes |
+The same server, questions, and scoring ran with five models from four model makers, three of them open-weight. That spread turned out to be one of the most useful things the testing produced: an MCP server does not have one score, it has a score per model, and the weaker models showed what the server had to carry.
+
+| 24 main questions, final server | Passing every check | Agrees with the gold reference | Report number and link, where required | Data date, where required | Adversarial 6 |
+|---|---|---|---|---|---|
+| No server (Claude Opus 5.5; Llama 3.3 70B) | 3; 2 | 4; 3 | 0 of 8 | n/a | n/a |
+| Claude Opus 5.5 (Anthropic API) | **23** | 24 | 8 of 8 | 5 of 5 | 6 |
+| Claude Sonnet 5.5 (Anthropic API) | **22** | 24 | 8 of 8 | 5 of 5 | 6 |
+| GPT-OSS 120B, open-weight (in watsonx Orchestrate), two runs | **12, 12** | 19, 19 | 3, 3 of 8 | 3, 2 of 5 | 4, 4 |
+| Llama 3.3 70B, open-weight (watsonx.ai) | **9** | 16 | 3 of 8 | 3 of 5 | 4 |
+| DeepSeek V4 Pro, open-weight (Hermes Agent), 18 questions | not scored the same way | 18 of 18 | 0 of 6 | 1 of 4 | not run |
+
+What changed from model to model:
+
+- **Choosing the tool was not the hard part.** The four models scored by code picked the right tool on 19 to 22 of 20 to 22 questions. The models differed in what they did with the results.
+- **Strong models follow the guidance a result carries; weaker ones skip it.** Every result carries a ready-made citation and the data date. Claude used them every time; GPT-OSS and Llama gave the citation on 3 of 8.
+- **Weaker models need the server to do the reading.** GPT-OSS misread the peak year from a 31-row table and put an office name in the wrong filter. The server now names the peak year and refuses the wrong filter with the fix, and the peak-year question went from failing every run to passing both.
+- **Result size is a model limit.** Llama 3.3 70B overflowed its 128K context on one question, after calling the same tool eight times; the facility profile was cut by 42 percent.
+- **Guardrails have to live in the server.** Llama handled 0 of 6 adversarial questions until the server stated its scope, then 4 of 6. Claude Opus went from 5 to 6.
+- **Left to choose, models guessed.** DeepSeek and Claude, in two different hosts, each picked a facility for "the New York VA" until the result said not to.
+
+**The lesson:** a server that only meets the best model has not been tested. Claude at its ceiling would have hidden every one of these weaknesses; many of the server's fixes came from the open-weight models' failures, and none of them cost Claude anything (29 of 30 on the final server).
+
+### Results by model, run by run
+
+| Model and where it ran | Questions passing every check | Notes |
 |---|---|---|
 | Claude Opus 5.5, harness | 23 of 24 on every run from November 4 to 17; 22 of 24 after the November 17 result-size changes; 29 of 30 on the final server (tag `eval-final-1`), with the 6 adversarial questions | Each failure is a scoring call on a correct answer, kept as a failure |
 | Claude Sonnet 5.5, harness | 23 of 24 on November 4 and again on November 17; 28 of 30 on the final server, with the 6 adversarial questions | Citations where required rose from 7 of 8 to 8 of 8; the new final-round miss gave a link pattern instead of each link |
 | Llama 3.3 70B, harness on watsonx.ai | 9 of 24, before and after the November 17 server changes | Tool choice, citations, and data dates improved; one question overflows the model's context |
-| GPT-OSS 120B, the Orchestrate agent | Round 1, three runs: 10, 8, and 11 of 24 (IBM's engine 14, 14, 13). Round 2, two runs on the fixed server: 12 and 12 of 24 (IBM's engine 16, 18); adversarial 4 and 4 of 6 | Same agent and model; only the server changed. The judge's agreement rose from 16, 14, and 15 to 19 and 19 of 24 |
-| DeepSeek V4 Pro, Hermes Agent | All 18 answers agree with the gold reference | Not a blind run |
+| GPT-OSS 120B, in watsonx Orchestrate | Round 1, three runs: 10, 8, and 11 of 24 (IBM's engine 14, 14, 13). Round 2, two runs on the fixed server: 12 and 12 of 24 (IBM's engine 16, 18); adversarial 4 and 4 of 6 | Same agent and model; only the server changed. The judge's agreement rose from 16, 14, and 15 to 19 and 19 of 24 |
+| DeepSeek V4 Pro, through Hermes Agent | All 18 answers agree with the gold reference | Not a blind run |
 
-**Citation integrity.** No answer from the server-backed Claude, Llama, or Orchestrate runs cited a report number that does not exist. The only one on any platform is in a logged answer from the Hermes agent.
+**Citation integrity.** No answer from the server-backed Claude, Llama, or GPT-OSS runs cited a report number that does not exist. The only one on any platform is in a logged answer from the Hermes agent.
 
-**Consistency.** Claude Opus 5.5 scored the same on every rerun. On Orchestrate, 5 questions passed all three runs, 9 failed all three, and 10 varied, which is why each question runs three times.
+**Consistency.** Claude Opus 5.5 scored the same on every rerun. For GPT-OSS 120B in Orchestrate, 5 questions passed all three runs, 9 failed all three, and 10 varied, which is why each question runs three times.
 
 **Judge agreement.** On the harness answer sets, the Claude and watsonx.ai judges gave the same pass or fail on 89 of 90 answers; on the Orchestrate runs, 67 of 71. IBM's engine agreed with the project's scoring on 52 of 72: it scores the whole conversation and has no citation or data-date check, so it passed 16 answers the project failed.
 
@@ -149,7 +175,7 @@ A second, independent grading of the saved answers, with nothing rerun: Llama 3.
 | Tool arguments | 16, 19, 17 | 19, 17 | 26 / 27 of 30 |
 | Tool responses used faithfully | 17/20, 21/22, 22/22 | 21/23, 20/21 | 26 / 26 of 26 |
 
-- **It confirms the main result with a judge this project did not build.** With only the server changed, Orchestrate's correct answers rose from about 16 to 20 of 24, the same jump the Claude judge found.
+- **It confirms the main result with a judge this project did not build.** With only the server changed, GPT-OSS 120B's correct answers rose from about 16 to 20 of 24, the same jump the Claude judge found.
 - **The gain came from how the agent used results, not which tool it chose.** Tool selection and tool arguments did not move between rounds; the server's changes made results clearer and harder to misread.
 - **Claude is close to perfect on what matters:** correct, in scope, and faithful to its tool responses.
 - **Claude's low tool selection score is the judge disagreeing with the server's design.** It counts two correct behaviors as wrong: calling the dataset status tool first, which the server instructs and five questions require, and refusing a question such as "Which VA facility is the worst?" without a tool. These account for every Opus failure and 18 of Sonnet's 19; Llama and Orchestrate also had 6 to 9 genuine wrong-tool choices per run.
@@ -178,7 +204,7 @@ Each failure was read against the tool results and the data API's traces and sor
 | 24 questions, Llama 3.3 70B: passing every check | 9 of 24 | 9 of 24 |
 | 24 questions, Llama 3.3 70B: right tool, citation, data date | 17 of 20, 1 of 8, 1 of 5 | 19 of 20, 3 of 8, 3 of 5 |
 | 24 questions, Claude Opus 5.5 (regression check) | 23 of 24 | 23 of 24, every measure unchanged |
-| 24 questions, the Orchestrate agent (GPT-OSS 120B), round 1 against round 2 | 10, 8, and 11 of 24; judge 16, 14, 15 | 12 and 12 of 24; judge 19 and 19. The peak year, the VBA median, and the no-forecast question moved from failing every run to passing both |
+| 24 questions, GPT-OSS 120B in watsonx Orchestrate, round 1 against round 2 | 10, 8, and 11 of 24; judge 16, 14, 15 | 12 and 12 of 24; judge 19 and 19. The peak year, the VBA median, and the no-forecast question moved from failing every run to passing both |
 | 30 questions, Claude Opus 5.5 and Sonnet 5.5, final server (tag `eval-final-1`) | Opus 22 of 24; Sonnet 23 of 24 | Opus 29 of 30, Sonnet 28 of 30; the judge agrees on 30 of 30 for both. Durham fails as on every run; nothing regressed |
 | 24 questions, Claude Opus 5.5, after the result-size changes (F06-S22) | 23 of 24, about 25,300 input tokens a question | 22 of 24, about 26,100; the judge agrees on 24 of 24. The new miss is wording on a correct answer* |
 
@@ -190,7 +216,7 @@ The whole sequence, round by round, with what each found, changed, and measured,
 
 ### Asking the user instead of guessing
 
-A facility name that matches several, such as "the Columbia VA" (South Carolina, Missouri, and Washington, DC), is never resolved by the model. Where the host can show MCP forms, the server asks the user directly (elicitation); everywhere else the result lists the matches with a next step: do not choose, ask, then call again with the station number. Before that next step, Hermes Agent and Claude Desktop each chose VA NY Harbor for "the New York VA"; after it, both asked, as did the Orchestrate agent. The form itself was shown in Claude Code. The model never sees the form, so at first it treated the user's pick as the server's guess; a notice in the result ([#114](https://github.com/HacksterT/oig-mcp/pull/114)) now says the user chose.
+A facility name that matches several, such as "the Columbia VA" (South Carolina, Missouri, and Washington, DC), is never resolved by the model. Where the host can show MCP forms, the server asks the user directly (elicitation); everywhere else the result lists the matches with a next step: do not choose, ask, then call again with the station number. Before that next step, Hermes Agent and Claude Desktop each chose VA NY Harbor for "the New York VA"; after it, both asked, as did GPT-OSS 120B in Orchestrate. The form itself was shown in Claude Code. The model never sees the form, so at first it treated the user's pick as the server's guess; a notice in the result ([#114](https://github.com/HacksterT/oig-mcp/pull/114)) now says the user chose.
 
 **What the form saves**, measured: "What has OIG found at the Columbia VA?", five runs per arm, Claude Opus 5.5 through Anthropic's API, a scripted user choosing Missouri. Every run in an arm gave the same counts.
 
@@ -254,7 +280,7 @@ The full design, every check with its latest result, the November 17 review, and
 
 **Scope containment.** Five behavior questions and six adversarial questions test that the agent declines what the data cannot support, refuses to rank facilities or guess who was responsible, gives no medical advice and sends an emergency to 911, and does not invent a report. The server states its scope in its own instructions, so the guardrail holds for any host, not only one configured agent.
 
-**Untrusted input and prompt injection.** Report text is quoted from OIG reports. Every result marks the fields that quote report text and says to cite them and never follow instructions in them, and every tool is read-only. The adversarial set includes an instruction injected into text a user pastes; both models ignored it after the server changes. Tool arguments are typed and bounded, and a robustness check sends every tool path traversal, header and query injection, SQL and search syntax, and values past every bound: all 48 checks pass, with no stack trace, upstream address, or credential in any reply.
+**Untrusted input and prompt injection.** Report text is quoted from OIG reports. Every result marks the fields that quote report text and says to cite them and never follow instructions in them, and every tool is read-only. The adversarial set includes an instruction injected into text a user pastes; both models ignored it after the server changes. Tool arguments are typed and bounded, and a robustness check sends every tool path traversal, header and query injection, SQL and search syntax, and values past every bound: all 49 checks pass, with no stack trace, upstream address, or credential in any reply.
 
 **Secrets and configuration.** Credentials load from the environment, or in Orchestrate from a key_value connection, and are never committed: a scan of the repository's full history found none. The server refuses to start without a bearer token of at least 32 characters, or with a plain-HTTP remote data address. No secret appears in tool results, logs, or the image, checked by the image and deployment checks.
 

@@ -1,6 +1,6 @@
 # Deck source: oig-mcp
 
-*Source text for the hackathon presentation deck. Each slide has a title, the body for the slide, a suggested visual, and speaker notes. Slides follow the order of the hackathon's sample deck, with four added: who the server serves (slide 4), asking the user instead of guessing (slide 9), the watsonx Orchestrate deployment (slide 10), and the failure analysis (slide 14). Figures come from [the evaluation document](evaluation-document.md) and [SECURITY.md](../../SECURITY.md) as of November 17, 2026, including the second Orchestrate round.*
+*Source text for the hackathon presentation deck. Each slide has a title, the body for the slide, a suggested visual, and speaker notes. Slides follow the order of the hackathon's sample deck, with five added: who the server serves (slide 4), asking the user instead of guessing (slide 9), the watsonx Orchestrate deployment (slide 10), the same server across five models (slide 14), and the failure analysis (slide 15). Figures come from [the evaluation document](evaluation-document.md) and [SECURITY.md](../../SECURITY.md) as of November 17, 2026, including the second Orchestrate round.*
 
 ---
 
@@ -163,7 +163,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 **Visual:** One tool's input schema beside its output schema, with an error result and its hint.
 
-**Speaker notes:** The last point came from evaluation. The Orchestrate agent wrote an office's full name in the domain filter, matched nothing, and told the user there was no data. The server now catches that. IBM's guide calls the opposite "anything-in, garbage-out" and "the data firehose". The firehose was our real exposure: Llama overflowed its context on one question, and the facility profile was cut by about 40 percent per page in response.
+**Speaker notes:** The last point came from evaluation. GPT-OSS 120B, running in Orchestrate, wrote an office's full name in the domain filter, matched nothing, and told the user there was no data. The server now catches that. IBM's guide calls the opposite "anything-in, garbage-out" and "the data firehose". The firehose was our real exposure: Llama overflowed its context on one question, and the facility profile was cut by about 40 percent per page in response.
 
 ---
 
@@ -314,10 +314,11 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 | Claude Opus 5.5 | 3 of 24 (1 of 16 exact facts) | 23 of 24 (16 of 16) |
 | Llama 3.3 70B, watsonx.ai | 2 of 24 (0 of 16) | 9 of 24 (11 of 16) |
 
-**Across platforms:**
+**By model:**
 - **Claude Opus 5.5:** 23 of 24 on every run from November 4 to 17, and 22 of 24 after the result-size changes, where the new miss was "agreed" for "concur" on a correct answer. Claude Sonnet 5.5 scored 23 of 24 on November 4 and on November 17. On the final server, with the 6 adversarial questions, Opus passed 29 of 30 and Sonnet 28 of 30.
-- **GPT-OSS 120B, the Orchestrate agent:** round 1, 10, 8, and 11 of 24 on this project's scoring (IBM's engine 14, 14, 13). After the server fixes, round 2: 12 and 12 of 24 (IBM's engine 16 and 18), with the judge agreeing on 19 of 24 instead of about 15. Same agent and model; only the server changed.
-- **Citations:** no answer from the server-backed Claude, Llama, or Orchestrate runs cited a report that does not exist.
+- **GPT-OSS 120B, open-weight, in watsonx Orchestrate:** round 1, 10, 8, and 11 of 24 on this project's scoring (IBM's engine 14, 14, 13). After the server fixes, round 2: 12 and 12 of 24 (IBM's engine 16 and 18), with the judge agreeing on 19 of 24 instead of about 15. Same model and agent; only the server changed.
+- **Llama 3.3 70B, open-weight, on watsonx.ai:** 9 of 24, against 2 of 24 with no server.
+- **Citations:** no answer from the server-backed Claude, Llama, or GPT-OSS runs cited a report that does not exist.
 - **Judge agreement:** the two judges agreed on 89 of 90 harness answers.
 
 **Operations:**
@@ -337,7 +338,41 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 ---
 
-## Slide 14: Failure analysis
+## Slide 14: Same server, five models
+
+**Title:** One Server, Five Models: What the Spread Taught Us
+
+**Body:**
+
+The same server, questions, and scoring, with five models from four model makers, three of them open-weight.
+
+| 24 main questions | Passing every check | Citation where required |
+|---|---|---|
+| No server (Claude Opus; Llama) | 3; 2 | 0 of 8 |
+| Claude Opus 5.5 | **23** | 8 of 8 |
+| Claude Sonnet 5.5 | **22** | 8 of 8 |
+| GPT-OSS 120B, in watsonx Orchestrate | **12, 12** | 3 of 8 |
+| Llama 3.3 70B, on watsonx.ai | **9** | 3 of 8 |
+| DeepSeek V4 Pro, through Hermes Agent | 18 of 18 agree with the gold, scored differently | 0 of 6 |
+
+**What varied by model:**
+- **Not the tool choice:** every model scored by code chose the right tool on 19 to 22 of 20 to 22 questions.
+- **Using what the result carries:** Claude cited every time; GPT-OSS and Llama, 3 of 8.
+- **Reading long results:** GPT-OSS misread a 31-row table, so the server now names the peak year.
+- **Context limits:** Llama overflowed 128K tokens on one question, so results were cut 42 percent.
+- **Staying in scope:** Llama 0 of 6 adversarial until the server stated its scope, then 4 of 6.
+
+**The lesson:** a server that only meets the best model has not been tested. The open-weight models found the gaps, and fixing them cost Claude nothing (29 of 30 on the final server).
+
+![Same server, different models: 9 to 23 of 24 questions, against 2 or 3 with no server](images/models-spread.png)
+
+**Visual:** The chart above: one bar per model, with the no-server baseline in gray.
+
+**Speaker notes:** This was the most surprising thing the project taught. I expected to test one agent; testing several showed that an MCP server's quality depends on the model reading it. A strong model follows the guidance in a result, such as a ready-made citation or the data date. A weaker one needs the server to do more of the work: precompute the answer, refuse a wrong filter with the fix, keep results small, and state the rules itself. Every one of those changes made the server better for every model.
+
+---
+
+## Slide 15: Failure analysis
 
 **Title:** Every Failure Traced to Its Cause, Then Fixed and Retested
 
@@ -359,7 +394,7 @@ Each failure was read against the tool results and the data service's request tr
   - right tool: 17 of 20 to 19 of 20
   - citation: 1 of 8 to 3 of 8
   - data date: 1 of 5 to 3 of 5
-- **The Orchestrate agent, same model, only the server changed:** 10, 8, and 11 of 24 before; 12 and 12 after, with the judge agreeing on 19 of 24 instead of about 15.
+- **GPT-OSS 120B in Orchestrate, only the server changed:** 10, 8, and 11 of 24 before; 12 and 12 after, with the judge agreeing on 19 of 24 instead of about 15.
 - **Claude Opus 5.5 regression checks:** 23 of 24 after the scope changes, every measure unchanged; 22 of 24 after the result-size changes, with the judge agreeing on all 24; 29 of 30 on the final server.
 - **Beyond the pass rate:** the Durham page 42 percent smaller; a burst of 45 calls answered 29 instead of 0; 2,059 of 2,059 calls answered at 40 clients; two real hosts that guessed a facility now ask.
 
@@ -367,11 +402,11 @@ Each failure was read against the tool results and the data service's request tr
 
 ![Phoenix comparing Orchestrate round 1 and round 2 on one question, with each evaluator's verdict](images/phoenix-compare-orchestrate.png)
 
-**Speaker notes:** Phoenix's correctness judge on watsonx.ai, independent of our own judge, found Orchestrate's answers correct on 16, 16, and 15 of 24 before the fixes and 20 and 20 after; its tool selection and argument judges showed no change, so the gain came from what the agent did with results. The traces settled who was at fault. The first report blamed the server for Orchestrate's own connection errors, and the traces showed every server call had succeeded. These retests are not blind: the adversarial questions and the fixes were written the same night.
+**Speaker notes:** Phoenix's correctness judge on watsonx.ai, independent of our own judge, found GPT-OSS 120B's answers correct on 16, 16, and 15 of 24 before the fixes and 20 and 20 after; its tool selection and argument judges showed no change, so the gain came from what the agent did with results. The traces settled who was at fault. The first report blamed the server for Orchestrate's own connection errors, and the traces showed every server call had succeeded. These retests are not blind: the adversarial questions and the fixes were written the same night.
 
 ---
 
-## Slide 15: Security considerations
+## Slide 16: Security considerations
 
 **Title:** Security Considerations
 
@@ -396,7 +431,7 @@ Each failure was read against the tool results and the data service's request tr
 
 ---
 
-## Slide 16: Lessons learned and recommendations
+## Slide 17: Lessons learned and recommendations
 
 **Title:** Lessons Learned and Recommendations
 
@@ -404,7 +439,7 @@ Each failure was read against the tool results and the data service's request tr
 
 1. **Compute gold answers from the source data, not from the API under test.** A gold set built through the API would repeat its errors. SQL against a frozen snapshot caught them.
 
-2. **Run a no-tool baseline and a weaker model.** The baseline turns "the server helps" into a measured difference. The weaker model shows what the server must make explicit, such as which tool counts and which one searches.
+2. **Test with several models, not only the best one.** A no-tool baseline turns "the server helps" into a measured difference. Weaker, open-weight models show what the server must make explicit, such as which tool counts and which one searches; the best model at its ceiling hides those gaps.
 
 3. **Make an empty result say so.** A filter that silently matches nothing becomes a confident wrong answer. Tell the agent to check its filter values before concluding there is no data.
 
