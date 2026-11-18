@@ -79,7 +79,7 @@ On November 17 it reproduced every saved result: all 18 runs, including the thre
 ```bash
 export MCP_AUTH_TOKEN=...   # the token you were given
 uv run python deploy/verify_deployment.py --url https://mcp.troymd.com   # 15 checks
-uv run python deploy/robustness_check.py --url https://mcp.troymd.com    # 48 checks
+uv run python deploy/robustness_check.py --url https://mcp.troymd.com    # 49 checks
 uv run --group eval python eval/phoenix/run_experiment.py --url https://mcp.troymd.com --no-phoenix
 ```
 
