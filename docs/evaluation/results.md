@@ -398,7 +398,7 @@ Every call was answered, with no rate-limit, busy, or timeout refusals, no error
 
 ## Security
 
-The full record, with every check and the November 17 review, is in [SECURITY.md](../../SECURITY.md). On November 17: 15 of 15 image checks, 22 of 22 deployment checks, 48 of 48 robustness checks (hostile and malformed input to every tool and to argument completion, the facility choice round trip, a burst past the rate limit, searches past the data API's capacity), no known vulnerable dependency, and no secret in the repository's history. An independent review found no high-severity issues; its findings are fixed or documented as accepted risks.
+The full record, with every check and the November 17 review, is in [SECURITY.md](../../SECURITY.md). On November 17: 15 of 15 image checks, 22 of 22 deployment checks, 49 of 49 robustness checks (hostile and malformed input to every tool and to argument completion, the facility choice round trip, a burst past the rate limit, searches past the data API's capacity), no known vulnerable dependency, and no secret in the repository's history. An independent review found no high-severity issues; its findings are fixed or documented as accepted risks.
 
 All authentication checks passed against the container, through a public HTTPS tunnel, and on IBM's virtual machine, where the image built there passed all 15 image checks, including the 22 deployment checks run against it. That run also confirmed IBM's network reaches the data API through Cloudflare with no proxy.
 
