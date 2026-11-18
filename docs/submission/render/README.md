@@ -12,3 +12,15 @@ Scripts that turn the Markdown sources in [`docs/submission/`](../) into the fil
 **How they work.** `build_docx.py` points the document's repository links at GitHub so they work outside the repository, converts it with pandoc against a style sheet it writes itself, then styles the tables and adds the cover line and footer. `build_pptx.js` uses `pptxgenjs` with its own layouts and theme, native charts for every figure, and Lucide icons. The deck's slide text is shorter than `deck.md`, so a change to a figure in `deck.md` must also be made in `build_pptx.js`. Two slides hold marked placeholders for the Orchestrate screenshot and the demo video.
 
 The structure follows GSA's sample deck and sample evaluation document from the hackathon page; the design is this project's own.
+
+## Picking this up
+
+**Status (November 18, 2026).** The DOCX is complete. The deck is a full draft of 17 slides with speaker notes, still missing two pieces of media: the Orchestrate screenshot on slide 10 and the demo video on slide 11. Both are dashed boxes drawn by `placeholderBox(...)` in the `===== 10.` and `===== 11.` blocks of `build_pptx.js`.
+
+**Replacing a placeholder with a screenshot.** Save the PNG in [`../images/`](../images/), then in that slide's block replace the `placeholderBox(...)` call with `s.addImage({ path: path.join(IMG, "<file>.png"), x, y, w, h, altText: "..." })`, using the box's own x, y, and width, and a height that keeps the image's aspect ratio (slide 12 does this for `phoenix-trace.png`). For the demo, either embed a short clip with `s.addMedia({ type: "video", path, x, y, w, h })` or use screenshots. An embedded video counts toward the deck's file size, and the separate video upload is capped at 50 MB.
+
+**Finding things in `build_pptx.js`.** Colors are the `HEX` object at the top, and the theme and fonts (Cambria headings, Calibri body) come right after it. The three slide layouts are `TITLE_DARK`, `CONTENT`, and `CONTENT_DARK`. Each slide is one `// ===== N. Name =====` block. `card`, `chip`, `iconDot`, and `numDot` draw the repeated shapes. Icons are Lucide names from `react-icons/lu`.
+
+**Changing a figure.** Change it in the Markdown first, then in `build_pptx.js` if the slide shows it, and check the wording against the project's accuracy rules: name the model with the platform it ran on, never claim "23 of 24 on every run", and keep the limits next to the scores. The DOCX places its three charts by finding a sentence in `evaluation-document.md`. If that sentence is reworded, the build stops with an assertion that names the text it could not find; update the `figs` list in `build_docx.py` to match.
+
+**Checking the layout.** Convert to PDF with LibreOffice and page through it: `soffice --headless --convert-to pdf out/oig-mcp-deck.pptx`, and the same for the DOCX. LibreOffice substitutes fonts for Cambria and Calibri, so spacing can shift slightly in PowerPoint and Word. Give each file a final look in Office before submitting.
