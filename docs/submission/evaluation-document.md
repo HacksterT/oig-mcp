@@ -42,10 +42,10 @@ The seven tools are built around what a user is trying to do, not around the dat
 | Automated tests | 313 tests on every change: each tool's inputs, results, output schema, error messages and hints, authentication, and that each description tells a model when to use the tool |
 | Image checks | 15 checks on the container: no secret inside, a non-root user, refusal to start without a valid token or with a plain-HTTP data address |
 | Deployment checks | 22 checks on a running server: seven kinds of bad credentials refused, all seven tools listed, live data with no secret in it |
-| Robustness check | 48 checks on a running server: hostile and malformed input to every tool and to argument completion, the facility choice round trip, a burst past the rate limit, searches past the data API's capacity, and no internal detail in any reply |
+| Robustness check | 49 checks on a running server: hostile and malformed input to every tool and to argument completion, the facility choice round trip, a burst past the rate limit, searches past the data API's capacity, and no internal detail in any reply |
 | Agent evaluation | Gold questions answered by an agent that has only the server's tools, scored by code and judges |
 | Baseline | The same questions and models with no server |
-| Cross-platform runs | The same questions on other models and hosts, including IBM's own agent, three runs |
+| Cross-platform runs | The same questions on other models and hosts, including GPT-OSS 120B in watsonx Orchestrate: three runs in round 1, two in round 2 |
 
 ### Framework and reproducibility
 
@@ -151,7 +151,7 @@ What changed from model to model:
 
 | Model and where it ran | Questions passing every check | Notes |
 |---|---|---|
-| Claude Opus 5.5, harness | 23 of 24 on every run from November 4 to 17; 22 of 24 after the November 17 result-size changes; 29 of 30 on the final server (tag `eval-final-1`), with the 6 adversarial questions | Each failure is a scoring call on a correct answer, kept as a failure |
+| Claude Opus 5.5, harness | 23 of 24 on every run but one from November 4 to 17, the exception 22 of 24 after the November 17 result-size changes; 29 of 30 on the final server (tag `eval-final-1`), with the 6 adversarial questions | Each failure is a scoring call on a correct answer, kept as a failure |
 | Claude Sonnet 5.5, harness | 23 of 24 on November 4 and again on November 17; 28 of 30 on the final server, with the 6 adversarial questions | Citations where required rose from 7 of 8 to 8 of 8; the new final-round miss gave a link pattern instead of each link |
 | Llama 3.3 70B, harness on watsonx.ai | 9 of 24, before and after the November 17 server changes | Tool choice, citations, and data dates improved; one question overflows the model's context |
 | GPT-OSS 120B, in watsonx Orchestrate | Round 1, three runs: 10, 8, and 11 of 24 (IBM's engine 14, 14, 13). Round 2, two runs on the fixed server: 12 and 12 of 24 (IBM's engine 16, 18); adversarial 4 and 4 of 6 | Same agent and model; only the server changed. The judge's agreement rose from 16, 14, and 15 to 19 and 19 of 24 |
@@ -159,7 +159,7 @@ What changed from model to model:
 
 **Citation integrity.** No answer from the server-backed Claude, Llama, or GPT-OSS runs cited a report number that does not exist. The only one on any platform is in a logged answer from the Hermes agent.
 
-**Consistency.** Claude Opus 5.5 scored the same on every rerun. For GPT-OSS 120B in Orchestrate, 5 questions passed all three runs, 9 failed all three, and 10 varied, which is why each question runs three times.
+**Consistency.** Claude Opus 5.5 scored the same on every rerun. For GPT-OSS 120B in Orchestrate, 5 questions passed all three runs, 9 failed all three, and 10 varied, which is why round 1 ran each question three times.
 
 **Judge agreement.** On the harness answer sets, the Claude and watsonx.ai judges gave the same pass or fail on 89 of 90 answers; on the Orchestrate runs, 67 of 71. IBM's engine agreed with the project's scoring on 52 of 72: it scores the whole conversation and has no citation or data-date check, so it passed 16 answers the project failed.
 
