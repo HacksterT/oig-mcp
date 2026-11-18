@@ -6,24 +6,52 @@
 
 ## Summary
 
-**Did the changes help?** Yes, where there was room. With only the server changed, the Orchestrate agent (GPT-OSS 120B) rose from 10, 8, and 11 to 12 and 12 of 24 questions, its agreement with the gold reference from about 15 to 19 of 24, and IBM's own score from 14, 14, and 13 to 16 and 18: every round-2 run beat every round-1 run on all three measures, and the gains fell on the questions the fixes targeted. Phoenix's correctness judge on watsonx.ai, built as IBM's skill specifies, agrees: 16, 16, and 15 of 24 correct in round 1, 20 and 20 in round 2; its tool selection and tool argument judges show no change. Reliability gains were large: a 45-call burst went from 0 to 29 answered, all 2,059 calls were answered at 40 clients, and 49 of 49 hostile inputs are handled. Claude was at its ceiling, so its reruns show only that nothing broke. Links in GPT-OSS answers did not improve, Llama was not rerun, and the test is not blind. The full assessment is in [Debrief](debrief.md).
+**Five models, one server.** The same questions ran with Claude Opus 5.5 and Sonnet 5.5, GPT-OSS 120B in watsonx Orchestrate, Llama 3.3 70B on watsonx.ai, and DeepSeek V4 Pro through Hermes Agent. With the server, the models passed between 9 and 23 of 24 questions, against 2 or 3 without it; the spread shows what the server must carry for weaker models ([Same server, five models](#same-server-five-models)).
 
-| Platform | Result | Read it with |
+**Did the changes help?** Yes, where there was room. With only the server changed, GPT-OSS 120B in watsonx Orchestrate rose from 10, 8, and 11 to 12 and 12 of 24 questions, its agreement with the gold reference from about 15 to 19 of 24, and IBM's own score from 14, 14, and 13 to 16 and 18: every round-2 run beat every round-1 run on all three measures, and the gains fell on the questions the fixes targeted. Phoenix's correctness judge on watsonx.ai, built as IBM's skill specifies, agrees: 16, 16, and 15 of 24 correct in round 1, 20 and 20 in round 2; its tool selection and tool argument judges show no change. Reliability gains were large: a 45-call burst went from 0 to 29 answered, all 2,059 calls were answered at 40 clients, and 49 of 49 hostile inputs are handled. Claude was at its ceiling, so its reruns show only that nothing broke. Links in GPT-OSS answers did not improve, Llama was not rerun, and the test is not blind. The full assessment is in [Debrief](debrief.md).
+
+| Model and where it ran | Result | Read it with |
 |---|---|---|
 | Claude Opus 5.5, harness | 23 of 24 questions pass every check on every run from November 4 to 17; 22 of 24 after the November 17 result-size changes; on the final server (tag `eval-final-1`), 29 of 30: 23 of 24 plus 6 of 6 adversarial | The same builder wrote the questions and tuned the server after earlier runs. Both misses are scoring calls on correct answers, kept as failures: the Durham list, and "agreed" where the check looks for "concur" (the judge agreed on 24 of 24) |
 | Claude Sonnet 5.5, harness | 23 of 24 on November 4, and again on November 17; report number and link where required 8 of 8, up from 7; on the final server (tag `eval-final-1`), 28 of 30: 22 of 24 plus 6 of 6 adversarial | Its answer to the Durham question also miscounted; the new miss gave a link pattern instead of each report's link |
 | DeepSeek V4 Pro 0813, Hermes Agent | All 18 answers agree with the gold reference; all 11 exact facts present | Not a blind run; answers rarely gave links |
-| IBM agent in watsonx Orchestrate, first six questions | 5 of 6 correct at first; the sixth fixed in the server and confirmed in Orchestrate | Read against the gold answers and the data API's traces, not yet by a judge |
-| IBM agent in watsonx Orchestrate (GPT-OSS 120B), 24 questions | Round 1, three runs: 10, 8, and 11 of 24 on the project's scoring, 14, 14, and 13 by IBM's engine. Round 2, two runs on the fixed server: **12 and 12** of 24, **16 and 18** by IBM's engine; the judge agreed on 19 and 19, up from 16, 14, and 15 | Same agent, instruction, and model; only the server changed. Round 2 ran the `eval-final-1` code. Three tool calls in round 2's run-1 failed inside Orchestrate (connection refused) |
+| GPT-OSS 120B in watsonx Orchestrate, first six questions | 5 of 6 correct at first; the sixth fixed in the server and confirmed in Orchestrate | Read against the gold answers and the data API's traces, not yet by a judge |
+| GPT-OSS 120B in watsonx Orchestrate, 24 questions | Round 1, three runs: 10, 8, and 11 of 24 on the project's scoring, 14, 14, and 13 by IBM's engine. Round 2, two runs on the fixed server: **12 and 12** of 24, **16 and 18** by IBM's engine; the judge agreed on 19 and 19, up from 16, 14, and 15 | Same agent, instruction, and model; only the server changed. Round 2 ran the `eval-final-1` code. Three tool calls in round 2's run-1 failed inside Orchestrate (connection refused) |
 | Llama 3.3 70B on IBM watsonx.ai, harness | 9 of 24, before and after the November 17 scope changes | Same model and settings; tool choice, citations, and data dates improved. Not rerun since the result-size changes |
 | No-tool baseline | Claude Opus 5.5: 3 of 24; Llama 3.3 70B: 2 of 24 | What the models do without the server |
-| Adversarial set, 6 questions | Opus 5 of 6, then 6 of 6; Llama 0 of 6, then 4 of 6, after server changes; Orchestrate 4 and 4 of 6, in round 2 | Not blind: questions and fixes written the same night |
-| Ambiguous facility name, four hosts | After #92, Hermes Agent, Claude Desktop, and the Orchestrate agent listed the matching facilities and asked; none chose one itself. In Claude Code the server's own form asked. Measured over five runs each, the form halved the round trips against asking in chat and cut tokens 39 percent ([what the form saves](#what-the-form-saves)) | One trial per host; the form has been shown in Claude Code, a terminal host, and in no desktop app |
+| Adversarial set, 6 questions | Opus 5 of 6, then 6 of 6; Llama 0 of 6, then 4 of 6, after server changes; GPT-OSS 120B 4 and 4 of 6, in round 2 | Not blind: questions and fixes written the same night |
+| Ambiguous facility name, four hosts | After #92, Hermes Agent (DeepSeek), Claude Desktop, and Orchestrate (GPT-OSS 120B) listed the matching facilities and asked; none chose one itself. In Claude Code the server's own form asked. Measured over five runs each, the form halved the round trips against asking in chat and cut tokens 39 percent ([what the form saves](#what-the-form-saves)) | One trial per host; the form has been shown in Claude Code, a terminal host, and in no desktop app |
 | Automated tests | 313 pass, on every change | |
-| Image, deployment, and robustness checks | 15 of 15 and 22 of 22, on the Mac and on IBM's virtual machine; 48 of 48 robustness checks, local and through the public URL | |
+| Image, deployment, and robustness checks | 15 of 15 and 22 of 22, on the Mac and on IBM's virtual machine; 49 of 49 robustness checks | |
 | Load test, 1 to 40 concurrent clients | All 2,059 calls answered, no errors; median 0.33 s to 1.8 s | One run, one Mac, not to failure |
 
-No answer from a server-backed run on Claude, Llama, or Orchestrate cited a report number that does not exist, which is the project's stated target. The only one found on any platform is in a logged answer from the Hermes agent, described below.
+No answer from a server-backed run on Claude, Llama, or GPT-OSS cited a report number that does not exist, which is the project's stated target. The only one found on any platform is in a logged answer from the Hermes agent, described below.
+
+## Same server, five models
+
+The same server, questions, and scoring ran with five models from four model makers, three of them open-weight. That spread turned out to be one of the most useful things the testing produced: an MCP server does not have one score, it has a score per model, and the weaker models showed what the server had to carry.
+
+| 24 main questions, final server | Passing every check | Agrees with the gold reference | Report number and link, where required | Data date, where required | Adversarial 6 |
+|---|---|---|---|---|---|
+| No server (Claude Opus 5.5; Llama 3.3 70B) | 3; 2 | 4; 3 | 0 of 8 | n/a | n/a |
+| Claude Opus 5.5 (Anthropic API) | **23** | 24 | 8 of 8 | 5 of 5 | 6 |
+| Claude Sonnet 5.5 (Anthropic API) | **22** | 24 | 8 of 8 | 5 of 5 | 6 |
+| GPT-OSS 120B, open-weight (in watsonx Orchestrate), two runs | **12, 12** | 19, 19 | 3, 3 of 8 | 3, 2 of 5 | 4, 4 |
+| Llama 3.3 70B, open-weight (watsonx.ai) | **9** | 16 | 3 of 8 | 3 of 5 | 4 |
+| DeepSeek V4 Pro, open-weight (Hermes Agent), 18 questions | not scored the same way | 18 of 18 | 0 of 6 | 1 of 4 | not run |
+
+![Same server, different models: 9 to 23 of 24 questions, against 2 or 3 with no server](../submission/images/models-spread.png)
+
+What changed from model to model:
+
+- **Choosing the tool was not the hard part.** The four models scored by code picked the right tool on 19 to 22 of 20 to 22 questions. The models differed in what they did with the results.
+- **Strong models follow the guidance a result carries; weaker ones skip it.** Every result carries a ready-made citation and the data date. Claude used them every time; GPT-OSS and Llama gave the citation on 3 of 8.
+- **Weaker models need the server to do the reading.** GPT-OSS misread the peak year from a 31-row table and put an office name in the wrong filter. The server now names the peak year and refuses the wrong filter with the fix, and the peak-year question went from failing every run to passing both.
+- **Result size is a model limit.** Llama 3.3 70B overflowed its 128K context on one question, after calling the same tool eight times; the facility profile was cut by 42 percent.
+- **Guardrails have to live in the server.** Llama handled 0 of 6 adversarial questions until the server stated its scope, then 4 of 6. Claude Opus went from 5 to 6.
+- **Left to choose, models guessed.** DeepSeek and Claude, in two different hosts, each picked a facility for "the New York VA" until the result said not to.
+
+**The lesson:** a server that only meets the best model has not been tested. Claude at its ceiling would have hidden every one of these weaknesses; many of the server's fixes came from the open-weight models' failures, and none of them cost Claude anything (29 of 30 on the final server).
 
 ## What the server adds
 
@@ -184,8 +212,8 @@ IBM's `mcp-eval-wxai` skill evaluates with `arize-phoenix-evals` judges on a wat
 
 **In short:** an independent judge, built as IBM intended, confirms that the server's changes made a weaker agent noticeably more accurate, about 16 to 20 of 24, mainly by helping it use results correctly rather than choose tools better, while Claude stayed near perfect throughout.
 
-- **The main result holds under a judge this project did not build:** Orchestrate's correct answers rose from 16, 16, and 15 to 20 and 20 of 24, matching the Claude judge.
-- **The gain came from using results, not choosing tools:** Orchestrate's tool selection and tool arguments did not move between rounds.
+- **The main result holds under a judge this project did not build:** GPT-OSS 120B's correct answers rose from 16, 16, and 15 to 20 and 20 of 24, matching the Claude judge.
+- **The gain came from using results, not choosing tools:** GPT-OSS 120B's tool selection and tool arguments did not move between rounds.
 - **Claude is close to perfect on what matters:** correct on 30 and 29 of 30, in scope every time, and faithful to its tool responses in all 26 answers with tool calls.
 - **Claude's low tool selection score is the judge disagreeing with the server's design,** counting the dataset status call the server asks for, and correct refusals without a tool, as wrong.
 - **The weaker agents' real failures show clearly:** ignoring a tool error, or misreading which open recommendation was oldest in a long result.
@@ -198,15 +226,15 @@ The closing assessment is in the [Debrief](debrief.md#what-the-phoenix-evaluator
 | Claude Sonnet 5.5, final, 30 questions | 29 of 30 | 30 of 30 | 11 of 30 | 27 of 30 | 26 of 26 |
 | Llama 3.3 70B, 24 questions | 15 of 24 | 21 of 24 | 14 of 24 | 17 of 24 | 21 of 23 |
 | Llama 3.3 70B, adversarial 6 | 4 of 6 | 4 of 6 | 4 of 6 | 5 of 6 | 4 of 4 |
-| Orchestrate round 1, 24 questions, three runs | 16, 16, 15 | 23, 23, 23 | 15, 13, 14 | 16, 19, 17 | 17 of 20, 21 of 22, 22 of 22 |
-| Orchestrate round 2, 24 questions, two runs | **20, 20** | 24, 23 | 14, 16 | 19, 17 | 21 of 23, 20 of 21 |
-| Orchestrate round 2, adversarial 6, two runs | 6, 6 | 6, 5 | 3, 3 | 4, 4 | 4 of 4, 3 of 3 |
+| GPT-OSS 120B in Orchestrate, round 1, 24 questions, three runs | 16, 16, 15 | 23, 23, 23 | 15, 13, 14 | 16, 19, 17 | 17 of 20, 21 of 22, 22 of 22 |
+| GPT-OSS 120B in Orchestrate, round 2, 24 questions, two runs | **20, 20** | 24, 23 | 14, 16 | 19, 17 | 21 of 23, 20 of 21 |
+| GPT-OSS 120B in Orchestrate, round 2, adversarial 6, two runs | 6, 6 | 6, 5 | 3, 3 | 4, 4 | 4 of 4, 3 of 3 |
 
-**The independent judge confirms the main result.** On the 24 main questions, the watsonx.ai judge found Orchestrate's answers correct on 16, 16, and 15 in round 1 and 20 and 20 in round 2, the same direction as the Claude judge (16, 14, 15 to 19, 19). Claude's answers were correct on 29 or 30 of 30.
+**The independent judge confirms the main result.** On the 24 main questions, the watsonx.ai judge found GPT-OSS 120B's answers correct on 16, 16, and 15 in round 1 and 20 and 20 in round 2, the same direction as the Claude judge (16, 14, 15 to 19, 19). Claude's answers were correct on 29 or 30 of 30.
 
-**Tool selection and tool arguments did not move for Orchestrate:** 13 to 15 of 24 in round 1 against 14 and 16 in round 2, and 16 to 19 against 19 and 17. The server's changes improved what the agent did with tool results, not which tool it chose.
+**Tool selection and tool arguments did not move for GPT-OSS 120B:** 13 to 15 of 24 in round 1 against 14 and 16 in round 2, and 16 to 19 against 19 and 17. The server's changes improved what the agent did with tool results, not which tool it chose.
 
-**Phoenix's tool selection judge disagrees with the server's design in two cases, so its low scores for Claude need reading.** It counts a call to `vaoig_get_dataset_status` alongside the right tool as a wrong selection, but the server's instructions tell an agent to call it first when currency matters, and five gold questions require the data date. It also counts a correct refusal with no tool call, such as for "Which VA facility is the worst?", as a wrong selection. Every one of Opus's 23 tool selection failures, and 18 of Sonnet's 19, are one of these two; Llama and Orchestrate have 6 to 9 other failures a run, which are real choices of the wrong tool. The judge was not changed after seeing this.
+**Phoenix's tool selection judge disagrees with the server's design in two cases, so its low scores for Claude need reading.** It counts a call to `vaoig_get_dataset_status` alongside the right tool as a wrong selection, but the server's instructions tell an agent to call it first when currency matters, and five gold questions require the data date. It also counts a correct refusal with no tool call, such as for "Which VA facility is the worst?", as a wrong selection. Every one of Opus's 23 tool selection failures, and 18 of Sonnet's 19, are one of these two; Llama and GPT-OSS have 6 to 9 other failures a run, which are real choices of the wrong tool. The judge was not changed after seeing this.
 
 **Response handling was judged once per answer, with all its calls.** A first pass judged each tool call on its own, which read data from an answer's other calls (Texas from one call, North Carolina from another) as invented. Judged with every call and response together, the way the agent saw them, Claude used its tool responses correctly in every answer. The remaining failures are real: answers that ignored a tool error, or misread which open recommendation was oldest in a long result. Per-run details, with every judge's reasoning, are in each run's `phoenix_evals.md` and `phoenix_evals.json`.
 
@@ -251,8 +279,8 @@ Testing changed the server, the scorer, and the data, not only the scores. Each 
 | The image built on IBM's virtual machine could not import the server ([#33](https://github.com/HacksterT/oig-mcp/pull/33)) | Server | Files in the image are made readable whatever the build machine's permissions |
 | The first Orchestrate registration ran the server with no data API address ([#35](https://github.com/HacksterT/oig-mcp/pull/35)) | Deployment | The toolkit passes the data API's settings through a key_value connection |
 | The "New York VA" failure in Orchestrate ([#37](https://github.com/HacksterT/oig-mcp/pull/37)) | Server | Place questions route to the facility tool; facility lookups retry without generic words; state filters accept postal codes |
-| Orchestrate's agent passed an office's full name, or put an office in the domain filter, and both matched nothing ([#60](https://github.com/HacksterT/oig-mcp/pull/60)) | Server | Office names become abbreviations; an office in the domain filter is refused with the right filter named; empty analyses say to check filter values |
-| Orchestrate's agent misread the peak year from a 31-row table (#60) | Server | Year analyses name the peak year |
+| GPT-OSS 120B, in Orchestrate, passed an office's full name, or put an office in the domain filter, and both matched nothing ([#60](https://github.com/HacksterT/oig-mcp/pull/60)) | Server | Office names become abbreviations; an office in the domain filter is refused with the right filter named; empty analyses say to check filter values |
+| GPT-OSS 120B, in Orchestrate, misread the peak year from a 31-row table (#60) | Server | Year analyses name the peak year |
 | Facility counts went to search; the next window was called OIG's estimate; open findings were presented as a forecast (#60) | Server | Descriptions route facility counts and report lists to the profile, and say the estimate is the server's and findings cannot be forecast |
 | A data API failure was described to the agent as "not reachable" (#60) | Server | Failures get their own hint: retry, try other filters, say the part could not be retrieved |
 | Counting with only a facility-response or domain filter failed with a 500 | Data | Fixed in the data API (oig-data-source #38) |

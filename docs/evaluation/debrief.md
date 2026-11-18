@@ -6,11 +6,11 @@
 
 ## Bottom line
 
-Yes. On the agent that had room to improve, the gains were modest and consistent across three independent measures. In reliability and abuse resistance they were large and unambiguous. On Claude they were neutral by design: it was already at the ceiling, so its reruns show that nothing broke. The largest effect in the project remains the server itself: without it, models answer 2 or 3 of 24 questions; with it, 9 to 23.
+Yes. On the agent that had room to improve, the gains were modest and consistent across three independent measures. In reliability and abuse resistance they were large and unambiguous. On Claude they were neutral by design: it was already at the ceiling, so its reruns show that nothing broke. The largest effect in the project remains the server itself: without it, models answer 2 or 3 of 24 questions; with it, 9 to 23. Testing five models from four model makers was the biggest source of learning: the same server scored very differently by model, and the weaker, open-weight models exposed what the server had to carry ([Same server, five models](results.md#same-server-five-models)).
 
 ## Where the changes clearly helped
 
-**The Orchestrate agent (GPT-OSS 120B)** is the cleanest test: the same agent, instruction, and model, with only the server changed.
+**GPT-OSS 120B, in watsonx Orchestrate,** is the cleanest test: the same model, agent, and instruction, with only the server changed.
 
 | 24 main questions | Round 1, three runs | Round 2, two runs | Change |
 |---|---|---|---|
@@ -38,7 +38,7 @@ Three things make the improvement credible rather than chance:
 - **Which tool the agent chose, and with which arguments, did not move:** Phoenix's tool selection and tool invocation judges scored Orchestrate about the same in both rounds. The server improved what the agent did with results, not its choice of tool.
 - **Links in GPT-OSS answers barely moved,** 3 of 8 at best in both rounds. A ready-made citation helps a model that copies it (Claude Sonnet reached 8 of 8), not one that omits links.
 - **Five questions regressed** from passing once in round 1 to failing both round-2 runs. Three of them met Orchestrate's own "connection refused" tool errors in round 2's first run; the other two look like sampling variance, which two runs cannot settle.
-- **The Orchestrate agent failed the instruction-override question** in both adversarial runs.
+- **GPT-OSS 120B failed the instruction-override question** in both adversarial runs.
 - **Llama 3.3 70B stayed at 9 of 24.** Its tool choice, citations, and data dates improved, and the cause of its context overflow was found and the page cut by 42 percent, but Llama was not rerun, so a fix there is unproven.
 - **The last three server changes** ([#101](https://github.com/HacksterT/oig-mcp/pull/101) to [#103](https://github.com/HacksterT/oig-mcp/pull/103)) are unmeasured on weaker models: Orchestrate's round 2 ran the earlier code. Claude Sonnet shows they broke nothing.
 - **The server-side facility form** (MCP elicitation) was shown in one real host, Claude Code, after this assessment's rounds; the desktop hosts tried, Claude Desktop and Hermes, did not display it.
@@ -47,10 +47,10 @@ Three things make the improvement credible rather than chance:
 
 The Phoenix evaluation was a second, independent grading of the saved answers, with nothing rerun. Llama 3.3 70B on watsonx.ai read each answer with the tool calls behind it and gave five verdicts, as IBM's `mcp-eval-wxai` skill specifies: correctness against the SQL-computed reference, scope, tool selection, tool arguments, and whether the answer used its tool responses faithfully. Full tables: [Results](results.md#phoenix-evaluators-on-watsonxai).
 
-1. **It confirms the main result with a judge this project did not build.** With only the server changed, Orchestrate's correct answers rose from 16, 16, and 15 of 24 to 20 and 20, the same jump the Claude judge found (about 15 to 19). Two judges from different model families agreeing makes the improvement much harder to dismiss.
-2. **The improvement came from how the agent used results, not which tool it chose.** Orchestrate's tool selection (15, 13, 14 to 14, 16) and tool arguments (16, 19, 17 to 19, 17) did not move. The server's changes worked by making results clearer and harder to misread, such as a precomputed peak year, wrong filters refused with the fix, and ready-made citations, not by improving the agent's choice of tool.
+1. **It confirms the main result with a judge this project did not build.** With only the server changed, GPT-OSS 120B's correct answers rose from 16, 16, and 15 of 24 to 20 and 20, the same jump the Claude judge found (about 15 to 19). Two judges from different model families agreeing makes the improvement much harder to dismiss.
+2. **The improvement came from how the agent used results, not which tool it chose.** GPT-OSS 120B's tool selection (15, 13, 14 to 14, 16) and tool arguments (16, 19, 17 to 19, 17) did not move. The server's changes worked by making results clearer and harder to misread, such as a precomputed peak year, wrong filters refused with the fix, and ready-made citations, not by improving the agent's choice of tool.
 3. **Claude is close to perfect on what matters:** correct on 30 of 30 (Opus) and 29 of 30 (Sonnet), in scope every time, and faithful to its tool responses in all 26 answers that called tools.
-4. **Claude's low tool selection score is the judge disagreeing with the server's design, not a failure.** Phoenix scored it 7 and 11 of 30 because of two correct behaviors: calling the dataset status tool first, which the server instructs and five questions require, and refusing questions such as "Which VA facility is the worst?" without calling a tool. These account for every Opus failure and 18 of Sonnet's 19. Llama and Orchestrate also had 6 to 9 genuine wrong-tool choices per run.
+4. **Claude's low tool selection score is the judge disagreeing with the server's design, not a failure.** Phoenix scored it 7 and 11 of 30 because of two correct behaviors: calling the dataset status tool first, which the server instructs and five questions require, and refusing questions such as "Which VA facility is the worst?" without calling a tool. These account for every Opus failure and 18 of Sonnet's 19. Llama and GPT-OSS also had 6 to 9 genuine wrong-tool choices per run.
 5. **The weaker agents' real problems showed clearly.** The remaining response handling failures are genuine: answers that ignored a tool error, or misread which open recommendation was oldest in a long result. Llama was correct on 15 of 24, in line with the other measures.
 
 **On method:** a first pass judged response handling one tool call at a time, so when an answer combined two calls (Texas from one, North Carolina from the other), each call made the other half look invented. Judged with all of an answer's calls together, the way the agent saw them, those false failures disappeared. Both passes are recorded.

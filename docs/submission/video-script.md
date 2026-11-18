@@ -42,9 +42,9 @@
 
 ## 6. Does it work? (2:35 to 3:00)
 
-**On screen:** the evaluation results chart (deck slide 13), then the repository.
+**On screen:** the five-models chart (deck slide 14), then the repository.
 
-"We tested it against answers computed directly from the data. Without the server, models got 2 or 3 of 24 questions right. With it, 9 to 23. Everything, including every score, is in the public repository."
+"We tested it with five AI models from four companies, against answers computed directly from the data. Without the server, models got 2 or 3 of 24 questions right. With it, 9 to 23, and that spread taught us the most: weaker models need the server to do more of the work, and every fix we made for them made the server better for all of them. Every score is in the public repository."
 
 ---
 
