@@ -236,7 +236,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 - **Local toolkit:** Orchestrate runs the server over stdio inside its own runtime, so the server has no network endpoint of its own there.
 - **Credentials from a connection:** the data service address and credentials come from a key_value connection, never from code or the repository.
 - **A minimal agent:** it uses the seven tools, runs GPT-OSS 120B, and has one instruction: "Answer only from what the OIG tools return. Do not use general knowledge or information outside the tool results."
-- **Evaluated in place:** IBM's Agent Development Kit ran the same gold questions against the deployed agent, three times.
+- **Evaluated in place:** IBM's Agent Development Kit ran the same gold questions against the deployed agent in two rounds: three runs, then two after the server fixes.
 - **Traced end to end:** every request the server makes carries a trace ID to the data service, so each Orchestrate conversation can be checked against the requests behind it.
 
 **Visual:** A screenshot of the Orchestrate agent answering with cited reports, and the toolkit's seven tools.
@@ -315,7 +315,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 | Llama 3.3 70B, watsonx.ai | 2 of 24 (0 of 16) | 9 of 24 (11 of 16) |
 
 **By model:**
-- **Claude Opus 5.5:** 23 of 24 on every run from November 4 to 17, and 22 of 24 after the result-size changes, where the new miss was "agreed" for "concur" on a correct answer. Claude Sonnet 5.5 scored 23 of 24 on November 4 and on November 17. On the final server, with the 6 adversarial questions, Opus passed 29 of 30 and Sonnet 28 of 30.
+- **Claude Opus 5.5:** 23 of 24 on every run but one from November 4 to 17; the exception was 22 of 24 after the result-size changes, where the new miss was "agreed" for "concur" on a correct answer. Claude Sonnet 5.5 scored 23 of 24 on November 4 and on November 17. On the final server, with the 6 adversarial questions, Opus passed 29 of 30 and Sonnet 28 of 30.
 - **GPT-OSS 120B, open-weight, in watsonx Orchestrate:** round 1, 10, 8, and 11 of 24 on this project's scoring (IBM's engine 14, 14, 13). After the server fixes, round 2: 12 and 12 of 24 (IBM's engine 16 and 18), with the judge agreeing on 19 of 24 instead of about 15. Same model and agent; only the server changed.
 - **Llama 3.3 70B, open-weight, on watsonx.ai:** 9 of 24, against 2 of 24 with no server.
 - **Citations:** no answer from the server-backed Claude, Llama, or GPT-OSS runs cited a report that does not exist.
