@@ -630,13 +630,37 @@ async function icon(name, color) {
       T(s, h, { x: x + 0.6, y, w: 3.8, h: 0.3, fontSize: 13, bold: true, color: i === 6 ? C.accent1 : C.background1 });
       T(s, b, { x: x + 0.6, y: y + 0.3, w: 3.8, h: 0.5, fontSize: 11, color: C.accent3 });
     });
-    T(s, "github.com/HacksterT/oig-mcp", { x: 5.1, y: 4.55, w: 4.4, h: 0.35, fontSize: 13, bold: true, color: C.accent1, align: "right" });
-    T(s, "Team: Troy Sybert, MD, MPH  ·  Mikhail Kuprian, MD", { x: 4.1, y: 4.9, w: 5.4, h: 0.25, fontSize: 10, color: C.accent5, align: "right" });
+    T(s, "github.com/HacksterT/oig-mcp", { x: 5.1, y: 4.7, w: 4.4, h: 0.35, fontSize: 13, bold: true, color: C.accent1, align: "right" });
+  }
+
+  // ===== 19. Thank you =====
+  {
+    const s = newSlide("TITLE_DARK", "GSA MCP SERVER AND AI AGENT GOVERNMENT HACKATHON  ·  DATASET ACCESS TRACK", "Thank you", "Closing");
+    s.addText("Every OIG finding, cited, in any AI assistant.", { placeholder: "body" });
+    T(s, "TEAM", { x: 0.6, y: 3.05, w: 4, h: 0.25, fontSize: 10, bold: true, charSpacing: 3, color: C.accent1 });
+    const team = ["Troy Sybert, MD, MPH", "Mikhail Kuprian, MD"];
+    team.forEach((name, i) => {
+      const x = 0.6 + i * 3.3;
+      card(s, x, 3.38, 3.05, 0.62, HEX.inkSoft, "Team member card");
+      T(s, name, { x: x + 0.22, y: 3.38, w: 2.7, h: 0.62, valign: "middle", fontFace: "Cambria", fontSize: 17, bold: true, color: C.background1 });
+    });
+    const links = [
+      ["Code, documentation, and every score", "github.com/HacksterT/oig-mcp"],
+      ["Hosted MCP endpoint", "mcp.troymd.com/mcp"],
+    ];
+    links.forEach(([label, value], i) => {
+      const y = 4.25 + i * 0.36;
+      T(s, label, { x: 0.6, y, w: 3.3, h: 0.3, fontSize: 11, color: C.accent3 });
+      T(s, value, { x: 3.9, y, w: 4, h: 0.3, fontSize: 12, bold: true, color: C.accent1 });
+    });
+    T(s, "Submitted November 23, 2026", { x: 6.2, y: 4.97, w: 3.3, h: 0.3, fontSize: 11, italic: true, color: C.accent3, align: "right" });
   }
 
   fs.mkdirSync(OUT, { recursive: true });
   const file = path.join(OUT, "oig-mcp-deck.pptx");
   await pres.writeFile({ fileName: file });
   await applyTheme(file, THEME);
+  // Folder entries in the ZIP stop some cloud viewers from opening the deck.
+  try { require("child_process").execFileSync("zip", ["-dq", file, "*/"]); } catch (e) { /* none to remove */ }
   console.log(file, cur.n, "slides");
 })().catch((e) => { console.error(e); process.exit(1); });
