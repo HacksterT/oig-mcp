@@ -448,7 +448,7 @@ async function icon(name, color) {
       s.addImage({ path: path.join(IMG, f), x, y, w: 2.17, h: 1.22, altText: alt });
       T(s, cap, { x, y: y + 1.25, w: 2.17, h: 0.25, fontSize: 9, bold: true, color: C.accent3 });
     });
-    T(s, "The video runs under three minutes; slide 12 and the evaluation document carry the detail.", { x: 5.0, y: 4.62, w: 4.5, h: 0.4, fontSize: 10, italic: true, color: C.accent1 });
+    T(s, "From the Hackathon demo video submitted with this entry. Slide 12 and the evaluation document carry the detail.", { x: 5.0, y: 4.62, w: 4.5, h: 0.4, fontSize: 10, italic: true, color: C.accent1 });
   }
 
   // ===== 12. Inside the brief =====
@@ -522,8 +522,12 @@ async function icon(name, color) {
       T(s, v, { x: x + 0.15, y: y + 0.12, w: 1.75, h: 0.55, fontFace: "Cambria", fontSize: 26, bold: true, color: k === 0 ? C.accent1 : C.text2 });
       T(s, l, { x: x + 0.15, y: y + 0.7, w: 1.75, h: 0.75, fontSize: 10, color: k === 0 ? C.background1 : C.text1 });
     });
-    T(s, "Limits: one builder wrote the questions and the server, and fixes followed failures on these questions. Twenty-four questions are a check, not a statistical estimate. One load test, on one Mac, not run to failure.",
-      { x: 0.5, y: 4.68, w: 9, h: 0.42, fontSize: 9.5, italic: true, color: C.accent5 });
+    s.addText([
+      { text: "Operations:  ", options: { bold: true, color: C.text2 } },
+      { text: "median tool latency 0.13 to 2 s  \u00B7  about $3 per 24-question run, judge included  \u00B7  39% fewer tokens with elicitation", options: { color: C.text1 } },
+    ], { isTextBox: true, x: 0.5, y: 4.64, w: 9, h: 0.24, margin: 0, fontSize: 10 });
+    T(s, "Limits: one builder wrote the questions and the server; 24 questions are a check, not a statistical estimate; one load test, not run to failure.",
+      { x: 0.5, y: 4.9, w: 9, h: 0.22, fontSize: 9.5, italic: true, color: C.accent5 });
   }
 
   // ===== 15. Five models =====
@@ -601,13 +605,17 @@ async function icon(name, color) {
       ["LuPackageCheck", "Container and supply chain", "Non-root, read-only filesystem; locked, audited dependencies; pinned image and actions", "CI and Dependabot"],
     ];
     for (const [k, t] of tiles.entries()) {
-      const x = 0.5 + (k % 3) * 3.05, y = 1.78 + Math.floor(k / 3) * 1.6;
-      card(s, x, y, 2.9, 1.48, C.background2, "Security tile");
+      const x = 0.5 + (k % 3) * 3.05, y = 1.74 + Math.floor(k / 3) * 1.52;
+      card(s, x, y, 2.9, 1.42, C.background2, "Security tile");
       await iconDot(s, t[0], x + 0.15, y + 0.15, 0.42, HEX.teal, HEX.white, "Security icon");
       T(s, t[1], { x: x + 0.67, y: y + 0.15, w: 2.1, h: 0.42, fontSize: 12.5, bold: true, valign: "middle" });
       T(s, t[2], { x: x + 0.15, y: y + 0.63, w: 2.6, h: 0.52, fontSize: 9.5 });
       T(s, t[3], { x: x + 0.15, y: y + 1.15, w: 2.6, h: 0.25, fontSize: 9.5, bold: true, color: C.accent1 });
     }
+    s.addText([
+      { text: "Assumes:  ", options: { bold: true, color: C.text2 } },
+      { text: "OIG's published record is the authority; testers enter no patient or nonpublic information; the data API's address stays private.", options: { color: C.text1 } },
+    ], { isTextBox: true, x: 0.5, y: 4.76, w: 9, h: 0.22, margin: 0, fontSize: 9.5 });
     T(s, "Independent review, November 17: no high-severity issues; medium and low findings fixed, each with a test.", { x: 0.5, y: 4.98, w: 8.4, h: 0.2, fontSize: 9.5, italic: true, color: C.accent5 });
   }
 
