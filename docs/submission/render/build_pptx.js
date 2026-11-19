@@ -75,7 +75,7 @@ async function icon(name, color) {
 (async () => {
   const pres = new pptxgen();
   pres.layout = "LAYOUT_16x9"; // 10 x 5.625
-  pres.author = "Troy Sybert";
+  pres.author = "Troy Sybert, Mikhail Kuprian";
   pres.title = "VA OIG Oversight Assistant";
   pres.subject = "GSA MCP Server and AI Agent Government Hackathon";
   pres.theme = { headFontFace: THEME.headFontFace, bodyFontFace: THEME.bodyFontFace };
@@ -171,7 +171,8 @@ async function icon(name, color) {
       T(s, v, { x, y: 3.45, w: 2.4, h: 0.6, fontFace: "Cambria", fontSize: 34, bold: true, color: C.accent1 });
       T(s, l, { x, y: 4.05, w: 2.4, h: 0.3, fontSize: 13, color: C.background1 });
     });
-    T(s, "Troy Sybert, MD   ·   github.com/HacksterT/oig-mcp   ·   Deployed in IBM watsonx Orchestrate", { x: 0.6, y: 4.85, w: 8.8, h: 0.3, fontSize: 11, color: C.accent3 });
+    T(s, "Troy Sybert, MD, MPH   ·   Mikhail Kuprian, MD", { x: 0.6, y: 4.55, w: 8.8, h: 0.3, fontSize: 13, bold: true, color: C.background1 });
+    T(s, "github.com/HacksterT/oig-mcp   ·   Deployed in IBM watsonx Orchestrate", { x: 0.6, y: 4.88, w: 8.8, h: 0.3, fontSize: 11, color: C.accent3 });
   }
 
   // ===== 2. Challenge =====
@@ -630,6 +631,7 @@ async function icon(name, color) {
       T(s, b, { x: x + 0.6, y: y + 0.3, w: 3.8, h: 0.5, fontSize: 11, color: C.accent3 });
     });
     T(s, "github.com/HacksterT/oig-mcp", { x: 5.1, y: 4.55, w: 4.4, h: 0.35, fontSize: 13, bold: true, color: C.accent1, align: "right" });
+    T(s, "Team: Troy Sybert, MD, MPH  ·  Mikhail Kuprian, MD", { x: 4.1, y: 4.9, w: 5.4, h: 0.25, fontSize: 10, color: C.accent5, align: "right" });
   }
 
   fs.mkdirSync(OUT, { recursive: true });

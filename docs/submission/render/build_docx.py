@@ -65,7 +65,7 @@ def preprocess(md):
         'title: "Evaluating oig-mcp"\n'
         'subtitle: "An MCP server over VA Inspector General reports, '
         'tested with five models"\n'
-        'author: "Troy Sybert, MD"\n'
+        'author: "Troy Sybert, MD, MPH, and Mikhail Kuprian, MD"\n'
         'date: "GSA MCP Server and AI Agent Government Hackathon · '
         'November 2026"\n'
         "---\n\n"
@@ -358,7 +358,7 @@ def postprocess(path):
         ppr.append(tabs)
 
     doc.core_properties.title = "Evaluating oig-mcp"
-    doc.core_properties.author = "Troy Sybert"
+    doc.core_properties.author = "Troy Sybert, Mikhail Kuprian"
     doc.core_properties.subject = (
         "GSA MCP Server and AI Agent Government Hackathon: evaluation documentation"
     )
