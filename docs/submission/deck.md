@@ -239,7 +239,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 - **Evaluated in place:** IBM's Agent Development Kit ran the same gold questions against the deployed agent in two rounds: three runs, then two after the server fixes.
 - **Traced end to end:** every request the server makes carries a trace ID to the data service, so each Orchestrate conversation can be checked against the requests behind it.
 
-**Visual:** A screenshot of the Orchestrate agent answering with cited reports, and the toolkit's seven tools.
+**Visual:** The Orchestrate agent (GPT-OSS 120B) answering "What has OIG found at the Mountain Home VA?", ending with its cited reports and the data date.
 
 **Speaker notes:** The same server runs over Streamable HTTP with bearer authentication for other hosts. No code differs between the two deployments.
 
@@ -247,24 +247,42 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 ## Slide 11: Demo
 
-**Title:** MCP Server Demo
+**Title:** One quality manager, one question
 
-**Body:** A short screen recording embedded in the slide, as the sample deck does, with screenshots as a fallback. Suggested flow:
+**Body:** The demo video (under three minutes, submitted separately) follows a quality manager at the Mountain Home VA in six moments:
 
-1. "How current is the data?" Dataset status, with the data date and its reconciliation with OIG's own counts.
-2. "Which offices have the most recommendations open longer than a year?" An exact table from the analysis tool.
-3. "What did facilities commit to doing about unsecured medication carts?" Search, with peer commitments and report links.
-4. "What has OIG found at the Columbia VA?" Three facilities match, and the server's form asks which one (Claude Code).
-5. "Prepare an inspection brief for a named facility." The inspection brief.
-6. "Which facility is the worst?" A declined request, with what the server can offer instead.
+1. Searching vaoig.gov for "Mountain Home": 196 results, 20 a page, with the detail in PDFs.
+2. From PDFs to answers: the pipeline, the database, and the row-by-row check against OIG's own listing.
+3. The same server in three hosts: GPT-OSS 120B in watsonx Orchestrate, Claude Opus 5.5 in Claude Code over stdio, and DeepSeek V4 Pro in Hermes Agent over Streamable HTTP.
+4. "Help me prepare for the next OIG inspection at the Tennessee VA." Three facilities match, the server's form asks which, and he picks Mountain Home.
+5. One inspection brief: his record, the estimated window, the most common peer finding, and what peers committed to do.
+6. "Which VA facility is the worst?" Declined, with what the record can support instead.
 
-**Visual:** Screenshots from the Orchestrate agent, or from Claude, for each step.
+**Visual:** Four frames from the video: the vaoig.gov results, the server's form, the brief, and the refusal.
 
-**Speaker notes:** End on the refusal. Knowing what not to answer is part of the design.
+**Speaker notes:** The video ends on the refusal. Knowing what not to answer is part of the design.
 
 ---
 
-## Slide 12: Evaluation setup
+## Slide 12: Inside the inspection brief
+
+**Title:** Inside the inspection brief
+
+**Body:** What one call to `vaoig_get_inspection_brief` returned for James H. Quillen VA Medical Center (station 621), shown in Claude Code with Claude Opus 5.5, data as of November 4, 2026:
+
+1. **The facility check:** the result tells the AI the user chose station 621 on the server's form, so the pick is not second-guessed.
+2. **Its own record:** 11 reports and 31 recommendations, none open, and no repeat findings, with how a repeat is counted.
+3. **The next window, labeled as an estimate:** about December 2028, from the last inspection plus the program's roughly three-year cycle. OIG publishes no schedule.
+4. **The most common peer finding:** test result communication, in 21 of 112 Healthcare Facility Inspection reports; Mountain Home is in that group.
+5. **What peers committed to do:** Hampton's monthly audit of 50 patients' results, and Shreveport's leadership review of seven-day follow-up, each with its report link.
+
+**Visual:** The brief as it appeared in the demo, with the five parts numbered beside it.
+
+**Speaker notes:** The brief does the sequencing a weaker model gets wrong: one call instead of up to ten searches. Which peer examples the model highlights varies from run to run; the server returns the same data each time.
+
+---
+
+## Slide 13: Evaluation setup
 
 **Title:** MCP Server Evaluation: Setup
 
@@ -301,7 +319,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 ---
 
-## Slide 13: Evaluation results
+## Slide 14: Evaluation results
 
 **Title:** MCP Server Evaluation: Results
 
@@ -338,7 +356,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 ---
 
-## Slide 14: Same server, five models
+## Slide 15: Same server, five models
 
 **Title:** One Server, Five Models: What the Spread Taught Us
 
@@ -372,7 +390,7 @@ The same server, questions, and scoring, with five models from four model makers
 
 ---
 
-## Slide 15: Failure analysis
+## Slide 16: Failure analysis
 
 **Title:** Every Failure Traced to Its Cause, Then Fixed and Retested
 
@@ -406,7 +424,7 @@ Each failure was read against the tool results and the data service's request tr
 
 ---
 
-## Slide 16: Security considerations
+## Slide 17: Security considerations
 
 **Title:** Security Considerations
 
@@ -431,7 +449,7 @@ Each failure was read against the tool results and the data service's request tr
 
 ---
 
-## Slide 17: Lessons learned and recommendations
+## Slide 18: Lessons learned and recommendations
 
 **Title:** Lessons Learned and Recommendations
 
