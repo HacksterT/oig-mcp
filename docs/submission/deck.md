@@ -472,3 +472,21 @@ Each failure was read against the tool results and the data service's request tr
 **Visual:** None, or one icon per lesson.
 
 **Speaker notes:** The full record, round by round, is in the wiki's Evaluation results.
+
+---
+
+## Slide 19: Thank you
+
+**Title:** Thank you
+
+**Subtitle:** Every OIG finding, cited, in any AI assistant.
+
+**Body:**
+
+- **Team:** Troy Sybert, MD, MPH, and Mikhail Kuprian, MD
+- **Code, documentation, and every score:** github.com/HacksterT/oig-mcp
+- **Hosted MCP endpoint:** mcp.troymd.com/mcp
+- **Submitted:** November 23, 2026, to the GSA MCP Server and AI Agent Government Hackathon, Dataset Access track
+
+**Speaker notes:** Thank you for reading. Everything in this deck can be checked: the repository holds the code, the wiki, and every saved evaluation run, and one command recomputes every score with no keys.
+
