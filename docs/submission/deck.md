@@ -12,7 +12,7 @@
 
 **Footer:**
 - GSA MCP Server and AI Agent Government Hackathon, Dataset Access track
-- Troy Sybert, MD
+- Team: Troy Sybert, MD, MPH, and Mikhail Kuprian, MD
 - Deployed on IBM watsonx Orchestrate
 - github.com/HacksterT/oig-mcp
 
