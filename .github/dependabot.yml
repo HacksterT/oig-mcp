@@ -2,13 +2,17 @@
 # enabled in the repository settings and open as soon as an advisory is published;
 # these rules do not affect them. Major version jumps, and any change to the Python
 # version, are left for a deliberate upgrade rather than a routine pull request.
+#
+# Paused through hackathon judging (November 30 to December 11, 2026): a limit of
+# 0 opens no version-update pull requests, so main stays the submitted state.
+# Security updates are unaffected. Restore the limits after judging.
 version: 2
 updates:
   - package-ecosystem: "uv"
     directory: "/"
     schedule:
       interval: "monthly"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
@@ -16,6 +20,7 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    open-pull-requests-limit: 0
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
@@ -23,6 +28,7 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    open-pull-requests-limit: 0
     ignore:
       # 3.11-slim to 3.15-slim reads as a minor update but changes Python itself.
       # New digests of 3.11-slim, with OS security fixes, still come through.
