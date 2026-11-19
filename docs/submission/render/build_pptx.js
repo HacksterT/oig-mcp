@@ -414,32 +414,64 @@ async function icon(name, color) {
       T(s, r[1], { x: 1.13, y: y - 0.03, w: 3.6, h: 0.27, fontSize: 13, bold: true });
       T(s, r[2], { x: 1.13, y: y + 0.24, w: 3.6, h: 0.46, fontSize: 10.5, color: C.accent5 });
     }
-    placeholderBox(s, 5.0, 1.4, 4.5, 3.6, "Screenshot to add: the Orchestrate agent answering with cited reports, beside the toolkit's seven tools");
+    card(s, 4.95, 1.35, 4.55, 3.7, C.background2, "Orchestrate screenshot frame");
+    s.addImage({ path: path.join(IMG, "orchestrate-answer.png"), x: 5.27, y: 1.47, w: 3.91, h: 3.33, altText: "watsonx Orchestrate Live Preview: GPT-OSS 120B answers What has OIG found at the Mountain Home VA? with a list of OIG report numbers and vaoig.gov links, ending with the data date 2026-11-04" });
+    T(s, "GPT-OSS 120B in watsonx Orchestrate: every report cited, data date stated", { x: 4.95, y: 4.82, w: 4.55, h: 0.22, fontSize: 9, italic: true, color: C.accent5, align: "center" });
   }
 
   // ===== 11. Demo =====
   {
-    const s = newSlide("CONTENT_DARK", "DEMO", "MCP server demo", "Demo");
+    const s = newSlide("CONTENT_DARK", "DEMO  ·  THE VIDEO IN SIX MOMENTS", "One quality manager, one question", "Demo");
     const steps = [
-      ["How current is the data?", "Dataset status, reconciled with OIG's counts"],
-      ["Which offices have the most items open over a year?", "An exact table from the analysis tool"],
-      ["What did peers do about unsecured medication carts?", "Peer commitments, with report links"],
-      ["What has OIG found at the Columbia VA?", "Three match; the server's form asks which"],
-      ["Prepare an inspection brief for a named facility.", "The inspection brief"],
-      ["Which facility is the worst?", "Declined, with what the server can offer"],
+      ["Search vaoig.gov for \u201CMountain Home\u201D", "196 results, 20 a page; the detail sits in PDFs"],
+      ["From PDFs to answers", "Pipeline and database, checked row by row against OIG"],
+      ["Same server, three hosts", "Orchestrate, Claude Code over stdio, Hermes over HTTP"],
+      ["\u201CThe Tennessee VA\u201D matches three", "The server's form asks which; he picks Mountain Home"],
+      ["One brief", "Record, estimated window, top peer finding, peer actions"],
+      ["\u201CWhich VA facility is the worst?\u201D", "Declined, with what the record can support instead"],
     ];
     steps.forEach(([q, what], i) => {
-      const y = 1.38 + i * 0.62;
-      numDot(s, i + 1, 0.5, y + 0.04, 0.42, i === 5 ? HEX.coral : HEX.amber, HEX.ink);
-      T(s, q, { x: 1.08, y, w: 4.3, h: 0.3, fontSize: 11.5, bold: true, color: C.background1 });
-      T(s, what, { x: 1.08, y: y + 0.28, w: 3.9, h: 0.28, fontSize: 10.5, color: C.accent3 });
+      const y = 1.32 + i * 0.6;
+      numDot(s, i + 1, 0.5, y + 0.03, 0.4, i === 5 ? HEX.coral : HEX.amber, HEX.ink);
+      T(s, q, { x: 1.05, y, w: 3.75, h: 0.27, fontSize: 11.5, bold: true, color: C.background1 });
+      T(s, what, { x: 1.05, y: y + 0.26, w: 3.75, h: 0.32, fontSize: 9.5, color: C.accent3 });
     });
-    placeholderBox(s, 5.6, 1.45, 3.9, 2.19, "\n\n\nEmbed the demo video here (screenshots as a fallback)", true);
-    s.addImage({ data: await icon("LuPlay", HEX.amber), x: 7.25, y: 1.95, w: 0.6, h: 0.6, altText: "Play icon" });
-    T(s, "End on the refusal: knowing what not to answer is part of the design.", { x: 5.6, y: 3.9, w: 3.9, h: 0.45, fontSize: 11.5, italic: true, color: C.accent1, align: "center" });
+    const shots = [
+      ["demo-search.png", "1  vaoig.gov: 196 results", "vaoig.gov search results for Mountain Home, displaying 1 to 20 of 196"],
+      ["demo-elicitation.png", "4  The server's form", "Claude Code: MCP server oig-mcp requests your input; three Tennessee facilities to choose from"],
+      ["demo-brief.png", "5  The brief", "Claude Code: the inspection brief for James H. Quillen VA Medical Center, station 621"],
+      ["demo-refusal.png", "6  The refusal", "Hermes Agent with DeepSeek V4 Pro declines to name a worst facility and offers recurring findings instead"],
+    ];
+    shots.forEach(([f, cap, alt], k) => {
+      const x = 5.0 + (k % 2) * 2.27, y = 1.32 + Math.floor(k / 2) * 1.62;
+      s.addImage({ path: path.join(IMG, f), x, y, w: 2.17, h: 1.22, altText: alt });
+      T(s, cap, { x, y: y + 1.25, w: 2.17, h: 0.25, fontSize: 9, bold: true, color: C.accent3 });
+    });
+    T(s, "The video runs under three minutes; slide 12 and the evaluation document carry the detail.", { x: 5.0, y: 4.62, w: 4.5, h: 0.4, fontSize: 10, italic: true, color: C.accent1 });
   }
 
-  // ===== 12. Evaluation setup =====
+  // ===== 12. Inside the brief =====
+  {
+    const s = newSlide("CONTENT", "DEMO  ·  WHAT ONE CALL RETURNS", "Inside the inspection brief", "Demo");
+    card(s, 0.45, 1.35, 5.5, 3.25, C.background2, "Brief screenshot frame");
+    s.addImage({ path: path.join(IMG, "demo-brief.png"), x: 0.57, y: 1.47, w: 5.26, h: 2.96, altText: "Claude Code showing the inspection brief: the facility check, Mountain Home's record, the next inspection estimate, and the main weakness, test result communication" });
+    T(s, "Claude Opus 5.5 in Claude Code, one call to vaoig_get_inspection_brief, data as of November 4, 2026", { x: 0.45, y: 4.66, w: 5.5, h: 0.35, fontSize: 9, italic: true, color: C.accent5 });
+    const parts = [
+      ["The facility check", "The result says the user chose station 621 on the server's form."],
+      ["Its own record", "11 reports, 31 recommendations, none open, no repeat findings, with how a repeat is counted."],
+      ["The next window, labeled", "About December 2028, from the last inspection plus a three-year cycle."],
+      ["The most common peer finding", "Test result communication, in 21 of 112 inspection reports, and Mountain Home is in that group."],
+      ["What peers committed to do", "Hampton's monthly audit of 50 patients' results; Shreveport's seven-day follow-up review. Each with its report link."],
+    ];
+    parts.forEach(([h, b], i) => {
+      const y = 1.35 + i * 0.73;
+      numDot(s, i + 1, 6.15, y + 0.02, 0.36, HEX.amber, HEX.ink);
+      T(s, h, { x: 6.62, y, w: 2.9, h: 0.26, fontSize: 12, bold: true });
+      T(s, b, { x: 6.62, y: y + 0.25, w: 2.9, h: 0.47, fontSize: 9.5, color: C.accent5 });
+    });
+  }
+
+  // ===== 13. Evaluation setup =====
   {
     const s = newSlide("CONTENT", "EVALUATION  ·  SETUP", "Scored against SQL, not the API under test", "Evaluation");
     const stages = [
@@ -465,7 +497,7 @@ async function icon(name, color) {
     T(s, "One question traced in Phoenix: Llama 3.3 70B on watsonx.ai calls the analysis tool and answers", { x: 9.5 - iw, y: 4.86, w: iw, h: 0.25, fontSize: 9, italic: true, color: C.accent5 });
   }
 
-  // ===== 13. Results =====
+  // ===== 14. Results =====
   {
     const s = newSlide("CONTENT", "EVALUATION  ·  RESULTS", "What the server adds", "Evaluation");
     s.addChart(pres.charts.BAR, [
@@ -493,7 +525,7 @@ async function icon(name, color) {
       { x: 0.5, y: 4.68, w: 9, h: 0.42, fontSize: 9.5, italic: true, color: C.accent5 });
   }
 
-  // ===== 14. Five models =====
+  // ===== 15. Five models =====
   {
     const s = newSlide("CONTENT", "EVALUATION  ·  FIVE MODELS", "One server, five models", "Evaluation");
     s.addChart(pres.charts.BAR, [{
@@ -517,7 +549,7 @@ async function icon(name, color) {
     pts.forEach(([h, b], i) => T(s, [{ text: h + " ", options: { bold: true } }, { text: b }], { x: 6.0, y: 2.72 + i * 0.58, w: 3.5, h: 0.55, fontSize: 10.5 }));
   }
 
-  // ===== 15. Failure analysis =====
+  // ===== 16. Failure analysis =====
   {
     const s = newSlide("CONTENT", "EVALUATION  ·  FAILURE ANALYSIS", "Every failure traced, fixed, and retested", "Evaluation");
     const rows = [
@@ -555,7 +587,7 @@ async function icon(name, color) {
     T(s, "Not blind: the adversarial questions and their fixes were written the same night.", { x: 0.5, y: 5.05 - 0.05, w: 9, h: 0.2, fontSize: 9, italic: true, color: C.accent5 });
   }
 
-  // ===== 16. Security =====
+  // ===== 17. Security =====
   {
     const s = newSlide("CONTENT", "SECURITY", "Public data, handled with care", "Security and lessons");
     T(s, "OIG's published record, with no CUI. Findings are addressed to roles and offices; the server never guesses who was responsible.", { x: 0.5, y: 1.32, w: 9, h: 0.35, fontSize: 12, italic: true, color: C.text2 });
@@ -578,7 +610,7 @@ async function icon(name, color) {
     T(s, "Independent review, November 17: no high-severity issues; medium and low findings fixed, each with a test.", { x: 0.5, y: 4.98, w: 8.4, h: 0.2, fontSize: 9.5, italic: true, color: C.accent5 });
   }
 
-  // ===== 17. Lessons =====
+  // ===== 18. Lessons =====
   {
     const s = newSlide("CONTENT_DARK", "LESSONS LEARNED AND RECOMMENDATIONS", "Seven lessons for MCP server builders", "Security and lessons");
     const L = [
