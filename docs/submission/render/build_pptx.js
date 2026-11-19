@@ -172,7 +172,7 @@ async function icon(name, color) {
       T(s, l, { x, y: 4.05, w: 2.4, h: 0.3, fontSize: 13, color: C.background1 });
     });
     T(s, "Troy Sybert, MD, MPH   ·   Mikhail Kuprian, MD", { x: 0.6, y: 4.55, w: 8.8, h: 0.3, fontSize: 13, bold: true, color: C.background1 });
-    T(s, "github.com/HacksterT/oig-mcp   ·   Deployed in IBM watsonx Orchestrate", { x: 0.6, y: 4.88, w: 8.8, h: 0.3, fontSize: 11, color: C.accent3 });
+    T(s, "github.com/HacksterT/oig-mcp   ·   Hosted behind Cloudflare and deployed in IBM watsonx Orchestrate", { x: 0.6, y: 4.88, w: 8.8, h: 0.3, fontSize: 11, color: C.accent3 });
   }
 
   // ===== 2. Challenge =====
@@ -206,7 +206,7 @@ async function icon(name, color) {
       ["LuMessageSquare", "Ask in plain language", "Exact counts, trends, time to close, recurring findings, and peer commitments, across every report."],
       ["LuLink", "Every finding can be checked", "An OIG report number, a vaoig.gov link, and the date the data was collected."],
       ["LuBan", "It states its limits", "No facility ratings, no predictions, no deadline miss rates, no guessing who was responsible."],
-      ["LuPlug", "It runs anywhere MCP does", "Deployed in IBM watsonx Orchestrate; works with Claude and other MCP clients."],
+      ["LuPlug", "It runs anywhere MCP does", "Hosted over HTTPS behind Cloudflare for any MCP client, and deployed in IBM watsonx Orchestrate over stdio."],
     ];
     for (const [i, r] of rows.entries()) {
       const y = 1.45 + i * 0.9;
@@ -276,7 +276,7 @@ async function icon(name, color) {
     const facts = [
       ["LuBraces", "Python on FastMCP", "One tool per file, each registering itself."],
       ["LuLock", "One outbound origin", "Set by the operator, never by a tool argument, through one hardened HTTP client."],
-      ["LuWaypoints", "Two transports, same code", "stdio inside Orchestrate and desktop hosts; Streamable HTTP for testers and judges."],
+      ["LuWaypoints", "Two transports, same code", "stdio inside Orchestrate and desktop hosts; Streamable HTTP through a Cloudflare Tunnel, a bearer token per client."],
     ];
     for (const [i, f] of facts.entries()) {
       const x = 0.5 + i * 3.05;
@@ -401,13 +401,13 @@ async function icon(name, color) {
 
   // ===== 10. Orchestrate =====
   {
-    const s = newSlide("CONTENT", "DEPLOYMENT", "Deployed in IBM watsonx Orchestrate", "Design");
+    const s = newSlide("CONTENT", "DEPLOYMENT", "Two deployments, one codebase", "Design");
     const rows = [
-      ["LuTerminal", "Local toolkit", "Orchestrate runs the server over stdio inside its own runtime, with no network endpoint of its own."],
-      ["LuKeyRound", "Credentials from a connection", "The data address and keys come from a key_value connection, never code or the repository."],
+      ["LuCloud", "Hosted endpoint, Streamable HTTP", "mcp.troymd.com through a Cloudflare Tunnel: no open port, a bearer token per client, a rate limit per token."],
+      ["LuTerminal", "watsonx Orchestrate, stdio", "A local toolkit inside Orchestrate's runtime, no network endpoint; keys from a key_value connection."],
       ["LuBot", "A minimal agent", "GPT-OSS 120B, the seven tools, and one instruction: answer only from what the OIG tools return."],
       ["LuClipboardCheck", "Evaluated in place", "IBM's Agent Development Kit ran the gold questions in two rounds: three runs, then two."],
-      ["LuActivity", "Traced end to end", "Each request carries a trace ID to the data service, so every conversation can be checked."],
+      ["LuActivity", "Traced end to end", "A trace ID to the data service, which sits behind Cloudflare Access with its own API key."],
     ];
     for (const [i, r] of rows.entries()) {
       const y = 1.4 + i * 0.73;
@@ -593,7 +593,7 @@ async function icon(name, color) {
     const s = newSlide("CONTENT", "SECURITY", "Public data, handled with care", "Security and lessons");
     T(s, "OIG's published record, with no CUI. Findings are addressed to roles and offices; the server never guesses who was responsible.", { x: 0.5, y: 1.32, w: 9, h: 0.35, fontSize: 12, italic: true, color: C.text2 });
     const tiles = [
-      ["LuLock", "MCP endpoint", "Bearer token compared in constant time; per-client rate limit; Host and Origin checks", "22 deployment checks"],
+      ["LuLock", "MCP endpoint", "Cloudflare Tunnel, no open port; bearer token compared in constant time; per-client rate limit", "22 deployment checks"],
       ["LuFilter", "Tool input", "Typed and bounded; traversal, injection, and search syntax refused cleanly", "49 robustness checks"],
       ["LuRoute", "Outbound requests", "One fixed origin; no redirects or proxies; bounded responses; at most eight at once", "Automated tests"],
       ["LuQuote", "Prompt injection", "Report text marked as quotation; read-only tools; scope in the server's instructions", "6 adversarial questions"],

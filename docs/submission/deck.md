@@ -13,7 +13,7 @@
 **Footer:**
 - GSA MCP Server and AI Agent Government Hackathon, Dataset Access track
 - Team: Troy Sybert, MD, MPH, and Mikhail Kuprian, MD
-- Deployed on IBM watsonx Orchestrate
+- Hosted over HTTPS behind Cloudflare, and deployed in IBM watsonx Orchestrate
 - github.com/HacksterT/oig-mcp
 
 **Visual:** None, or the project mark.
@@ -52,7 +52,7 @@ oig-mcp gives any MCP-compatible agent seven tools over a structured, regularly 
 - **Ask in plain language,** across every report, and get exact counts, trends, time to close, recurring findings, and peer commitments.
 - **Every finding can be checked.** It comes with the OIG report number, a vaoig.gov link, and the date the data was collected.
 - **It states its limits.** It declines what the data cannot support: rating facilities, predicting findings, computing a deadline miss rate, or guessing who was responsible.
-- **It runs anywhere MCP does.** The same server is deployed in IBM watsonx Orchestrate and also works with Claude and other MCP clients.
+- **It runs anywhere MCP does.** The same server is hosted over HTTPS behind Cloudflare for any MCP client, and deployed in IBM watsonx Orchestrate over stdio.
 
 Example questions:
 - "Which findings recur across VA medical facilities?"
@@ -100,7 +100,7 @@ The project is built in Python on FastMCP. It has two parts, and the MCP server 
   - **Resources:** an about page, the facility registry, and filter values.
   - **Prompts:** an inspection readiness checklist and an open-recommendation aging brief.
 - **Middleware:** bearer authentication, a per-client rate limit, a usage log, and traces linked to the data service by trace ID.
-- **Transports:** stdio (watsonx Orchestrate, desktop clients) and Streamable HTTP (a hosted endpoint for testers and judges).
+- **Transports:** stdio (watsonx Orchestrate, desktop clients) and Streamable HTTP (a hosted endpoint at `https://mcp.troymd.com/mcp`, reached through a Cloudflare Tunnel with no open port and a bearer token per client).
 
 **Visual:**
 
@@ -227,21 +227,21 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
 
 ---
 
-## Slide 10: Running on IBM watsonx Orchestrate
+## Slide 10: Two deployments, one codebase
 
-**Title:** Deployed on IBM watsonx Orchestrate
+**Title:** Two deployments, one codebase
 
 **Body:**
 
-- **Local toolkit:** Orchestrate runs the server over stdio inside its own runtime, so the server has no network endpoint of its own there.
-- **Credentials from a connection:** the data service address and credentials come from a key_value connection, never from code or the repository.
+- **Hosted endpoint, Streamable HTTP:** the server's container answers at `https://mcp.troymd.com/mcp` through a Cloudflare Tunnel, so the host machine has no open port. Each client has its own bearer token and rate limit.
+- **watsonx Orchestrate, stdio:** Orchestrate runs the server as a local toolkit inside its own runtime, with no network endpoint there; the data service address and credentials come from a key_value connection, never from code or the repository.
 - **A minimal agent:** it uses the seven tools, runs GPT-OSS 120B, and has one instruction: "Answer only from what the OIG tools return. Do not use general knowledge or information outside the tool results."
 - **Evaluated in place:** IBM's Agent Development Kit ran the same gold questions against the deployed agent in two rounds: three runs, then two after the server fixes.
-- **Traced end to end:** every request the server makes carries a trace ID to the data service, so each Orchestrate conversation can be checked against the requests behind it.
+- **Traced end to end:** every request the server makes carries a trace ID to the data service, which sits behind Cloudflare Access with its own API key, so each conversation can be checked against the requests behind it.
 
 **Visual:** The Orchestrate agent (GPT-OSS 120B) answering "What has OIG found at the Mountain Home VA?", ending with its cited reports and the data date.
 
-**Speaker notes:** The same server runs over Streamable HTTP with bearer authentication for other hosts. No code differs between the two deployments.
+**Speaker notes:** No code differs between the two deployments. In the demo, Claude Code runs the server locally over stdio, and Hermes Agent reaches the hosted endpoint over Streamable HTTP.
 
 ---
 
@@ -434,7 +434,7 @@ Each failure was read against the tool results and the data service's request tr
 
 | Surface | Mitigation | Checked by |
 |---|---|---|
-| MCP endpoint | A bearer token compared in constant time; a per-client rate limit; Host and Origin checks for local HTTP | 22 deployment checks |
+| MCP endpoint | Reached through a Cloudflare Tunnel, with no open port; a bearer token compared in constant time; a per-client rate limit; Host and Origin checks for local HTTP | 22 deployment checks |
 | Tool input | Typed and bounded; path traversal, injection, and search syntax refused cleanly | 49 robustness checks |
 | Outbound requests | One fixed origin, no redirects or proxies, bounded responses, at most eight requests at once | Automated tests |
 | Prompt injection | Report text marked as quotation; read-only tools; scope in the server's instructions | 6 adversarial questions |
