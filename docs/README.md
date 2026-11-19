@@ -25,7 +25,7 @@ The [repository README](../README.md) is the short overview and quick start. Thi
 
 ## For the hackathon submission
 
-The deck, the evaluation document, and the video script are drawn from these pages: [submission/deck.md](submission/deck.md), [submission/evaluation-document.md](submission/evaluation-document.md), and [submission/video-script.md](submission/video-script.md); [submission/render/](submission/render/README.md) builds the DOCX and PPTX files from them. Security, with every check and the independent review, is in [SECURITY.md](../SECURITY.md) at the repository root. Earlier working documents are kept, unchanged, in [`_archive/`](_archive/README.md).
+The deck and the evaluation document are drawn from these pages: [submission/deck.md](submission/deck.md) and [submission/evaluation-document.md](submission/evaluation-document.md); [submission/render/](submission/render/README.md) builds the DOCX and PPTX files from them. Security, with every check and the independent review, is in [SECURITY.md](../SECURITY.md) at the repository root. Earlier working documents are kept, unchanged, in [`_archive/`](_archive/README.md).
 
 ## Conventions
 
