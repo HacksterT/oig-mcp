@@ -94,7 +94,7 @@ The design favors trust over polish. It produces no facility scores or rankings.
 
 The project is built in Python on FastMCP. It has two parts, and the MCP server calls exactly one origin.
 
-- **Data service** (companion repository): crawls vaoig.gov, parses report pages and PDFs into SQLite, and serves a JSON API behind Cloudflare Access with its own API key.
+- **Data service** (companion repository): crawls vaoig.gov, parses report pages and PDFs into SQLite, indexes them for search by keyword and by meaning, and serves a JSON API behind Cloudflare Access with its own API key.
 - **oig-mcp** (this repository): 7 tools, 3 resources, and 2 workflow prompts. The data address is set by the operator, never by a tool argument.
   - **Tools:** data status, search, analysis, systemic clusters, one report, a facility profile, an inspection brief.
   - **Resources:** an about page, the facility registry, and filter values.
@@ -105,7 +105,7 @@ The project is built in Python on FastMCP. It has two parts, and the MCP server 
 **Visual:**
 
 ```
-vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Access
+vaoig.gov ──> data service: crawler, SQLite, hybrid search, JSON API, behind Cloudflare Access
                      │  HTTPS, service token and API key
                      ▼
               oig-mcp: 7 tools · 3 resources · 2 prompts
@@ -115,7 +115,7 @@ vaoig.gov ──> data service: crawler, SQLite, JSON API, behind Cloudflare Acc
   watsonx Orchestrate agent · Claude · any MCP client
 ```
 
-**Speaker notes:** One tool per file, each registering itself. Everything outbound goes through one hardened HTTP client. Behind the API is a private pipeline built for this entry: it crawls vaoig.gov, extracts 11,264 facility responses from inspection PDFs with rules rather than an LLM, groups recurring findings into 283 clusters, and reconciles every build with OIG's own listing row by row before publishing. The wiki's Data source page describes each stage.
+**Speaker notes:** One tool per file, each registering itself. Everything outbound goes through one hardened HTTP client. Behind the API is a private pipeline built for this entry: it crawls vaoig.gov, extracts 11,264 facility responses from inspection PDFs with rules rather than an LLM, groups recurring findings into 283 clusters, and builds hybrid search: a keyword index plus 26,077 meaning vectors from an embedding model that runs locally, one for every recommendation and corrective action, so a question in the user's own words finds OIG's differently worded findings and no report text leaves the machine. It reconciles every build with OIG's own listing row by row before publishing. The wiki's Data source page describes each stage.
 
 ---
 
