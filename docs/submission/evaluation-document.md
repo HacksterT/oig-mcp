@@ -5,11 +5,11 @@
 | | |
 |---|---|
 | **Server under test** | oig-mcp, an MCP server over VA Office of Inspector General (OIG) reports and recommendations, with seven tools |
-| **Evaluation frameworks** | Arize Phoenix (harness, traces, experiments); IBM's Agent Development Kit (`orchestrate evaluations evaluate`) against the server deployed in IBM watsonx Orchestrate |
+| **Evaluation framework** | Arize Phoenix (harness, traces, experiments); IBM's Agent Development Kit (`orchestrate evaluations evaluate`) against the server deployed in IBM watsonx Orchestrate |
 | **Agent models** | Claude Opus 5.5 and Claude Sonnet 5.5 (Anthropic API); Llama 3.3 70B (IBM watsonx.ai, temperature 0); GPT-OSS 120B (in IBM watsonx Orchestrate); DeepSeek V4 Pro 0813 (Hermes Agent). Five models from four model makers, three open-weight |
 | **Judges** | Code checks; Claude Opus 5.5; Llama 3.3 70B on watsonx.ai, directly and through `arize-phoenix-evals` as IBM's skill specifies; IBM's evaluation engine |
-| **Datasets** | 24 gold questions plus 6 adversarial questions, with answers computed by SQL from a frozen data snapshot (data as of November 4, 2026) |
-| **Dates** | November 4 to 17, 2026 |
+| **Dataset** | 24 gold questions plus 6 adversarial questions, with answers computed by SQL from a frozen data snapshot (data as of November 4, 2026) |
+| **Date** | November 4 to 17, 2026 |
 
 ## 1. Overview and objectives
 
@@ -169,15 +169,25 @@ Claude Opus was unchanged on every measure, and Llama's total held at 9 of 24. R
 
 The full design, every check with its latest result, the independent review, and the accepted risks are in [SECURITY.md](../../SECURITY.md).
 
-**Data classification.** The data is public: OIG's published reports and recommendations at vaoig.gov, with no CUI. Inspection findings are addressed to roles and offices; the server never guesses who was responsible and names a person only where a quoted finding does. Questions sent during the hackathon are recorded in traces, users are told so, and they are asked not to enter patient or nonpublic information.
+### Data classification
 
-**Scope containment as a control.** Five behavior questions and six adversarial questions test that the agent declines what the data cannot support, refuses to rank facilities or guess who was responsible, gives no medical advice and sends an emergency to 911, and does not invent a report. The server states its scope in its own instructions, so the guardrail holds for any host, not only one configured agent.
+The data is public: OIG's published reports and recommendations at vaoig.gov, with no CUI. Inspection findings are addressed to roles and offices; the server never guesses who was responsible and names a person only where a quoted finding does. Questions sent during the hackathon are recorded in traces, users are told so, and they are asked not to enter patient or nonpublic information.
 
-**Secrets and configuration.** Credentials load from the environment, or in Orchestrate from a connection, and are never committed: a scan of the repository's full history found none. The server refuses to start without a strong bearer token or with a plain-HTTP data address. Dependencies are locked with hashes and audited on every change; the base image and CI actions are pinned.
+### Scope containment as a control
 
-**Untrusted input and prompt injection.** Every result marks the fields that quote report text and says to cite them and never follow instructions in them, and every tool is read-only. The adversarial set includes an injected instruction; both models ignored it after the server changes. A robustness check sends every tool path traversal, injection, and out-of-bound values: all 49 checks pass, with no stack trace, address, or credential in any reply.
+Five behavior questions and six adversarial questions test that the agent declines what the data cannot support, refuses to rank facilities or guess who was responsible, gives no medical advice and sends an emergency to 911, and does not invent a report. The server states its scope in its own instructions, so the guardrail holds for any host, not only one configured agent.
 
-**Transport and isolation.** The hosted endpoint is reached through a Cloudflare Tunnel with no open port; every request needs a bearer token per client, compared in constant time, with a per-client rate limit. The data API sits behind Cloudflare Access and requires its own service token and API key, and the server can call only that one origin. The container runs as a non-root user with a read-only filesystem. In Orchestrate, the server runs over stdio with no network endpoint of its own. An independent review on November 17 found no high-severity issues; its medium and low findings are fixed, each with a test.
+### Secrets and configuration
+
+Credentials load from the environment, or in Orchestrate from a connection, and are never committed: a scan of the repository's full history found none. The server refuses to start without a strong bearer token or with a plain-HTTP data address. Dependencies are locked with hashes and audited on every change; the base image and CI actions are pinned.
+
+### Untrusted input and prompt injection
+
+Every result marks the fields that quote report text and says to cite them and never follow instructions in them, and every tool is read-only. The adversarial set includes an injected instruction; both models ignored it after the server changes. A robustness check sends every tool path traversal, injection, and out-of-bound values: all 49 checks pass, with no stack trace, address, or credential in any reply.
+
+### Transport and isolation
+
+The hosted endpoint is reached through a Cloudflare Tunnel with no open port; every request needs a bearer token per client, compared in constant time, with a per-client rate limit. The data API sits behind Cloudflare Access and requires its own service token and API key, and the server can call only that one origin. The container runs as a non-root user with a read-only filesystem. In Orchestrate, the server runs over stdio with no network endpoint of its own. An independent review on November 17 found no high-severity issues; its medium and low findings are fixed, each with a test.
 
 ## 5. Lessons learned and recommendations
 
