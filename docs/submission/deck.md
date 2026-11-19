@@ -249,7 +249,7 @@ vaoig.gov ──> data service: crawler, SQLite, hybrid search, JSON API, behind
 
 **Title:** One quality manager, one question
 
-**Body:** The demo video (under three minutes, submitted separately) follows a quality manager at the Mountain Home VA in six moments:
+**Body:** The Hackathon demo video submitted with this entry (under three minutes) follows a quality manager at the Mountain Home VA in six moments:
 
 1. Searching vaoig.gov for "Mountain Home": 196 results, 20 a page, with the detail in PDFs.
 2. From PDFs to answers: the pipeline, the database, and the row-by-row check against OIG's own listing.
@@ -346,6 +346,8 @@ vaoig.gov ──> data service: crawler, SQLite, hybrid search, JSON API, behind
 - **Load:** ramped from 1 to 40 concurrent clients through the public URL, all 2,059 calls were answered, with no errors and no unclean reply. The median call slowed from 0.33 to 1.8 seconds as the server queued requests to protect the data service.
 - **Cost:** about $3 per full Claude Opus 5.5 run, including the judge.
 
+**On the slide:** median tool latency, cost per run, and the elicitation token saving, as the sample deck reports latency and tokens.
+
 **Limits:** One builder wrote the questions and the server, and fixes followed failures on these same questions. Twenty-four questions are a check, not a statistical estimate. The load test was one run on one Mac, to 40 clients, not to failure.
 
 **Visual:** Phoenix's experiments for the gold dataset, with the five evaluators' scores across runs, as the sample deck does. Beside it, a bar chart of no tools against with the server for both models.
@@ -440,6 +442,8 @@ Each failure was read against the tool results and the data service's request tr
 | Prompt injection | Report text marked as quotation; read-only tools; scope in the server's instructions | 6 adversarial questions |
 | Secrets | From the environment or an Orchestrate connection; never in results, logs, or the image | 15 image checks, history scan |
 | Container and supply chain | Non-root, no capabilities, read-only filesystem; locked dependencies audited on every change; pinned image and CI actions | CI, Dependabot |
+
+**Assumptions (out of scope):** OIG's published record is the authority; testers enter no patient or nonpublic information; the data API's address stays private.
 
 **Independent review (November 17):** a separate review agent found no high-severity issues. Its medium and low findings are fixed, each with a test.
 
