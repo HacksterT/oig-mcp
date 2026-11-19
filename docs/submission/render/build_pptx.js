@@ -255,7 +255,7 @@ async function icon(name, color) {
     const s = newSlide("CONTENT", "SERVER DESIGN", "Two parts, one origin", "Design");
     const boxes = [
       { x: 0.5, w: 1.45, head: "vaoig.gov", body: "OIG's published reports and PDFs", fill: C.background2, dark: false },
-      { x: 2.4, w: 1.95, head: "Data service", body: "Crawler, SQLite, JSON API, behind Cloudflare Access", fill: C.background2, dark: false },
+      { x: 2.4, w: 1.95, head: "Data service", body: "Crawler, SQLite, keyword + meaning search, JSON API, behind Cloudflare Access", fill: C.background2, dark: false },
       { x: 4.8, w: 2.5, head: "oig-mcp", body: "7 tools · 3 resources · 2 prompts\nauth, rate limit, usage log, traces", fill: C.text1, dark: true },
       { x: 7.75, w: 1.75, head: "Any MCP host", body: "Orchestrate, Claude, any MCP client", fill: C.background2, dark: false },
     ];
