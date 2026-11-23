@@ -360,27 +360,30 @@ vaoig.gov ──> data service: crawler, SQLite, hybrid search, JSON API, behind
 
 ## Slide 15: Phoenix evaluators
 
-**Title:** A second judge, built as IBM's skill specifies
+**Title:** The server, not the model, made the gain
 
-**Body:** IBM's `mcp-eval-wxai` skill grades answers with `arize-phoenix-evals` judges on watsonx.ai. Every saved answer set was graded that way, with nothing rerun: Llama 3.3 70B on watsonx.ai read each answer with its tool calls and full responses.
+**Body:**
 
-| Evaluator | Orchestrate round 1 (3 runs, of 24) | Orchestrate round 2 (2 runs, of 24) | Claude Opus / Sonnet, final (of 30) |
+- **16 to 20 of 24 correct.** Same model, same agent, only the server changed: GPT-OSS 120B in watsonx Orchestrate gave more correct answers.
+- **30 of 30 in scope.** Claude answered or rightly declined every question; GPT-OSS 23 to 24 of 24.
+- **26 of 26 faithful to results.** Claude used what the tools returned and invented nothing, in every answer that called a tool.
+- **Why it worked:** tool selection did not change between rounds. The models picked the same tools; the server's results got clearer and harder to misread.
+
+Every evaluator's score, run by run, is in the evaluation document, section 3.
+
+**Visual:** The Phoenix dataset page's annotation score comparison for the five evaluators.
+
+**Speaker notes:** This is the grading IBM's mcp-eval-wxai skill specifies: arize-phoenix-evals judges on Llama 3.3 70B on watsonx.ai, run over every saved answer with its tool calls and full responses, with nothing rerun. It includes the sample deck's two judges, correctness and scope, plus the three tool judges the skill adds.
+
+| Evaluator | GPT-OSS round 1 (3 runs, of 24) | GPT-OSS round 2 (2 runs, of 24) | Claude Opus / Sonnet, final (of 30) |
 |---|---|---|---|
-| Correct against the gold reference | 16, 16, 15 | **20, 20** | 30 / 29 |
+| Correct against the gold reference | 16, 16, 15 | 20, 20 | 30 / 29 |
 | In scope, or rightly declined | 23, 23, 23 | 24, 23 | 30 / 30 |
 | Tool selection | 15, 13, 14 | 14, 16 | 7 / 11 |
 | Tool arguments | 16, 19, 17 | 19, 17 | 26 / 27 |
 | Tool responses used faithfully | 17/20, 21/22, 22/22 | 21/23, 20/21 | 26 / 26 of 26 |
 
-- A judge this project did not build confirms the main result: with only the server changed, GPT-OSS 120B's correct answers rose from about 16 to 20 of 24.
-- Tool selection and tool arguments did not move: the gain came from how the agent used results.
-- Claude's low tool selection score is the judge disagreeing with the server's design: it counts calling the dataset status tool first, which the server instructs, and declining "Which VA facility is the worst?" without a tool, as wrong.
-
-**Per question,** Claude Opus 5.5 on the final 30-question run: 12.8 seconds, 2.1 tool calls, about 24,000 input and 1,200 output tokens. These come from the harness; the Phoenix runs regraded saved answers, so Phoenix's latency panel reads 0 ms.
-
-**Visual:** The Phoenix dataset page's annotation score comparison for the five evaluators, beside the table.
-
-**Speaker notes:** The sample deck reports Phoenix's correctness and scope judges. Here they are, with the three tool judges IBM's skill adds, on the same gold dataset in Phoenix. Every judge's reasoning is saved with each run.
+Claude's low tool selection score is the judge disagreeing with the server's design: it counts calling the dataset status tool first, which the server instructs, and declining "Which VA facility is the worst?" without a tool, as wrong. Per question, Claude Opus 5.5 on the final 30-question run took 12.8 seconds, with 2.1 tool calls and about 24,000 input and 1,200 output tokens; those figures come from the harness, because the Phoenix runs regraded saved answers.
 
 ---
 
