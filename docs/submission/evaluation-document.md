@@ -35,18 +35,18 @@ The seven tools are built around what a user is trying to do, not around the dat
 
 ### Framework and reproducibility
 
-The harness ([`eval/phoenix/`](../../eval/phoenix/)) gives the agent no project-specific prompt: its system prompt is the server's own `instructions`, as any MCP host receives them. Every run is recorded in Arize Phoenix with each tool call, its arguments, and its latency, and kept in [`eval/results/`](../../eval/results/). The data is frozen, and the harness refuses to run if the server's data differs from the pinned snapshot. One command runs a set:
+The harness ([`eval/phoenix/`](../../eval/phoenix/)) gives the agent no project-specific prompt: its system prompt is the server's own `instructions`, as any MCP host receives them. Every run is recorded in Arize Phoenix with each tool call, its arguments, and its latency, and kept in [`eval/results/`](../../eval/results/). The data is frozen, and the harness refuses to run if the server's data differs from the pinned snapshot. One command runs a set; the second runs the no-tool baseline:
 
 ```bash
 uv run --group eval python eval/phoenix/run_experiment.py --model claude-opus-5-5
-uv run --group eval python eval/phoenix/run_experiment.py --no-tools          # baseline
+uv run --group eval python eval/phoenix/run_experiment.py --no-tools
 ```
 
 In watsonx Orchestrate, the server runs as a local toolkit over stdio. The agent has the seven tools and one instruction: answer only from what the tools return. IBM's Agent Development Kit runs test files generated from the same gold set.
 
 Agent evaluation sits on top of four other layers: 313 automated tests on every change, 15 container image checks, 22 checks on a running deployment, and 49 robustness checks that send hostile and malformed input to every tool.
 
-**Verify it yourself.** One command, from a clean clone with no keys, server, or network, recomputes every code check from the saved answers. On November 17 it reproduced all 18 runs on every question:
+**A verifiable process.** Every result in this document can be traced and reproduced. The gold questions, their SQL-computed answers, and every run's answers, tool calls, and scores are saved in the repository, and one command recomputes every code check from those saved answers, with no keys, server, or network. On November 17 it reproduced all 18 runs on every question:
 
 ```bash
 git clone https://github.com/HacksterT/oig-mcp && cd oig-mcp
@@ -54,7 +54,7 @@ uv sync --group eval
 uv run --group eval python eval/verify_scores.py
 ```
 
-With a tester token, a judge can also run the deployment checks, the robustness checks, and the full question set against the hosted server. [Verify it yourself](../evaluation/method.md#verify-it-yourself) gives the commands.
+The deployment checks, the robustness checks, and the full question set can also be rerun against the hosted server with a tester token; the [evaluation method](../evaluation/method.md#verify-it-yourself) gives the commands.
 
 ### Golden dataset
 
