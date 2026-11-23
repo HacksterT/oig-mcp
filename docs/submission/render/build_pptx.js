@@ -530,6 +530,36 @@ async function icon(name, color) {
       { x: 0.5, y: 4.9, w: 9, h: 0.22, fontSize: 9.5, italic: true, color: C.accent5 });
   }
 
+  // ===== 15. Phoenix evaluators =====
+  {
+    const s = newSlide("CONTENT", "EVALUATION  \u00B7  PHOENIX EVALUATORS", "A second judge, built as IBM's skill specifies", "Evaluation");
+    const iw = 4.0, ih = iw * 341 / 450;
+    s.addImage({ path: path.join(IMG, "phoenix-evaluators.png"), x: 0.5, y: 1.32, w: iw, h: ih, altText: "Phoenix dataset oig-eval-2bb10bd321e0: annotation score comparison for the five evaluators across seven experiments" });
+    T(s, "Phoenix experiments on the gold dataset: five arize-phoenix-evals judges on Llama 3.3 70B (watsonx.ai), regrading saved answers", { x: 0.5, y: 1.36 + ih, w: iw, h: 0.4, fontSize: 9, italic: true, color: C.accent5 });
+    const hd = (t) => ({ text: t, options: { bold: true, color: HEX.white, fill: { color: HEX.ink }, fontSize: 9.5 } });
+    const c = (t, o = {}) => ({ text: t, options: { fontSize: 10, color: HEX.text, ...o } });
+    const rows = [
+      [hd("Evaluator"), hd("GPT-OSS, round 1"), hd("GPT-OSS, round 2"), hd("Claude O / S")],
+      [c("Correct", { bold: true }), c("16, 16, 15"), c("20, 20", { bold: true, color: HEX.teal }), c("30 / 29")],
+      [c("In scope", { bold: true }), c("23, 23, 23"), c("24, 23"), c("30 / 30")],
+      [c("Tool selection", { bold: true }), c("15, 13, 14"), c("14, 16"), c("7 / 11 *")],
+      [c("Tool arguments", { bold: true }), c("16, 19, 17"), c("19, 17"), c("26 / 27")],
+      [c("Faithful to results", { bold: true }), c("17/20, 21/22, 22/22"), c("21/23, 20/21"), c("26/26, 26/26")],
+    ];
+    s.addTable(rows, { x: 4.75, y: 1.32, w: 4.75, colW: [1.25, 1.3, 1.15, 1.05], rowH: 0.29, fill: { color: HEX.tint }, border: { type: "solid", pt: 0.75, color: HEX.white }, valign: "middle", margin: 0.05, fontFace: "Calibri" });
+    T(s, "GPT-OSS 120B in Orchestrate, of 24: same agent and model, only the server changed. Claude Opus and Sonnet on the final server, of 30.", { x: 4.75, y: 3.22, w: 4.75, h: 0.32, fontSize: 8.5, italic: true, color: C.accent5 });
+    const notes = [
+      ["A judge this project did not build confirms the gain:", " correct answers rose from 16 to 20 of 24."],
+      ["Tool selection did not move:", " the gain came from how the agent used results, not which tool it chose."],
+      ["* The judge disagrees with the design:", " it counts checking data currency first, and declining \u201Cworst facility\u201D without a tool, as wrong."],
+    ];
+    notes.forEach(([h, b], i) => T(s, [{ text: h, options: { bold: true } }, { text: b }], { x: 4.75, y: 3.6 + i * 0.38, w: 4.75, h: 0.38, fontSize: 9.5 }));
+    s.addText([
+      { text: "Per question:  ", options: { bold: true, color: C.text2 } },
+      { text: "Claude Opus 5.5, final run: 12.8 s, 2.1 tool calls, about 24,000 input and 1,200 output tokens (harness timing; Phoenix regraded saved answers)", options: { color: C.text1 } },
+    ], { isTextBox: true, x: 0.5, y: 4.85, w: 9, h: 0.24, margin: 0, fontSize: 9.5 });
+  }
+
   // ===== 15. Five models =====
   {
     const s = newSlide("CONTENT", "EVALUATION  ·  FIVE MODELS", "One server, five models", "Evaluation");
