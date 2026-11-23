@@ -15,7 +15,7 @@ The structure follows GSA's sample deck and sample evaluation document from the 
 
 ## Picking this up
 
-**Status (November 19, 2026).** Both files are complete. The deck has 19 slides with speaker notes, ending on a thank-you slide with the team, the links, and the submission date (November 23, 2026; change it on slide 19 if the submission goes in on another day). Slides 10 to 12 use frames from the demo video (`orchestrate-answer.png`, `demo-*.png` in `../images/`): slide 11 maps the video's six moments, and slide 12 annotates the inspection brief, so the deck carries the detail the video moves through quickly.
+**Status (November 19, 2026).** Both files are complete. The deck has 20 slides with speaker notes, including the Phoenix evaluators on slide 15, and ends on a thank-you slide with the team, the links, and the submission date (November 23, 2026; change it on slide 20 if the submission goes in on another day). Slides 10 to 12 use frames from the demo video (`orchestrate-answer.png`, `demo-*.png` in `../images/`): slide 11 maps the video's six moments, and slide 12 annotates the inspection brief, so the deck carries the detail the video moves through quickly.
 
 **Adding a screenshot.** Save the PNG in [`../images/`](../images/), then in that slide's block add `s.addImage({ path: path.join(IMG, "<file>.png"), x, y, w, h, altText: "..." })`, using the box's own x, y, and width, and a height that keeps the image's aspect ratio (slide 12 does this for `phoenix-trace.png`). For the demo, either embed a short clip with `s.addMedia({ type: "video", path, x, y, w, h })` or use screenshots. An embedded video counts toward the deck's file size, and the separate video upload is capped at 50 MB.
 
